@@ -20,3 +20,15 @@ def test_error_block_empty():
 
 def test_error_block_none():
     assert extract_error_block(None) == ""
+
+
+def test_extract_error_block_with_invalid_input():
+    # Pass a non-string input to trigger exception
+    result = extract_error_block(67890)
+    assert result.startswith("[Error extracting error block:")
+
+    result = extract_error_block(None)
+    assert result == ""  # None is handled
+
+    result = extract_error_block({"E something": "error"})
+    assert result.startswith("[Error extracting error block:")

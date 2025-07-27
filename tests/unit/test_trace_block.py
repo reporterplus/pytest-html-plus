@@ -25,3 +25,15 @@ def test_trace_block_none():
 def test_trace_block_only_error_line():
     trace = "E error line"
     assert extract_trace_block(trace) == ""
+
+def test_extract_trace_block_with_invalid_input():
+    # Pass a non-string input to trigger exception
+    result = extract_trace_block(12345)
+    assert result.startswith("[Error extracting trace block:")
+
+    result = extract_trace_block(None)
+    assert result == ""  # None is handled
+
+    result = extract_trace_block(["this", "is", "a", "list"])
+    assert result.startswith("[Error extracting trace block:")
+
