@@ -1,11 +1,11 @@
 ⚠️ Package renamed: This plugin was previously known as pytest-reporter-plus.
 
-> ⚡ **Plug. Play. Debug without delay.**  
+> ⚡ **Plug. Play. Quickly debug without delay.**  
 > _Just install. No setup. Crystal-clear test reports out of the box._
 
-## Get a single, easy-to-read single page HTML actionable plug-and-play Unified reports summarizing all your test results — no hassle, just clarity. Detect **flaky tests**, and optionally send reports via email**. Works beautifully with or without `xdist`.
+## Get a self-contained, actionable, easy-to-read single page HTML unified reports summarizing all your test results — no hassle, just clarity. Detect **flaky tests**, and optionally send reports via email**. Works beautifully with or without `xdist`.
 
-[![PyPI Downloads](https://static.pepy.tech/badge/pytest-html-plus)](https://pepy.tech/projects/pytest-html-plus) ![PyPI](https://img.shields.io/pypi/v/pytest-html-plus) ![Python Versions](https://img.shields.io/pypi/pyversions/pytest-html-plus)  ![License](https://img.shields.io/pypi/l/pytest-html-plus)  [![Unit Tests](https://github.com/reach2jeyan/pytest-report-plus/actions/workflows/unit-test.yml/badge.svg)](https://github.com/reach2jeyan/pytest-report-plus/actions/workflows/unit-test.yml)
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/latest/index.html)[![PyPI Downloads](https://static.pepy.tech/badge/pytest-html-plus)](https://pepy.tech/projects/pytest-html-plus) ![PyPI](https://img.shields.io/pypi/v/pytest-html-plus) ![Python Versions](https://img.shields.io/pypi/pyversions/pytest-html-plus)  ![License](https://img.shields.io/pypi/l/pytest-html-plus)  [![Unit Tests](https://github.com/reach2jeyan/pytest-report-plus/actions/workflows/unit-test.yml/badge.svg)](https://github.com/reach2jeyan/pytest-report-plus/actions/workflows/unit-test.yml)
 
 [![Discord](https://img.shields.io/discord/1377581416337903646?labelColor=black&logo=discord&logoColor=c20a71&style=for-the-badge&color=c20a71)](https://discord.gg/Pjy2sCBC) 
 
@@ -16,36 +16,6 @@ pip install pytest-html-plus
 # or with Poetry
 poetry add pytest-html-plus
 ```
-
-## 🧾 Usage
-
-Generate HTML + JSON reports by simply running:
-
-```bash
-pytest
-```
-
-You’ll get:
-
-report.html – a clean, styled HTML report within report_output/
-
----
-
-## Available Options
-
-| Option                  | Description                                         | Default             | Choices                           |
-|-------------------------|-----------------------------------------------------|---------------------|-----------------------------------|
-| `--json-report`         | Path to save individual JSON test reports           | `final_report.json` | *Any valid file path*             |
-| `--capture-screenshots` | When to capture screenshots                         | `failed`            | `failed`, `all`, `none`           |
-| `--html-output`         | Directory to output HTML reports                    | `report_output`     | *Any valid directory*             |
-| `--screenshots`         | Directory where screenshots will be stored          | `screenshots`       | *Any valid directory*             |
-| `--send-email`          | Send HTML report via email after the test run       | `False`             | `True`, `False`                   |
-| `--should-open-report`  | Open your HTML report automatically post completion | `failed`            | `always`, `failed`, `never`       |
-| `--generate-xml`        |       Easily generate combined xml of all runs      |  `False`            | `False`, `True`   |
-| `--xml-report`          | Path to output the XML report (used with --generate-xml) |  `None`         |  *Any valid file path*    |
-
-
----
 
 # Keep using your regular pytest commands — just plug this in to unlock the below powerful reporting features with zero extra effort.
 
@@ -67,11 +37,23 @@ No need for custom marker definitions. Perfect for smarter filtering, reporting,
 
 ![ScreenRecording2025-07-12at10 15 33PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f000388f-cdbc-418d-829b-a54309b8ffc4)
 
-
 #### Easily track Untracked test scenarios
 
 ![ScreenRecording2025-06-29at1 06 02AM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
 
+#### 🔍 Universal Test Search + Smart Link Navigation
+
+Whether you're trying to trace coverage or track unlinked test cases — this search has your back!
+
+Just start typing, and the dashboard will instantly filter tests by:
+
+✅ Test name
+
+✅ Linked issue/documentation IDs (like JIRA, Testmo, Notion, etc.)
+
+✅ Custom URLs or keywords present in the links
+
+![ScreenRecording2025-06-21at3 10 06PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f81c9a81-f98d-4151-ad7a-c1184cd199eb)
 
 #### 🔄 Flaky Test Detection: Automatically flags flaky tests so you can spot and fix inconsistent failures quickly.
 
@@ -90,23 +72,6 @@ No need for custom marker definitions. Perfect for smarter filtering, reporting,
 #### 📝 Comprehensive output capture: All your test logs with loggers, print() statements, and screenshots are automatically captured and embedded in the report...
 
 ![ezgif-744a5d34a4c46d](https://github.com/user-attachments/assets/209cd2c0-d33b-48ec-b58b-8c8991ce35be)
-
-
-#### 🔍 Universal Test Search + Smart Link Navigation
-
-Whether you're trying to trace coverage or track unlinked test cases — this search has your back!
-
-Just start typing, and the dashboard will instantly filter tests by:
-
-✅ Test name
-
-✅ Linked issue/documentation IDs (like JIRA, Testmo, Notion, etc.)
-
-✅ Custom URLs or keywords present in the links
-
-
-![ScreenRecording2025-06-21at3 10 06PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f81c9a81-f98d-4151-ad7a-c1184cd199eb)
-
 
 ### AND MANY MANY MORE
 
@@ -144,43 +109,11 @@ This plugin aims to fill those gaps by acting as a companion layer on top of the
 
 🧼 Quickly copy test paths and run in your local
 
-## 📧 Email Report (Optional)
+## Contributing
 
-Send the HTML report via email using --send-email. Please note you will need your own sendgrid setup to use this feature
+We welcome pull requests, issues, and feature suggestions from the community.
 
-Create an emailenv file in your project folder that has the following
-
-```commandline
-sender_email=you@example.com
-recipient_email=team@example.com
-subject=Your Test Report
-smtp_server=smtp.sendgrid.net
-smtp_port=587
-email_password=your_sendgrid_api_key
-
-```
-
-## Run
-
-```commandline
-pytest --send-email
-```
-
-## Contributions
-
-We welcome pull requests, issues, and feature suggestions from the community. 
-Before contributing, please take a moment to review our contribution guidelines and code of conduct. 
-Your involvement helps make this tool better for everyone!
-
-### Setting up the project is pretty simple
-
-```
-docker build -t pytest-html-plus .
-docker run -it pytest-html-plus /bin/bash 
-poetry install --dev
-
-poetry run pytest tests/ 
-```
+See the [contribution guide](https://pytest-html-plus.readthedocs.io/en/latest/contributing.html) for setup instructions.
 
 
 ## 📜 License
