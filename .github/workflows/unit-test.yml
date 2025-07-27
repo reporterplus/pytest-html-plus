@@ -33,4 +33,4 @@ jobs:
 
       - name: 🧪 Run tests with coverage
         run: |
-          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=79 --cov-report=term --reruns 1
+          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=79 --cov-report=term --reruns 1 >> GITHUB_SUMMARY

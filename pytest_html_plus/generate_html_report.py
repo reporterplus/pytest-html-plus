@@ -1,4 +1,5 @@
 import argparse
+import base64
 import json
 import os
 import shutil
@@ -7,6 +8,7 @@ import html
 from sys import path
 
 from pytest_html_plus.compute_filter_counts import compute_filter_count
+from pytest_html_plus.utils import extract_trace_block, extract_error_block
 
 
 def main():
@@ -57,6 +59,7 @@ class JSONReporter:
             nodeid,
             status,
             duration,
+            trace=None,
             error=None,
             markers=None,
             filepath=None,
@@ -73,6 +76,7 @@ class JSONReporter:
             "nodeid": nodeid,
             "status": status,
             "duration": duration,
+            "trace": trace,
             "error": error,
             "markers": markers or [],
             "file": filepath,
@@ -137,35 +141,24 @@ class JSONReporter:
                     return os.path.join("screenshots", file)
         return None
 
-    def format_error_with_diffs(self, error_text: str) -> str:
-        if not error_text:
-            return ""
-
-        lines = html.escape(error_text).splitlines()
-        html_lines = []
-        for line in lines:
-            stripped = line.strip()
-            if stripped.startswith("-"):
-                html_lines.append(
-                    f"<div style='color: red; background-color: #ffecec; padding: 2px; border-left: 4px solid red;'>❌ {line}</div>"
-                )
-            elif stripped.startswith("+"):
-                html_lines.append(
-                    f"<div style='color: green; background-color: #eaffea; padding: 2px; border-left: 4px solid green;'>✅ {line}</div>"
-                )
-            elif stripped.startswith("E "):
-                html_lines.append(
-                    f"<div style='color: #d8000c; background-color: #fff2f2; padding: 2px; border-left: 4px solid #d8000c;'>{line}</div>"
-                )
-            elif "AssertionError" in stripped:
-                html_lines.append(
-                    f"<div style='color: darkorange; font-weight: bold; padding: 2px;'>{line}</div>"
-                )
-            else:
-                html_lines.append(
-                    f"<pre style='margin: 0; font-family: monospace;'>{line}</pre>"
-                )
-        return "\n".join(html_lines)
+    def generate_copy_button(self, content, label):
+        if isinstance(content, list):
+            # Convert list to string (for logs)
+            content_str = '\n'.join(str(item) for item in content)
+        elif content is None:
+            content_str = ""
+        else:
+            content_str = str(content)
+            
+        # Encode content as base64 to avoid any JavaScript syntax issues
+        content_b64 = base64.b64encode(content_str.encode('utf-8')).decode('ascii')
+        return f"""<button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('{content_b64}', this)" title="Copy {label}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            """
 
     def generate_html_report(self):
         # Extract all unique markers
@@ -183,6 +176,7 @@ class JSONReporter:
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+    
       body {{ font-family: Arial, sans-serif; padding: 1rem; background: #f9f9f9; }}
       .test {{ border: 1px solid #ddd; margin-bottom: 0.5rem; border-radius: 5px; background: white; }}
       .header {{ padding: 0.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }}
@@ -261,6 +255,14 @@ class JSONReporter:
       /* Handle long URLs in header links */
       .header a {{ word-break: break-all; overflow-wrap: break-word; max-width: 150px; display: inline-block; }}
       .nodeid-badge code {{ word-break: break-all; overflow-wrap: break-word; max-width: 300px; }}
+      
+      .inline-copy-btn {{ cursor: pointer; background: none; border: 1px solid #ddd; border-radius: 3px; padding: 2px 4px; font-size: 0.8em; margin-left: 8px; color: #666; transition: all 0.2s ease; line-height: 1; }} 
+      .inline-copy-btn:hover {{ border-color: #999; background: #f5f5f5; color: #333; }}
+      .error-content pre {{ background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px; border-radius: 4px; color: #7f1d1d; margin: 8px 0; }}
+      .trace-content pre {{ background: #fef7ed; border-left: 4px solid #ea580c; padding: 12px; border-radius: 4px; color: #9a3412; margin: 8px 0; }}
+      .details-text div pre {{ background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px; margin: 8px 0; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.85em; line-height: 1.4; }}
+      .details-text div strong {{ display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 600; color: #374151; }}
+      .trace-content strong, .error-content strong {{ margin-bottom: 12px; }}
     </style>
 
     <script>
@@ -270,12 +272,26 @@ class JSONReporter:
         details.style.display = (details.style.display === 'block') ? 'none' : 'block';
       }}
 
-      function copyToClipboard(text) {{
-        navigator.clipboard.writeText(text).then(() => {{
-          console.log("Copied: " + text);
-        }}).catch((err) => {{
-          console.error("Copy failed", err);
-        }});
+      function copyFromBase64(base64Content, button) {{
+        try {{
+          const originalContent = button.innerHTML;
+          // Decode base64 content for copy
+          const decodedContent = atob(base64Content);
+          navigator.clipboard.writeText(decodedContent).then(() => {{
+            button.innerHTML = '<span style="color: #2f7a33;">✓</span>';
+            setTimeout(() => {{
+              button.innerHTML = originalContent;
+            }}, 1000);
+          }}).catch(err => {{
+            console.error("Copy failed:", err);
+            button.innerHTML = '<span style="color: #d32f2f;">✗</span>';
+            setTimeout(() => {{
+              button.innerHTML = originalContent;
+            }}, 1000);
+          }});
+        }} catch (error) {{
+          console.error("Copy button error:", error);
+        }}
       }}
 
       function toggleFullscreen(img) {{
@@ -579,23 +595,59 @@ class JSONReporter:
                 'failed' if test['status'] == 'failed' else
                 'skipped'
             )
-            error_text = test.get("error", "")
-            error_html = f"<pre>{self.format_error_with_diffs(error_text)}</pre>" if error_text else ""
             screenshot_path = self.find_screenshot_and_copy(test['test'])
             screenshot_html = f'<div class="details-screenshot"><img src="{screenshot_path}" alt="Screenshot" onclick="toggleFullscreen(this)"></div>' if screenshot_path else ""
             markers = test.get("markers")
             marker_str = ",".join(markers) if isinstance(markers, list) else ""
             stdout_html = ""
             if test.get('stdout'):
-                stdout_html = f"<div><strong>STDOUT:</strong><pre>{test['stdout']}</pre></div>"
+                stdout_escaped = test['stdout'].replace("`", "\\`")  # Escape backticks
+                stdout_html = f"""
+                <div><strong>STDOUT:</strong> {self.generate_copy_button(stdout_escaped, 'stdout')}
+                <pre>{test['stdout']}</pre></div>
+                """
 
             stderr_html = ""
             if test.get('stderr'):
-                stderr_html = f"<div><strong>STDERR:</strong><pre>{test['stderr']}</pre></div>"
+                stderr_escaped = test['stderr'].replace("`", "\\`")
+                stderr_html = f"""
+                <div><strong>STDERR:</strong> {self.generate_copy_button(stderr_escaped, 'stderr')}
+                <pre>{test['stderr']}</pre></div>
+                """
 
             logs_html = ""
-            if test.get('logs'):
-                logs_html = f"<div><strong>Logs:</strong><pre>{test['logs']}</pre></div>"
+            logs_content = test.get('logs')
+            if logs_content:
+                if isinstance(logs_content, list):
+                    logs_display = '\n'.join(str(item) for item in logs_content if item)
+                else:
+                    logs_display = str(logs_content)
+                if logs_display.strip():
+                    logs_html = f"""
+                    <div><strong>Logs:</strong> {self.generate_copy_button(logs_content, 'logs')}
+                    <pre>{logs_display}</pre></div>
+                    """
+
+            trace_html = ""
+            error_html = ""
+            
+            if test.get('error'):
+                full_error = test['error']
+                full_trace = test['trace']
+                trace_content = extract_trace_block(full_trace)
+                error_content = extract_error_block(full_error)
+                
+                if trace_content and trace_content.strip():
+                    trace_html = f"""
+                    <div class="trace-content"><strong>Trace:</strong> {self.generate_copy_button(trace_content, 'trace')}
+                    <pre>{trace_content}</pre></div>
+                    """
+                
+                if error_content and error_content.strip():
+                    error_html = f"""
+                    <div class="error-content"><strong>Error:</strong> {self.generate_copy_button(error_content, 'error')}
+                    <pre>{error_content}</pre></div>
+                    """
 
             flaky_badge = ""
             if test.get("flaky"):
@@ -634,21 +686,7 @@ class JSONReporter:
     <div class="header-section meta">
       <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
         <code style="font-size: 0.6em; color: #555;">{test["nodeid"]}</code>
-        <button class="copy-btn"
-                onclick="event.stopPropagation(); copyToClipboard('{test["nodeid"]}')"
-                title="Copy full test path"
-                style="
-                  cursor: pointer;
-                  background: none;
-                  border: 1px solid #ddd;
-                  border-radius: 4px;
-                  font-size: 1.2em;
-                  padding: 2px 4px;
-                  line-height: 1;
-                  color: #555;
-                ">
-          ⧉
-        </button>
+          {self.generate_copy_button(test["nodeid"], "nodeid")}
       </span>
       <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">{test["worker"]}</span>
     </div>
@@ -663,6 +701,7 @@ class JSONReporter:
   <div class="details">
     <div class="details-content">
       <div class="details-text">
+        {trace_html}
         {error_html}
         {stdout_html}
         {stderr_html}

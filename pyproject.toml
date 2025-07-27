@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-html-plus"
-version = "0.3.6"
+version = "0.3.7"
 description = "Auto-generated HTML reports with filters, screenshots, logs, flaky detection & more — all without writing a single line of config."
 readme = "README.md"
 authors = ["Emjey", "Karan"]

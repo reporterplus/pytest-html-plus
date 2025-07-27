@@ -11,6 +11,7 @@ from pytest_html_plus.json_merge import merge_json_reports
 from pytest_html_plus.json_to_xml_converter import convert_json_to_junit_xml
 from pytest_html_plus.resolver_driver import take_screenshot_generic, resolve_driver
 from pytest_html_plus.send_email_report import send_email_from_env, load_email_env
+from pytest_html_plus.utils import extract_error_block, extract_trace_block
 
 python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
@@ -38,6 +39,12 @@ def pytest_runtest_setup(item):
 def pytest_runtest_makereport(item, call):
    outcome = yield
    report = outcome.get_result()
+   error = None
+   trace = None
+   if report.failed:
+       full_error = str(report.longrepr)
+       error = extract_error_block(error=full_error)
+       trace = extract_trace_block(str(report.longrepr))
 
    if report.when == "call" or (report.when == "setup" and report.skipped):
        config = item.config
@@ -71,7 +78,8 @@ def pytest_runtest_makereport(item, call):
            nodeid=item.nodeid,
            status=report.outcome,
            duration=report.duration,
-           error=str(report.longrepr) if report.failed else None,
+           error=error,
+           trace=trace if report.failed else None,
            markers=[m.name for m in item.iter_markers()],
            filepath=item.location[0],
            lineno=item.location[1],
