@@ -633,7 +633,8 @@ class JSONReporter:
             
             if test.get('error'):
                 full_error = test['error']
-                trace_content = extract_trace_block(full_error)
+                full_trace = test['trace']
+                trace_content = extract_trace_block(full_trace)
                 error_content = extract_error_block(full_error)
                 
                 if trace_content and trace_content.strip():
