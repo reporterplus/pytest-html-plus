@@ -104,8 +104,3 @@ The report has a structure like:
     }]
 
 You can easily parse this using Python, JavaScript, or any JSON-compatible tool.
-
-Coming Soon:
-^^^^^^^^^^^^
-- Built-in JSON-to-Grafana/Elastic export script
-- CLI to generate CSV/Excel reports from `final_report.json`
