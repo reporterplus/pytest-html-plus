@@ -25,7 +25,7 @@ class EmailSender:
         msg.add_attachment(report_data, maintype="application", subtype="zip", filename=filename)
         return filename
 
-    def send(self, ):
+    def send(self):
         msg = EmailMessage()
         msg["Subject"] = self.subject
         msg["From"] = self.sender
@@ -34,21 +34,9 @@ class EmailSender:
         self.zip_and_attach(msg)
 
         try:
-            if "sendgrid" in self.smtp_server.lower():
-                self._send_via_sendgrid(msg)
-            else:
-                self._send_via_smtp(msg)
+            self._send_via_smtp(msg)
         except Exception as e:
             raise RuntimeError(f"Failed to send email: {e}") from e
-
-    def _send_via_sendgrid(self, msg: EmailMessage):
-        if not self.password.startswith("SG."):
-            print("Invalid SendGrid API Key: should start with 'SG.'")
-        with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-            if self.use_tls:
-                server.starttls()
-            server.login("apikey", self.password)
-            server.send_message(msg)
 
     def _send_via_smtp(self, msg: EmailMessage):
         if self.use_ssl:
