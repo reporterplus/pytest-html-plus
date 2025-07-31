@@ -1,7 +1,7 @@
 Email the HTML Report (`--send-email`)
 ======================================
 
-The `--send-email` flag allows you to automatically send the generated HTML test report via email. This is useful for test pipelines that need to share results with team members or stakeholders without manually downloading and forwarding reports.
+The `--plus-send-email` flag allows you to automatically send the generated HTML test report via email. This is useful for test pipelines that need to share results with team members or stakeholders without manually downloading and forwarding reports.
 
 SendGrid Setup Required
 -----------------------
@@ -35,7 +35,7 @@ Steps to Set Up
 
    .. code-block:: bash
 
-      pytest --send-email
+      pytest --plus-send-email
 
    This will:
    - Generate the test report (requires `--html-output`)
