@@ -1,12 +1,12 @@
 Email the HTML Report (`--send-email`)
 ======================================
 
-The `--send-email` flag allows you to automatically send the generated HTML test report via email. This is useful for test pipelines that need to share results with team members or stakeholders without manually downloading and forwarding reports.
+The `--plus-send-email` flag allows you to automatically send the generated HTML test report via email. This is useful for test pipelines that need to share results with team members or stakeholders without manually downloading and forwarding reports.
 
-SendGrid Setup Required
+SMTP Setup Required
 -----------------------
 
-To use this feature, you must configure your own **SendGrid SMTP** account.
+To use this feature, you must configure your own **SMTP** account and TEMPORARY APP_PASSWORD of your email account.
 
 Steps to Set Up
 ---------------
@@ -17,25 +17,27 @@ Steps to Set Up
 
    .. code-block:: bash
 
-      sender_email=you@example.com
-      recipient_email=team@example.com
-      subject=Your Test Report
-      smtp_server=smtp.sendgrid.net
-      smtp_port=587
-      email_password=your_sendgrid_api_key
+        SMTP_SERVER=smtp.gmail.com
+        SMTP_PORT=587
+        EMAIL_USE_TLS=true
+        EMAIL_SENDER=your@example.com
+        EMAIL_PASSWORD=***************
+        EMAIL_RECIPIENT=your@example.com
+        EMAIL_SUBJECT=Your Report from SMTP
 
-   - `sender_email`: The email address used to send the report.
-   - `recipient_email`: Comma-separated list of recipients.
-   - `subject`: Subject line of the email.
-   - `smtp_server`: Must be `smtp.sendgrid.net`
-   - `smtp_port`: Typically `587` for TLS
-   - `email_password`: Your SendGrid API key (used as SMTP password)
+
+   - `EMAIL_SENDER`: The email address used to send the report.
+   - `EMAIL_RECIPIENT`: The email address to who the report is to be sent.
+   - `EMAIL_SUBJECT`: Subject line of the email.
+   - `SMTP_SERVER`: Must be `smtp.gmail.net` or server of your email provider
+   - `SMTP_PORT`: Typically `587` for TLS
+   - `EMAIL_PASSWORD`: Your temporary password provided by your email service (used as SMTP password)
 
 2. **Run Pytest with the Email Flag**
 
    .. code-block:: bash
 
-      pytest --send-email
+      pytest --plus-send-email
 
    This will:
    - Generate the test report (requires `--html-output`)
@@ -44,7 +46,6 @@ Steps to Set Up
 Requirements
 ------------
 
-- To use this feature, you must configure your own **SendGrid SMTP** account.
 - The test framework will automatically read the `emailenv` file from the root directory.
 
 Attachments

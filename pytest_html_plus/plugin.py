@@ -10,8 +10,8 @@ from pytest_html_plus.generate_html_report import JSONReporter
 from pytest_html_plus.json_merge import merge_json_reports
 from pytest_html_plus.json_to_xml_converter import convert_json_to_junit_xml
 from pytest_html_plus.resolver_driver import take_screenshot_generic, resolve_driver
-from pytest_html_plus.send_email_report import send_email_from_env, load_email_env
-from pytest_html_plus.utils import extract_error_block, extract_trace_block
+from pytest_html_plus.send_email_report import EmailSender
+from pytest_html_plus.utils import extract_error_block, extract_trace_block, load_email_env
 
 python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
@@ -137,12 +137,13 @@ def pytest_sessionfinish(session, exitstatus):
    except Exception as e:
        raise RuntimeError(f"Exception during HTML report generation: {e}") from e
 
-   if session.config.getoption("--send-email"):
-       print("📬 --send-email enabled. Sending report...")
+   if session.config.getoption("--plus-send-email"):
+       print("📬 --plus-send-email enabled. Sending report...")
        try:
            config = load_email_env()
            config["report_path"] = f"{html_output}"
-           send_email_from_env(config)
+           sender = EmailSender(config, report_path=config["report_path"])
+           sender.send()
        except Exception as e:
            raise RuntimeError(f"Failed to send email: {e}") from e
 
@@ -186,7 +187,7 @@ def pytest_addoption(parser):
    parser.addoption("--html-output", default="report_output")
    parser.addoption("--screenshots", default="screenshots")
    parser.addoption(
-       "--send-email",
+       "--plus-send-email",
        action="store_true",
        default=False,
        help="Send HTML test report via email after test run"
