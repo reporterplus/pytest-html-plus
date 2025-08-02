@@ -1,17 +1,20 @@
 import shutil
 import webbrowser
+from datetime import datetime
 from pathlib import Path
 
 import pytest
 import json
 
+from pytest_html_plus.compute_report_metadata import write_plus_metadata_if_main_worker
 from pytest_html_plus.extract_link import extract_links_from_item
 from pytest_html_plus.generate_html_report import JSONReporter
 from pytest_html_plus.json_merge import merge_json_reports
 from pytest_html_plus.json_to_xml_converter import convert_json_to_junit_xml
 from pytest_html_plus.resolver_driver import take_screenshot_generic, resolve_driver
 from pytest_html_plus.send_email_report import EmailSender
-from pytest_html_plus.utils import extract_error_block, extract_trace_block, load_email_env
+from pytest_html_plus.utils import extract_error_block, extract_trace_block, load_email_env, get_env_marker, \
+    get_git_branch, get_git_commit
 
 python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
@@ -159,10 +162,11 @@ def pytest_sessionfinish(session, exitstatus):
 
 
 def pytest_sessionstart(session):
-   configure_logging()
-   session.config.addinivalue_line(
+    configure_logging()
+    session.config.addinivalue_line(
        "markers", "link(url): Add a link to external test case or documentation."
    )
+    write_plus_metadata_if_main_worker(session.config)
 
 
 def pytest_load_initial_conftests(args):
@@ -217,7 +221,6 @@ def pytest_addoption(parser):
        default=None,
        help="Path to output the XML report (used with --generatexml)"
    )
-
 
 import logging
 import sys
@@ -329,4 +332,3 @@ def open_html_report(report_path: str, json_path: str, config) -> None:
            logger.warning(f"Could not open report in browser: {e}")
        except Exception:
            print(f"Could not open report in browser: {e}")
-

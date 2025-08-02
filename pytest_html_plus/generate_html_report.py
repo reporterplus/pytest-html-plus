@@ -53,6 +53,13 @@ class JSONReporter:
         else:
             raise ValueError("Unexpected report format.")
 
+        metadata_path = os.path.join(os.path.dirname(self.report_path), "plus_metadata.json")
+        if os.path.exists(metadata_path):
+            with open(metadata_path) as meta_file:
+                self.metadata = json.load(meta_file)
+        else:
+            self.metadata = {}
+
     def log_result(
             self,
             test_name,
@@ -263,6 +270,37 @@ class JSONReporter:
       .details-text div pre {{ background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px; margin: 8px 0; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.85em; line-height: 1.4; }}
       .details-text div strong {{ display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 600; color: #374151; }}
       .trace-content strong, .error-content strong {{ margin-bottom: 12px; }}
+      .report-metadata {{
+        margin-bottom: 20px;
+        font-family: sans-serif;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 10px;
+    }}
+
+    .report-metadata summary {{
+        font-size: 0.5em;
+        cursor: pointer;
+        margin-bottom: 8px;
+    }}
+
+    .report-metadata table {{
+        width: 100%;
+        border-collapse: collapse;
+    }}
+
+    .report-metadata th, .report-metadata td {{
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }}
+
+    .report-metadata th {{
+        background-color: #eee;
+        width: 200px;
+    }}
+    .hidden {{ display: none; }}
     </style>
 
     <script>
@@ -504,6 +542,18 @@ class JSONReporter:
     </script>
     </head>
     <body>
+    <div class="report-metadata">
+    <h2 onclick="this.nextElementSibling.classList.toggle('hidden')" style="cursor:pointer;">
+        Report Metadata (click to toggle)
+    </h2>
+    <table class="hidden" style="margin-top:10px;">
+        <tr><th>Title</th><td>{self.metadata.get('report_title', '')}</td></tr>
+        <tr><th>Environment</th><td>{self.metadata.get('environment', '')}</td></tr>
+        <tr><th>Branch</th><td>{self.metadata.get('branch', '')}</td></tr>
+        <tr><th>Commit</th><td>{self.metadata.get('commit', '')}</td></tr>
+        <tr><th>Generated At</th><td>{self.metadata.get('generated_at', '')}</td></tr>
+    </table>
+</div>
     <div id="fullscreen-overlay" class="fullscreen-overlay" onclick="closeFullscreen()"></div>
     <div class="checkbox-container">
       <label>

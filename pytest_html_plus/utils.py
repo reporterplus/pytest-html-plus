@@ -1,3 +1,23 @@
+import subprocess
+
+def get_git_commit():
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
+    except Exception:
+        return "NA"
+
+def get_git_branch():
+    try:
+        return subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode().strip()
+    except Exception:
+        return "NA"
+
+def get_env_marker(config):
+    for arg in ("--env", "--environment"):
+        if config.getoption(arg.lstrip("-").replace("-", "_"), default=None):
+            return config.getoption(arg.lstrip("-").replace("-", "_"))
+    return "NA"
+
 def extract_trace_block(trace: str) -> str:
     try:
         if not trace:
@@ -47,3 +67,7 @@ def load_email_env(filepath="emailenv"):
                 key, value = line.strip().split("=", 1)
                 config[key.strip()] = value.strip()
     return config
+
+
+def is_main_worker():
+    return os.environ.get("PYTEST_XDIST_WORKER") in (None, "gw0")
