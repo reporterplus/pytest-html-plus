@@ -752,8 +752,8 @@ class JSONReporter:
   <div class="details">
     <div class="details-content">
       <div class="details-text">
+         {error_html}
         {trace_html}
-        {error_html}
         {stdout_html}
         {stderr_html}
         {logs_html}
