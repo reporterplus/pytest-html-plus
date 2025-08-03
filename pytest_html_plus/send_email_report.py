@@ -1,64 +1,50 @@
 import os
 import smtplib
 from email.message import EmailMessage
-from email.utils import make_msgid
+from pytest_html_plus.utils import zip_report_folder
 
-import shutil
 
-def zip_report_folder(folder_path: str, output_zip: str):
-    shutil.make_archive(output_zip.replace(".zip", ""), 'zip', folder_path)
-    return output_zip
+class EmailSender:
+    def __init__(self, config: dict, report_path=None):
+        self.sender = config.get("EMAIL_SENDER") or os.getenv("EMAIL_FROM")
+        self.recipient = config.get("EMAIL_RECIPIENT") or os.getenv("EMAIL_TO")
+        self.subject = config.get("EMAIL_SUBJECT")
+        self.report_path = report_path
+        self.smtp_server = config.get("SMTP_SERVER") or os.getenv("SMTP_HOST")
+        self.smtp_port = int(config.get("SMTP_PORT") or os.getenv("SMTP_PORT", "587"))
+        self.password = config.get("EMAIL_PASSWORD") or os.getenv("SMTP_PASSWORD")
+        self.username = config.get("smtp_username") or self.sender or os.getenv("SMTP_USERNAME")
+        self.use_tls = str(config.get("EMAIL_USE_TLS", True)).lower() == "true"
+        self.use_ssl = str(config.get("use_ssl", False)).lower() == "true"
 
-def load_email_env(filepath="emailenv"):
-    if not os.path.exists(filepath):
-        raise FileNotFoundError("emailenv file not found!")
+    def zip_and_attach(self, msg: EmailMessage) -> str:
+        zip_path = zip_report_folder(self.report_path, f"{self.report_path}_zipped.zip")
+        filename = os.path.basename(zip_path)
+        with open(zip_path, "rb") as f:
+            report_data = f.read()
+        msg.add_attachment(report_data, maintype="application", subtype="zip", filename=filename)
+        return filename
 
-    config = {}
-    with open(filepath, "r") as f:
-        for line in f:
-            if "=" in line:
-                key, value = line.strip().split("=", 1)
-                config[key.strip()] = value.strip()
-    return config
+    def send(self):
+        msg = EmailMessage()
+        msg["Subject"] = self.subject
+        msg["From"] = self.sender
+        msg["To"] = self.recipient
+        msg.set_content(self.subject)
+        self.zip_and_attach(msg)
 
-def send_email_from_env(config: dict):
-    sender = config["sender_email"]
-    recipient = config["recipient_email"]
-    report_path = config["report_path"]
-    subject = config["subject"]
-    smtp_server = config["smtp_server"]
-    smtp_port = int(config["smtp_port"])
-    password = config["email_password"]
-    use_tls = True
+        try:
+            self._send_via_smtp(msg)
+        except Exception as e:
+            raise RuntimeError(f"Failed to send email: {e}") from e
 
-    zip_path = zip_report_folder(report_path, f"{report_path}_zipped" + ".zip")
-
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = sender
-    msg["To"] = recipient
-
-    msg.set_content("Your test report is attached as an HTML file.")
-
-    filename = os.path.basename(zip_path)
-    with open(zip_path, "rb") as f:
-        report_data = f.read()
-    msg.add_attachment(report_data, maintype="application", subtype="zip", filename=filename)
-
-    try:
-        if "sendgrid" in smtp_server.lower():
-            if not password.startswith("SG."):
-                print("****************************************************************")
-                print("SendGrid API key looks invalid. It should start with 'SG.'")
-                print("****************************************************************")
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            if use_tls:
+    def _send_via_smtp(self, msg: EmailMessage):
+        if self.use_ssl:
+            server = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port)
+        else:
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            if self.use_tls:
                 server.starttls()
-            login_user = "apikey" if "sendgrid" in smtp_server.lower() else sender
-            server.login(login_user, password)
-            server.send_message(msg)
-            print("****************************************************************")
-            print(f"{subject} is sent to {recipient} from {sender} successfully with attachment: {filename}")
-            print("****************************************************************")
-    except Exception as e:
-        raise RuntimeError(f"Failed to send email: {e}") from e
+        server.login(self.username, self.password)
+        server.send_message(msg)
+        server.quit()
