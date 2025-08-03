@@ -162,11 +162,12 @@ def pytest_sessionfinish(session, exitstatus):
 
 
 def pytest_sessionstart(session):
+    html_output = session.config.getoption("--html-output") or "report_output"
     configure_logging()
     session.config.addinivalue_line(
        "markers", "link(url): Add a link to external test case or documentation."
    )
-    write_plus_metadata_if_main_worker(session.config)
+    write_plus_metadata_if_main_worker(session.config, report_path=html_output)
 
 
 def pytest_load_initial_conftests(args):

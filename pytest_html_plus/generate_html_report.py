@@ -271,18 +271,18 @@ class JSONReporter:
       .details-text div strong {{ display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 600; color: #374151; }}
       .trace-content strong, .error-content strong {{ margin-bottom: 12px; }}
       .report-metadata {{
-        margin-bottom: 20px;
+        margin-bottom: 5px;
         font-family: sans-serif;
         background: #f9f9f9;
         border: 1px solid #ddd;
-        border-radius: 6px;
-        padding: 10px;
+        border-radius: 3px;
+        padding: 5px;
     }}
 
     .report-metadata summary {{
         font-size: 0.5em;
         cursor: pointer;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }}
 
     .report-metadata table {{
@@ -544,7 +544,7 @@ class JSONReporter:
     <body>
     <div class="report-metadata">
     <h2 onclick="this.nextElementSibling.classList.toggle('hidden')" style="cursor: pointer; font-size: 12px;">
-        Report Metadata (click to toggle)
+        Execution Metadata (click to toggle)
          {self.generate_copy_button(self.metadata, "metadata")}
     </h2>
     <table class="hidden" style="margin-top:10px;">

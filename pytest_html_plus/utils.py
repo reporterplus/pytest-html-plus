@@ -18,6 +18,12 @@ def get_env_marker(config):
             return config.getoption(arg.lstrip("-").replace("-", "_"))
     return "NA"
 
+def get_report_title(output_path):
+    report_path = output_path
+    report_filename = os.path.basename(report_path)
+    report_title = os.path.splitext(report_filename)[0]
+    return report_title
+
 def extract_trace_block(trace: str) -> str:
     try:
         if not trace:
