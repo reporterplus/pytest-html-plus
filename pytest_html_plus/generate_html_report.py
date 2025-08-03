@@ -544,7 +544,7 @@ class JSONReporter:
     <body>
     <div class="report-metadata">
     <h2 onclick="this.nextElementSibling.classList.toggle('hidden')" style="cursor: pointer; font-size: 12px;">
-        Report Metadata (click to toggle)
+        Execution Metadata (click to toggle)
          {self.generate_copy_button(self.metadata, "metadata")}
     </h2>
     <table class="hidden" style="margin-top:10px;">
