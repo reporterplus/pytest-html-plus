@@ -1,7 +1,5 @@
-⚠️ Package renamed: This plugin was previously known as pytest-reporter-plus.
-
 > ⚡ **Plug. Play. Quickly debug without delay.**  
-> _Just install. No setup. Crystal-clear test reports out of the box._
+> _Just install. No setup. The best reporter for pytest._
 
 ## Get a self-contained, actionable, easy-to-read single page HTML unified reports summarizing all your test results — no hassle, just clarity. Detect **flaky tests**, and optionally send reports via email**. Works beautifully with or without `xdist`.
 
@@ -16,8 +14,6 @@ pip install pytest-html-plus
 # or with Poetry
 poetry add pytest-html-plus
 ```
-
-# Keep using your regular pytest commands — just plug this in to unlock the below powerful reporting features with zero extra effort.
 
 ## ✨ Features
 

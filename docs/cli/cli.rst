@@ -25,7 +25,7 @@ Overview
      - Directory for HTML output
      - ``report_output``
      - Customize output directory per CI job
-   * - ``--plus-send-email``
+   * - ``--plus-email``
      - Send HTML report via email
      - ``False``
      - Enable in scheduled test runs (nightly builds)

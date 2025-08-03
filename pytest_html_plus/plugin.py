@@ -140,8 +140,8 @@ def pytest_sessionfinish(session, exitstatus):
    except Exception as e:
        raise RuntimeError(f"Exception during HTML report generation: {e}") from e
 
-   if session.config.getoption("--plus-send-email"):
-       print("📬 --plus-send-email enabled. Sending report...")
+   if session.config.getoption("--plus-email"):
+       print("📬 --plus-email enabled. Sending report...")
        try:
            config = load_email_env()
            config["report_path"] = f"{html_output}"
@@ -192,7 +192,7 @@ def pytest_addoption(parser):
    parser.addoption("--html-output", default="report_output")
    parser.addoption("--screenshots", default="screenshots")
    parser.addoption(
-       "--plus-send-email",
+       "--plus-email",
        action="store_true",
        default=False,
        help="Send HTML test report via email after test run"

@@ -41,7 +41,7 @@ Integration
 - Automatically works with:
 
   - `--capture-screenshots`: embeds screenshots in the report.
-  - `--plus-send-email`: attaches this directory for delivery.
+  - `--plus-email`: attaches this directory for delivery.
   - `--should-open-report`: opens `index.html` after run.
 
 .. note::
