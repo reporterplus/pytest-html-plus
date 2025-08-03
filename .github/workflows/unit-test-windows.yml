@@ -18,7 +18,7 @@ jobs:
 
       - name: Cleanup artifacts before run
         run: |
-          - rm -rf report_output/
+          rm -rf report_output/
 
       - name: 🐍 Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
