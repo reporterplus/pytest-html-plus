@@ -38,7 +38,7 @@ Quick Start
 
    .. code-block:: bash
 
-      pytest --plus-send-email
+      pytest --plus-email
 
 The plugin will zip your report folder and email it to the recipient.
 
@@ -71,7 +71,7 @@ Common Questions
 ----------------
 
 **Do I need to change my tests?**
-No — just create the ``emailenv`` file and run with ``--plus-send-email``.
+No — just create the ``emailenv`` file and run with ``--plus-email``.
 
 **What gets sent?**
 A **zipped** copy of your HTML report output folder.
