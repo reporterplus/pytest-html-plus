@@ -41,6 +41,9 @@ No need for custom marker definitions. Perfect for smarter filtering, reporting,
 
 ![ScreenRecording2025-06-29at1 06 02AM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
 
+📋⚡ Turn failure context into a single click — copy logs, traces, and errors instantly for your team.
+
+
 #### 🔍 Universal Test Search + Smart Link Navigation
 
 Whether you're trying to trace coverage or track unlinked test cases — this search has your back!

@@ -21,6 +21,14 @@ One-click copy
 Each metadata section in the HTML report is **copy-ready**:
 - **Copy the entire metadata block** in one click
 
+One-click log & error sharing 📋🔥
+=================================
+
+Quickly copy traces, stdout/stderr, and error blocks with a single click — no manual selection, no messy copy-paste.
+
+- ✅ Capture full stack traces, logs and screenshots in the report
+- ✅ Copy any block (or the whole block) with one click and paste into your bug tracker, chat, or PR comment
+
 Why it helps
 ------------
 - **Instant reproducibility** — paste commit + test path to rerun the exact failing test
