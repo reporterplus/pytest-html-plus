@@ -37,11 +37,13 @@ No need for custom marker definitions. Perfect for smarter filtering, reporting,
 
 ![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/fa397d22-e40b-4e4a-9321-a2e88aea1c08)
 
+📋⚡ Turn failure context into a single click — copy logs, traces, and errors instantly for your team.
+
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/396e8cf6-862b-4619-82bf-81a8eae8e7b6)
+
 #### Easily track Untracked test scenarios
 
 ![ScreenRecording2025-06-29at1 06 02AM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
-
-📋⚡ Turn failure context into a single click — copy logs, traces, and errors instantly for your team.
 
 
 #### 🔍 Universal Test Search + Smart Link Navigation
