@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-html-plus"
-version = "0.3.7"
+version = "0.3.8"
 description = "Auto-generated HTML reports with filters, screenshots, logs, flaky detection & more — all without writing a single line of config."
 readme = "README.md"
 authors = ["Emjey", "Karan"]
@@ -8,10 +8,15 @@ license = "MIT"
 packages = [{ include = "pytest_html_plus" }]
 keywords = [
     "pytest",
-    "html-report",
+    "pytest-html-plus",
     "pytest-plugin",
+    "html-test-report",
+    "beautiful-test-report",
+    "shareable-test-results",
     "test-report",
     "test-results",
+    "unit-test-report",
+    "functional-test-report",
     "test-summary",
     "reporting",
     "python-testing",
@@ -20,6 +25,8 @@ keywords = [
     "report-generator",
     "continuous-integration",
     "ci-cd",
+    "github-actions",
+    "jenkins",
     "pytest-html",
     "pytest-report"
 ]
