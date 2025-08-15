@@ -7,8 +7,14 @@ def get_git_commit():
         return "NA"
 
 def get_git_branch():
+    for var in ["GITHUB_HEAD_REF", "GITHUB_REF_NAME", "CI_COMMIT_REF_NAME", "GIT_BRANCH"]:
+        val = os.getenv(var)
+        if val:
+            return val
     try:
-        return subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode().strip()
+        return subprocess.check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+        ).decode().strip()
     except Exception:
         return "NA"
 
