@@ -33,6 +33,10 @@ No need for custom marker definitions. Perfect for smarter filtering, reporting,
 
 ![ScreenRecording2025-07-12at10 15 33PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f000388f-cdbc-418d-829b-a54309b8ffc4)
 
+📦 Ship reports with provenance 📜 — full run metadata included 📋 and copy-ready.
+
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/fa397d22-e40b-4e4a-9321-a2e88aea1c08)
+
 #### Easily track Untracked test scenarios
 
 ![ScreenRecording2025-06-29at1 06 02AM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
