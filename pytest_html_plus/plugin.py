@@ -13,8 +13,7 @@ from pytest_html_plus.json_merge import merge_json_reports
 from pytest_html_plus.json_to_xml_converter import convert_json_to_junit_xml
 from pytest_html_plus.resolver_driver import take_screenshot_generic, resolve_driver
 from pytest_html_plus.send_email_report import EmailSender
-from pytest_html_plus.utils import extract_error_block, extract_trace_block, load_email_env, get_env_marker, \
-    get_git_branch, get_git_commit
+from pytest_html_plus.utils import extract_error_block, extract_trace_block, load_email_env
 
 python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
