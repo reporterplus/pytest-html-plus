@@ -7,10 +7,17 @@ def get_git_commit():
         return "NA"
 
 def get_git_branch():
-    for var in ["GITHUB_HEAD_REF", "GITHUB_REF_NAME", "CI_COMMIT_REF_NAME", "GIT_BRANCH"]:
+    branch_env_vars = [
+        "GITHUB_HEAD_REF", "GITHUB_REF_NAME",
+        "CI_COMMIT_REF_NAME", "BITBUCKET_BRANCH",
+        "BUILD_SOURCEBRANCHNAME", "CIRCLE_BRANCH",
+        "BRANCH_NAME", "TRAVIS_BRANCH"
+    ]
+    for var in branch_env_vars:
         val = os.getenv(var)
         if val:
             return val
+
     try:
         return subprocess.check_output(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"]
