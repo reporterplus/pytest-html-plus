@@ -1,4 +1,8 @@
+import platform
 import subprocess
+import shutil
+import os
+
 
 def get_git_commit():
     try:
@@ -62,11 +66,6 @@ def extract_error_block(error: str) -> str:
     except Exception as e:
         return f"[Error extracting error block: {e}]"
 
-
-import shutil
-import os
-
-
 def zip_report_folder(report_path: str, output_zip: str = "report.zip") -> str:
     """Zips the given report folder into a zip file."""
     if not os.path.exists(report_path):
@@ -90,3 +89,9 @@ def load_email_env(filepath="emailenv"):
 
 def is_main_worker():
     return os.environ.get("PYTEST_XDIST_WORKER") in (None, "gw0")
+
+def get_python_version():
+    try:
+        return platform.python_version()
+    except Exception:
+        return "NA"
