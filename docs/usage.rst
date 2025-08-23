@@ -104,3 +104,75 @@ The report has a structure like:
     }]
 
 You can easily parse this using Python, JavaScript, or any JSON-compatible tool.
+
+Metadata Schema
+^^^^^^^^^^^^^^^
+
+Alongside the main JSON report, the plugin writes a lightweight metadata file
+named ``plus_metadata.json`` (in the root directory). This captures
+high-value, actionable context for the run and is also rendered at the top of
+the HTML report.
+
+**File:** ``<root>/plus_metadata.json``
+
+Example
+~~~~~~~
+
+.. code-block:: json
+
+   {
+     "report_title": "report_output",
+     "environment": "staging",
+     "branch": "feature/login-flow",
+     "commit": "e1b6737f858a7ceb1da88de2ed5d368ee6206408",
+     "python_version": "3.11.7",
+     "pytest_version": "8.3.3",
+     "generated_at": "2025-08-20T12:34:56.123456"
+   }
+
+Fields
+~~~~~~
+
+- ``report_title`` (string)
+  The title shown in the HTML header. By default this is derived from the
+  ``--html-output`` folder name (e.g., ``report_output``). Can be overridden with
+  ``--html-output``.
+
+- ``environment`` (string)
+  Target environment (e.g., ``staging``, ``prod-sim``). Auto-detected from common
+  CLI flags if present (``--env`` or ``--environment``). Defaults to ``"NA"`` if
+  not provided.
+
+- ``branch`` (string)
+  Git branch at test time.
+  Falls back to ``"NA"`` if git info isn’t available (e.g., not a repo).
+
+- ``commit`` (string)
+  Full commit SHA for traceability. Falls back to ``"NA"`` if unavailable.
+
+
+- ``python_version`` (string)
+  Python interpreter version used for the run (e.g., ``3.11.7``).
+
+- ``generated_at`` (ISO 8601 string)
+  Timestamp when metadata was created, e.g., ``2025-08-20T12:34:56.123456``.
+
+Behavior & Notes
+~~~~~~~~~~~~~~~~
+
+- **Zero-config:** All fields are collected automatically where possible.
+- **Overrides:**
+  - Title: ``--plus-report-title="My Nightly Report"``
+  - Environment: pass your usual flag (``--env`` or ``--environment``); the plugin will pick it up.
+- **Non-git folders / CI without checkout:** Branch/commit gracefully become ``"NA"`` (no failures).
+- **xdist:** Metadata is written **once** (on the controller), not per worker.
+- **Portability:** The HTML report reads this file at render time and shows a compact,
+  copy-ready “Run Metadata” section at the top.
+
+Tip
+~~~
+
+Keep metadata lean and high-value. We intentionally avoid low-actionability fields
+(e.g., full ``pip freeze`` or OS package lists) to keep reports **fast**, **portable**, and
+**CI-artifact friendly**.
+

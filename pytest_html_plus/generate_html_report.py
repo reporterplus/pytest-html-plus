@@ -553,6 +553,7 @@ class JSONReporter:
         <tr><th>Branch</th><td>{self.metadata.get('branch', '')}</td></tr>
         <tr><th>Commit</th><td>{self.metadata.get('commit', '')}</td></tr>
         <tr><th>Generated At</th><td>{self.metadata.get('generated_at', '')}</td></tr>
+        <tr><th>Python version</th><td>{self.metadata.get('python_version', '')}</td></tr>
     </table>
 </div>
     <div id="fullscreen-overlay" class="fullscreen-overlay" onclick="closeFullscreen()"></div>

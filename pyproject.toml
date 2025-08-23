@@ -40,15 +40,13 @@ python = ">=3.9,<4.0"
 yagmail = ">=0.15.293,<0.16.0"
 keyring = ">=25.6.0,<26.0.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+pytest-rerunfailures = "^15.1"
 pytest = "^8.4.1"
 pytest-cov = "^6.2.1"
 playwright = "^1.53.0"
 pytest-playwright = "^0.7.0"
 pytest-xdist = "^3.8.0"
-
-[tool.poetry.group.dev.dependencies]
-pytest-rerunfailures = "^15.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -56,18 +54,5 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.plugins."pytest11"]
 pytest_html_plus = "pytest_html_plus.plugin"
-
-classifiers = [
-    "Framework :: Pytest",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Topic :: Software Development :: Testing",
-    "Intended Audience :: Developers"
-]
 
 
