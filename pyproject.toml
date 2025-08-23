@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pytest-html-plus"
 version = "0.3.9"
-description = "Auto-generated HTML reports with filters, screenshots, logs, flaky detection & more — all without writing a single line of config."
+description = "Plugin for Auto-generated pytest single file HTML reports with filters, screenshots, logs, flaky detection & more — all without writing a single line of config even with xdist"
 readme = "README.md"
 authors = ["Emjey", "Karan"]
 license = "MIT"
@@ -55,6 +55,19 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.plugins."pytest11"]
-pytest_reporter_plus = "pytest_html_plus.plugin"
+pytest_html_plus = "pytest_html_plus.plugin"
+
+classifiers = [
+    "Framework :: Pytest",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Testing",
+    "Intended Audience :: Developers"
+]
 
 
