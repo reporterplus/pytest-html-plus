@@ -1,0 +1,52 @@
+name: Reporterplus marketplace actions test
+
+on:
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.13" ]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 📦 Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: 📦 Install dependencies with Poetry and install playwright
+        run: |
+          poetry lock
+          poetry install --with dev
+          poetry run playwright install --with-deps
+      
+      - name: 🧪 Run playwright test and generate report using marketplace plugin
+        uses: reporterplus/pytest-html-plus-action@v1
+        with:
+          htmloutput: "report_output_playwright"
+          capturescreenshots: "all"
+          testpath: "tests/browser/test_playwright.py"
+          usepoetry: "true"
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
+          path: |
+            report_output_playwright/
+

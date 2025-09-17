@@ -47,6 +47,8 @@ pytest-cov = "^6.2.1"
 playwright = "^1.53.0"
 pytest-playwright = "^0.7.0"
 pytest-xdist = "^3.8.0"
+selenium = "^4.8.0"
+webdriver-manager = "^3.8.5"
 
 [build-system]
 requires = ["poetry-core"]
