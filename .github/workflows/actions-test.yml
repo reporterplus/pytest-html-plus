@@ -37,18 +37,18 @@ jobs:
       - name: 🧪 Run selenium test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
         with:
-          html-output: "report_output_selenium"
-          capture-screenshots: "all"
-          test-path: "tests/browser/test_selenium.py"
-          use-poetry: "true"
+          htmloutput: "report_output_selenium"
+          capturescreenshots: "all"
+          testpath: "tests/browser/test_selenium.py"
+          usepoetry: "true"
       
       - name: 🧪 Run selenium test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
         with:
-          html-output: "report_output_playwright"
-          capture-screenshots: "all"
-          test-path: "tests/browser/test_playwright.py"
-          use-poetry: "true"
+          htmloutput: "report_output_playwright"
+          capturescreenshots: "all"
+          testpath: "tests/browser/test_playwright.py"
+          usepoetry: "true"
 
       - name: Upload reports
         uses: actions/upload-artifact@v4
