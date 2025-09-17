@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Reporterplus marketplace actions test
 
 on:
   pull_request:
@@ -23,8 +23,27 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: 🧪 Run tests with coverage
+      - name: 🧪 Run selenium test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
         with:
-          pytest-args: "--cov=pytest_html_plus tests/ --cov-fail-under=75 --cov-report=term --reruns 1"
-          
+          pytest-args: "--cov=pytest_html_plus tests/e2e/test_selenium.py --cov-report=term --reruns 1"
+          html-output: "report_output_selenium"
+          capture-screenshots: "all"
+          test-path: "tests/browser/test_selenium.py"
+      
+      - name: 🧪 Run selenium test and generate report using marketplace plugin
+        uses: reporterplus/pytest-html-plus-action@v1
+        with:
+          pytest-args: "--cov=pytest_html_plus --cov-report=term --reruns 1"
+          html-output: "report_output_playwright"
+          capture-screenshots: "all"
+          test-path: "tests/browser/test_playwright.py"
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
+          path: |
+            report_output_playwright/
+            report_output_selenium/
+
