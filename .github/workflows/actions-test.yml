@@ -37,7 +37,6 @@ jobs:
       - name: 🧪 Run selenium test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
         with:
-          pytest-args: "--cov=pytest_html_plus tests/e2e/test_selenium.py --cov-report=term --reruns 1"
           html-output: "report_output_selenium"
           capture-screenshots: "all"
           test-path: "tests/browser/test_selenium.py"
@@ -46,7 +45,6 @@ jobs:
       - name: 🧪 Run selenium test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
         with:
-          pytest-args: "--cov=pytest_html_plus --cov-report=term --reruns 1"
           html-output: "report_output_playwright"
           capture-screenshots: "all"
           test-path: "tests/browser/test_playwright.py"
