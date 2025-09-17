@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          
+
       - name: 📦 Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
@@ -41,6 +41,7 @@ jobs:
           html-output: "report_output_selenium"
           capture-screenshots: "all"
           test-path: "tests/browser/test_selenium.py"
+          use-poetry: "true"
       
       - name: 🧪 Run selenium test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
@@ -49,6 +50,7 @@ jobs:
           html-output: "report_output_playwright"
           capture-screenshots: "all"
           test-path: "tests/browser/test_playwright.py"
+          use-poetry: "true"
 
       - name: Upload reports
         uses: actions/upload-artifact@v4
