@@ -28,12 +28,13 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: 📦 Install dependencies with Poetry
+      - name: 📦 Install dependencies with Poetry and install playwright
         run: |
           poetry lock
           poetry install --with dev
+          playwright install   
       
-      - name: 🧪 Run selenium test and generate report using marketplace plugin
+      - name: 🧪 Run playwright test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
         with:
           htmloutput: "report_output_playwright"
