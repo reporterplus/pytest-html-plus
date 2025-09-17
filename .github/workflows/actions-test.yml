@@ -27,3 +27,4 @@ jobs:
         uses: reporterplus/pytest-html-plus-action@v1
         with:
           pytest-args: "--cov=pytest_html_plus tests/ --cov-fail-under=75 --cov-report=term --reruns 1"
+          
