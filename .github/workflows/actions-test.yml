@@ -32,15 +32,6 @@ jobs:
         run: |
           poetry lock
           poetry install --with dev
-
-
-      - name: 🧪 Run selenium test and generate report using marketplace plugin
-        uses: reporterplus/pytest-html-plus-action@v1
-        with:
-          htmloutput: "report_output_selenium"
-          capturescreenshots: "all"
-          testpath: "tests/browser/test_selenium.py"
-          usepoetry: "true"
       
       - name: 🧪 Run selenium test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
@@ -56,5 +47,4 @@ jobs:
           name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
           path: |
             report_output_playwright/
-            report_output_selenium/
 
