@@ -43,6 +43,7 @@ jobs:
           usepoetry: "true"
 
       - name: Upload reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
