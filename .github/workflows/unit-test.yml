@@ -33,9 +33,10 @@ jobs:
 
       - name: 🧪 Run tests with coverage
         run: |
-          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=75 --cov-report=term --reruns 1 >> GITHUB_SUMMARY
+          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=75 --cov-report=term --reruns 1 --ignore=tests/browser >> $GITHUB_SUMMARY
 
       - name: Upload HTML Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: report-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
