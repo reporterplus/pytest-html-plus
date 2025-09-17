@@ -32,7 +32,7 @@ jobs:
         run: |
           poetry lock
           poetry install --with dev
-          playwright install   
+          poetry run playwright install --with-deps
       
       - name: 🧪 Run playwright test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v1
