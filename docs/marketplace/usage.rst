@@ -61,37 +61,53 @@ Add the action to your workflow after you install your project dependencies:
 Inputs Reference
 ----------------
 
+Inputs Reference
+----------------
+
 The action accepts the following inputs. All values map directly to
 pytest-html-plus plugin options.
 
-+--------------------+---------------------------------------------------------+---------------------+
-| Input              | Description                                             | Default             |
-+====================+=========================================================+=====================+
-| ``testpath``       | Path to test files/folders (e.g. ``tests/``). If empty, | ``""`` (discovery)  |
-|                    | pytest auto-discovers tests.                            |                     |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``pytestargs``     | Extra pytest arguments (e.g. coverage, reruns).         | ``""``              |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``jsonreport``     | Path for JSON report.                                   | ``final_report.json``|
-+--------------------+---------------------------------------------------------+---------------------+
-| ``htmloutput``     | Directory to save HTML report.                          | ``report_output``   |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``screenshots``    | Directory to save screenshots.                          | ``screenshots``     |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``capturescreenshots`` | When to capture screenshots (``failed``, ``all``,   | ``failed``          |
-|                    | ``none``).                                              |                     |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``plusemail``      | Send HTML report via email. (future use)                | ``false``           |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``shouldopenreport`` | When to open the report (``always``, ``failed``,      | ``failed``          |
-|                      | ``never``).                                           |                     |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``generatexml``    | Generate JUnit-style XML report.                        | ``false``           |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``xmlreport``      | Path to JUnit XML file.                                 | ``""``              |
-+--------------------+---------------------------------------------------------+---------------------+
-| ``usepoetry``      | Run pytest through ``poetry run pytest``.               | ``false``           |
-+--------------------+---------------------------------------------------------+---------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 60 20
+
+   * - Input
+     - Description
+     - Default
+   * - ``testpath``
+     - Path to test files/folders (e.g. ``tests/``). If empty, pytest auto-discovers tests.
+     - ``""`` (discovery)
+   * - ``pytestargs``
+     - Extra pytest arguments (e.g. coverage, reruns).
+     - ``""``
+   * - ``jsonreport``
+     - Path for JSON report.
+     - ``final_report.json``
+   * - ``htmloutput``
+     - Directory to save HTML report.
+     - ``report_output``
+   * - ``screenshots``
+     - Directory to save screenshots.
+     - ``screenshots``
+   * - ``capturescreenshots``
+     - When to capture screenshots (``failed``, ``all``, ``none``).
+     - ``failed``
+   * - ``plusemail``
+     - Send HTML report via email. (future use)
+     - ``false``
+   * - ``shouldopenreport``
+     - When to open the report (``always``, ``failed``, ``never``).
+     - ``failed``
+   * - ``generatexml``
+     - Generate JUnit-style XML report.
+     - ``false``
+   * - ``xmlreport``
+     - Path to JUnit XML file.
+     - ``""``
+   * - ``usepoetry``
+     - Run pytest through ``poetry run pytest``.
+     - ``false``
+
 
 Examples
 --------
