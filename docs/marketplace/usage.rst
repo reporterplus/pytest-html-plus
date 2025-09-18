@@ -59,10 +59,7 @@ Add the action to your workflow after you install your project dependencies:
                screenshots/
 
 Inputs Reference
-----------------
-
-Inputs Reference
-----------------
+--------
 
 The action accepts the following inputs. All values map directly to
 pytest-html-plus plugin options.
@@ -113,7 +110,7 @@ Examples
 --------
 
 With Poetry
-~~~~~~~~~~~
+--------
 
 .. code-block:: yaml
 
