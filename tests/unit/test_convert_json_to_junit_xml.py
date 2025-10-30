@@ -35,8 +35,19 @@ def sample_json_file():
         }
     ]
 
+    payload = {
+        "filters": {
+            "total": len(test_data),
+            "passed": sum(1 for t in test_data if (t.get("status") or "").lower() == "passed"),
+            "failed": sum(1 for t in test_data if (t.get("status") or "").lower() == "failed"),
+            "skipped": sum(1 for t in test_data if (t.get("status") or "").lower() == "skipped"),
+            "marker_counts": {}
+        },
+        "results": test_data
+    }
+
     with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as tmp:
-        json.dump(test_data, tmp)
+        json.dump(payload, tmp)
         tmp_path = tmp.name
 
     yield tmp_path
