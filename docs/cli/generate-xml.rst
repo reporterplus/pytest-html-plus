@@ -12,18 +12,18 @@ Flags Overview
   **Accepted Values:** ``True``, ``False``
 
 - ``--xml-report``
-  Specifies the path where the combined XML report should be written.
+  Specifies the path where the combined XML report should be written. Make sure the directory exists
   **Default:** ``None``
-  **Accepted Values:** Any valid file path (e.g., ``reports/final_report.xml``)
+  **Accepted Values:** Any valid file path (e.g., ``report_output/final_report.xml``)
 
 Usage Example
 -------------
 
 .. code-block:: bash
 
-   pytest --generate-xml True --xml-report reports/final_report.xml
+   pytest --generate-xml True --xml-report report_output/final_report.xml
 
-This will aggregate the test results from all discovered test cases and output a single JUnit-compatible XML report to `reports/final_report.xml`.
+This will aggregate the test results from all discovered test cases and output a single JUnit-compatible XML report to `report_output/final_report.xml`.
 
 Use Cases
 ---------
