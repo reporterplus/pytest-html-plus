@@ -41,6 +41,7 @@ jobs:
           capturescreenshots: "all"
           testpath: "tests/browser/test_playwright.py"
           usepoetry: "true"
+          xmlreport: "report_output_playwright/report.xml"
 
       - name: Upload reports
         if: always()

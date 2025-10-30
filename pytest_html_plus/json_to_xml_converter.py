@@ -11,7 +11,19 @@ def sanitize_test_name(test):
 
 def convert_json_to_junit_xml(json_path, xml_path):
     with open(json_path, "r", encoding="utf-8") as f:
-        test_results = json.load(f)
+         payload = json.load(f)
+
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"Invalid report format: expected JSON object at top-level in {json_path}")
+
+    if "results" not in payload:
+        raise RuntimeError(f"Invalid report format: missing 'results' key in {json_path}")
+
+    test_results = payload["results"]
+
+    if not isinstance(test_results, list):
+        raise RuntimeError(f"Invalid report format: 'results' must be a list in {json_path}")
+
 
     testsuite = ET.Element("testsuite", {
         "name": "Test Suite",
