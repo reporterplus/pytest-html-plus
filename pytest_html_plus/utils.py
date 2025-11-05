@@ -3,31 +3,11 @@ import subprocess
 import shutil
 import os
 
+from pytest_html_plus.compute_git_branch import get_repo_info
 
-def get_git_commit():
-    try:
-        return subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
-    except Exception:
-        return "NA"
 
-def get_git_branch():
-    branch_env_vars = [
-        "GITHUB_HEAD_REF", "GITHUB_REF_NAME",
-        "CI_COMMIT_REF_NAME", "BITBUCKET_BRANCH",
-        "BUILD_SOURCEBRANCHNAME", "CIRCLE_BRANCH",
-        "BRANCH_NAME", "TRAVIS_BRANCH"
-    ]
-    for var in branch_env_vars:
-        val = os.getenv(var)
-        if val:
-            return val
-
-    try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"]
-        ).decode().strip()
-    except Exception:
-        return "NA"
+def get_git_information():
+    return get_repo_info()
 
 def get_env_marker(config):
     for arg in ("--env", "--environment"):
