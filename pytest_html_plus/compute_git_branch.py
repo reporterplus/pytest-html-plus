@@ -1,114 +1,99 @@
 import os
 import threading
 import subprocess
-from typing import Optional
+from typing import Tuple, Optional
 
-_cache_lock = threading.Lock()
-_cached_git_branch: Optional[str] = None
+_CACHE_LOCK = threading.Lock()
+_CACHED_REPO_INFO: Optional[Tuple[str, str]] = None
 
-def _read_file(path: str) -> Optional[str]:
+# Env vars we treat as authoritative when present (CI) — cheap checks
+_CI_BRANCH_VARS = [
+    "GITHUB_HEAD_REF", "GITHUB_REF_NAME",
+    "CI_COMMIT_REF_NAME", "BITBUCKET_BRANCH",
+    "BUILD_SOURCEBRANCHNAME", "CIRCLE_BRANCH",
+    "BRANCH_NAME", "TRAVIS_BRANCH", "GIT_BRANCH"
+]
+_CI_COMMIT_VARS = [
+    "GITHUB_SHA", "CI_COMMIT_SHA", "BITBUCKET_COMMIT",
+    "BUILD_SOURCEVERSION", "CIRCLE_SHA1", "TRAVIS_COMMIT"
+]
+
+def _run_git(cmd: list, timeout: float = 1.0) -> Optional[str]:
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read().strip()
+        out = subprocess.check_output(cmd, stderr=subprocess.DEVNULL, timeout=timeout)
+        return out.decode().strip()
     except Exception:
         return None
 
-def _branch_from_dotgit(dotgit_path: str) -> Optional[str]:
+def get_repo_info() -> Tuple[str, str]:
     """
-    Try to read .git/HEAD and resolve a branch name without calling subprocess.
-    Handles:
-      - normal HEAD -> "ref: refs/heads/<branch>"
-      - detached HEAD (sha1) -> return "DETACHED" or None
-      - packed-refs resolution when needed
+    Return (branch, commit_sha).
+    - Branch is a readable branch name or "NA".
+    - Commit is full SHA or "NA".
+    Behavior:
+      1) If REPORTER_BRANCH / REPORTER_COMMIT provided -> use them (manual override).
+      2) Else read common CI env vars (cheap).
+      3) Else call git once to get commit, and try to get branch (symbolic-ref / points-at).
+    Result is cached per-process.
     """
-    head_path = os.path.join(dotgit_path, "HEAD")
-    head = _read_file(head_path)
-    if not head:
-        return None
+    global _CACHED_REPO_INFO
 
-    # Standard case: "ref: refs/heads/<branch>"
-    if head.startswith("ref:"):
-        ref = head.split(":", 1)[1].strip()
-        # try to read the ref file
-        ref_path = os.path.join(dotgit_path, *ref.split("/"))
-        val = _read_file(ref_path)
-        if val:
-            return val if len(val) == 40 else val  # sometimes refs store an annotated string; we return as-is
+    # 0) Manual overrides (explicit, highest priority) - zero cost
+    manual_branch = os.getenv("REPORTER_BRANCH")
+    manual_commit = os.getenv("REPORTER_COMMIT")
+    if manual_branch or manual_commit:
+        branch = manual_branch or "NA"
+        commit = manual_commit or _run_git(["git", "rev-parse", "HEAD"]) or "NA"
+        with _CACHE_LOCK:
+            _CACHED_REPO_INFO = (branch, commit)
+        return _CACHED_REPO_INFO
 
-        # If the ref file doesn't exist, try packed-refs
-        packed = _read_file(os.path.join(dotgit_path, "packed-refs"))
-        if packed:
-            # packed-refs lines are: "<sha> <ref>"
-            for line in packed.splitlines():
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                if " " in line:
-                    sha, refname = line.split(" ", 1)
-                    if refname.strip() == ref:
-                        return sha.strip()
-        return None
-
-    # Detached HEAD (contains a commit sha)
-    if len(head) >= 7 and all(c in "0123456789abcdefABCDEF" for c in head[:7]):
-        return head  # return sha or indicate detached
-    return None
-
-def compute_git_branch() -> str:
-    """Get git branch fast: env vars -> cached -> .git files -> subprocess -> 'NA'."""
-    global _cached_git_branch
-
-    # 1) Check common CI/env override vars (very cheap)
-    branch_env_vars = [
-        "GITHUB_HEAD_REF", "GITHUB_REF_NAME",
-        "CI_COMMIT_REF_NAME", "BITBUCKET_BRANCH",
-        "BUILD_SOURCEBRANCHNAME", "CIRCLE_BRANCH",
-        "BRANCH_NAME", "TRAVIS_BRANCH", "GIT_BRANCH"
-    ]
-    for var in branch_env_vars:
+    # 1) CI envs (cheap, no subprocess)
+    for var in _CI_COMMIT_VARS:
         val = os.getenv(var)
         if val:
-            return val
+            commit = val
+            # try branch envs (if any)
+            branch = next((os.getenv(bv) for bv in _CI_BRANCH_VARS if os.getenv(bv)), "NA")
+            with _CACHE_LOCK:
+                _CACHED_REPO_INFO = (branch, commit)
+            return _CACHED_REPO_INFO
 
-    with _cache_lock:
-        if _cached_git_branch is not None:
-            return _cached_git_branch
+    for var in _CI_BRANCH_VARS:
+        val = os.getenv(var)
+        if val:
+            # branch available but commit not set in CI envs -> get commit cheaply
+            commit = _run_git(["git", "rev-parse", "HEAD"]) or "NA"
+            with _CACHE_LOCK:
+                _CACHED_REPO_INFO = (val, commit)
+            return _CACHED_REPO_INFO
 
-    try:
-        cwd = os.getcwd()
-        dotgit_path = os.path.join(cwd, ".git")
-        if os.path.exists(dotgit_path):
-            # If .git is a file (git worktree/submodule), it contains "gitdir: /path/to/actual/git"
-            if os.path.isfile(dotgit_path):
-                content = _read_file(dotgit_path)
-                if content and content.startswith("gitdir:"):
-                    gitdir = content.split(":", 1)[1].strip()
-                    if not os.path.isabs(gitdir):
-                        gitdir = os.path.normpath(os.path.join(cwd, gitdir))
-                    branch = _branch_from_dotgit(gitdir)
-                else:
-                    branch = None
-            else:
-                branch = _branch_from_dotgit(dotgit_path)
+    # 2) Return cached if already computed
+    with _CACHE_LOCK:
+        if _CACHED_REPO_INFO is not None:
+            return _CACHED_REPO_INFO
 
-            if branch:
-                with _cache_lock:
-                    _cached_git_branch = branch
-                return branch
-    except Exception:
-        pass
+    # 3) Final: use git (one or two quick calls), cached afterwards
+    commit = _run_git(["git", "rev-parse", "HEAD"]) or "NA"
+    branch = _run_git(["git", "symbolic-ref", "--short", "-q", "HEAD"])
 
-    try:
-        out = subprocess.check_output(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            stderr=subprocess.DEVNULL,
-            timeout=2  # don't let this hang
-        )
-        branch = out.decode().strip()
-        with _cache_lock:
-            _cached_git_branch = branch
-        return branch
-    except Exception:
-        with _cache_lock:
-            _cached_git_branch = "NA"
-        return "NA"
+    # If symbolic-ref didn't return and commit is present, try local branches pointing to HEAD
+    if not branch and commit != "NA":
+        branches = _run_git(["git", "branch", "--points-at", "HEAD", "--format=%(refname:short)"])
+        if branches:
+            branch = branches.splitlines()[0].strip()
+
+    if not branch:
+        branch = "NA"
+
+    with _CACHE_LOCK:
+        _CACHED_REPO_INFO = (branch, commit)
+    return _CACHED_REPO_INFO
+
+def display_repo_ref(short_len: int = 7) -> str:
+    """Return a friendly display like 'feature/foo (5bb4c87)' or '5bb4c87'."""
+    branch, commit = get_repo_info()
+    commit_short = commit[:short_len] if commit and commit != "NA" else "NA"
+    if branch and branch != "NA":
+        return f"{branch} ({commit_short})"
+    return commit_short
