@@ -35,7 +35,7 @@ jobs:
           poetry run playwright install --with-deps
       
       - name: 🧪 Run playwright test and generate report using marketplace plugin
-        uses: reporterplus/pytest-html-plus-action@v1
+        uses: reporterplus/pytest-html-plus-action@v2
         with:
           htmloutput: "report_output_playwright"
           capturescreenshots: "all"
