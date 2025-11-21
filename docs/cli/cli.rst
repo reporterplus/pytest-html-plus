@@ -41,6 +41,20 @@ Overview
      - Path for XML report
      - ``None``
      - Useful when generating multiple output types
+   * - ``--env``
+     - Include environment variables in the execution metadata.
+     - Default: None
+     - Useful for adding CI or custom environment metadata (safe values only).
+   * - ``--git-branch``
+     - Branch name to display in the report.
+     - Default: "NA"
+     - Useful when running tests manually or when CI does not provide branch information.
+   * - ``--git-commit``
+     - Commit SHA to display in the report.
+     - Default: "NA"
+     - Useful for ensuring traceability when CI does not set commit environment variables.
+
+
 
 
 Detailed Option Usage
