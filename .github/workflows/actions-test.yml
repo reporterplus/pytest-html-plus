@@ -42,6 +42,7 @@ jobs:
           testpath: "tests/browser/test_playwright.py"
           usepoetry: "true"
           xmlreport: "report_output_playwright/report.xml"
+          gitbranch: "$(git rev-parse --abbrev-ref HEAD)"
 
       - name: Upload reports
         if: always()
