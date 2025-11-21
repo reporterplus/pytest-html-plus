@@ -99,6 +99,12 @@ pytest-html-plus plugin options.
    * - ``usepoetry``
      - Run pytest through ``poetry run pytest``.
      - ``false``
+   * - ``gitbranch``
+     - Insert value of the branch from the CI
+     - ``NA``
+   * - ``gitcommit``
+     - Insert value of the branch from the CI
+     - ``NA``
 
 
 Examples
