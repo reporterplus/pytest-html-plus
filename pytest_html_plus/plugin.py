@@ -162,11 +162,14 @@ def pytest_sessionfinish(session, exitstatus):
 
 def pytest_sessionstart(session):
     html_output = session.config.getoption("--html-output") or "report_output"
+    git_branch = session.config.getoption("--git-branch") or "NA"
+    git_commit = session.config.getoption("--git-commit") or "NA"
     configure_logging()
     session.config.addinivalue_line(
        "markers", "link(url): Add a link to external test case or documentation."
    )
-    write_plus_metadata_if_main_worker(session.config, report_path=html_output)
+    write_plus_metadata_if_main_worker(session.config, report_path=html_output,
+                                       git_branch=git_branch, git_commit=git_commit)
 
 
 def pytest_load_initial_conftests(args):
@@ -220,6 +223,18 @@ def pytest_addoption(parser):
        action="store",
        default=None,
        help="Path to output the XML report (used with --generatexml)"
+   )
+   parser.addoption(
+       "--git-branch",
+       action="store",
+       default="NA",
+       help="Helps show branch information on the report"
+   )
+   parser.addoption(
+       "--git-commit",
+       action="store",
+       default="NA",
+       help="Helps show commitId information on the report"
    )
 
 import logging

@@ -3,12 +3,6 @@ import subprocess
 import shutil
 import os
 
-from pytest_html_plus.compute_git_branch import get_repo_info
-
-
-def get_git_information():
-    return get_repo_info()
-
 def get_env_marker(config):
     for arg in ("--env", "--environment"):
         if config.getoption(arg.lstrip("-").replace("-", "_"), default=None):
