@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pytest-html-plus"
-version = "0.4.4"
-description = "Get started with rich pytest reports in under 3 seconds. Just install the plugin — no setup required. The simplest, fastest reporter for pytest."
+version = "0.4.5"
+description = "Generate Actionable, automatic screenshots, unified Pytest HTML report in less than 3 seconds — no hooks, merge plugins, no config, xdist-ready."
 readme = "README.md"
 authors = ["reporterplus"]
 license = "MIT"
