@@ -1,7 +1,7 @@
 ⚡ **Plug. Play. Debug without delay.**  
 > _Get started with rich pytest reports in under 3 seconds. Just install — no setup required. The simplest, fastest reporter for pytest._
 
-## Get a self-contained, actionable, easy-to-read single page HTML unified reports summarizing all your test results — no hassle, just clarity. Detect **flaky tests**, and optionally send reports via email**. Works beautifully with or without `xdist`.
+## Get a self-contained, actionable, easy-to-read single page HTML unified reports summarizing all your test results — no hassle, just clarity. Detect **flaky tests**, **attach screenshots** automatically without hooks and optionally send reports via email**. Works beautifully with or without `xdist`.
 
 ➡️ [View Demo Report](https://reporterplus.github.io/pytest-html-plus/)
 
