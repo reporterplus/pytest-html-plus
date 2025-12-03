@@ -45,9 +45,15 @@ jobs:
         run: |
           poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --xml-report report_output/final_xml_windows.xml --git-branch $(git rev-parse --abbrev-ref HEAD)
 
+      - name: 🧪 Run tests with warnings enabled
+        run: |
+          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --html-output=report_output_warnings --xml-report report_output/final_xml_windows_with_warnings.xml --git-branch $(git rev-parse --abbrev-ref HEAD)
+
       - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: report-windows-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
-          path: report_output/
+          path:
+            report_output/
+            report_output_warnings/
