@@ -3,7 +3,7 @@ import base64
 import json
 import os
 import shutil
-from datetime import datetime
+from datetime import datetime, timezone
 import html
 from sys import path
 
@@ -90,7 +90,7 @@ class JSONReporter:
             "line": lineno,
             "stdout": stdout,
             "stderr": stderr,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "screenshot": screenshot,
             "logs": logs or [],
             "worker": worker,
