@@ -55,5 +55,12 @@ jobs:
         with:
           name: report-windows-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
           path:
-            report_output/**
-            report_output_warnings/**
+            report_output/
+
+      - name: Upload HTML warnings report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-warnings-windows-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
+          path:
+            report_output_warnings/
