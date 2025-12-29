@@ -376,9 +376,9 @@ class JSONReporter:
           // Sort and reorder
           testElements.sort((a, b) => {{
             const aDuration = parseFloat(
-        a.querySelector('.timestamp').textContent.replace(/[^\d.]/g, '')
+        a.querySelector('.timestamp').textContent.replace(/[^\\d.]/g, '') '')
         ) || 0;
-            const bDuration = parseFloat(b.querySelector('.timestamp').textContent.replace(/[^\d.]/g, '')) || 0;
+            const bDuration = parseFloat(b.querySelector('.timestamp').textContent.replace(/[^\\d.]/g, '') || 0;
             return bDuration - aDuration;
           }});
 
