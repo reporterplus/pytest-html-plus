@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-html-plus"
-version = "0.4.5"
+version = "0.4.6"
 description = "Generate Actionable, automatic screenshots, unified Pytest HTML report in less than 3 seconds — no hooks, merge plugins, no config, xdist-ready."
 readme = "README.md"
 authors = ["reporterplus"]
