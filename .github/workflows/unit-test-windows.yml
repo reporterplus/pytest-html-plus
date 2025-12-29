@@ -47,7 +47,7 @@ jobs:
 
       - name: 🧪 Run tests with warnings enabled
         run: |
-          PYTHONWARNINGS=error poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --html-output=report_output_warnings --xml-report report_output/final_xml_windows_with_warnings.xml --git-branch $(git rev-parse --abbrev-ref HEAD)
+          $env:PYTHONWARNINGS="error"; poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --html-output=report_output_warnings --xml-report report_output/final_xml_windows_with_warnings.xml --git-branch $(git rev-parse --abbrev-ref HEAD)
 
       - name: Upload HTML Report
         if: always()
