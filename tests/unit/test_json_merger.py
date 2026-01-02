@@ -8,6 +8,7 @@ from pytest_html_plus.json_merge import merge_json_reports
 basic_test_list = [
     {"nodeid": "test_1", "status": "passed", "markers": [], "links": []},
     {"nodeid": "test_2", "status": "failed", "markers": ["flaky"], "links": []},
+    {"nodeid": "test_3", "status": "error", "markers": [], "links": []}
 ]
 
 wrapped_test_dict = {
@@ -95,3 +96,26 @@ def test_compute_filter_count_failed_non_flaky():
     assert filters["passed"] == 0
     assert filters["total"] == 1
     assert filters["marker_counts"]["smoke"] == 1
+
+def test_compute_filter_count_error_non_flaky():
+    from pytest_html_plus.compute_filter_counts import compute_filter_count
+
+    results = [
+        {
+            "status": "error",
+            "flaky": False,
+            "links": ["some-link"],
+            "markers": ["setup"]
+        }
+    ]
+
+    filters = compute_filter_count(results)
+
+    assert filters["error"] == 1
+    assert filters.get("failed") is None
+    assert filters.get("flaky") is None
+    assert filters.get("skipped") is None
+    assert filters["passed"] == 0
+    assert filters["total"] == 1
+    assert filters["marker_counts"]["setup"] == 1
+
