@@ -190,7 +190,11 @@ class JSONReporter:
       .header.passed {{ background: #e6f4ea; color: #2f7a33; }}
       .header.failed {{ background: #fdecea; color: #a83232; }}
       .header.skipped {{  background: #fff8e1; color: #b36b00;  }}
-      .header.error {{  background: #f0f0f0; color: #f0f0f0;  }}
+      .header.error {{
+  background: #fdecea;   /* light red / pink */
+  color: #b71c1c;        /* deep red */
+  border-left: 4px solid #d32f2f;
+}}
       .details {{ padding: 0.5rem 1rem; display: none; border-top: 1px solid #ddd; }}
       .toggle::before {{ content: "▶"; display: inline-block; margin-right: 0.5rem; transition: transform 0.3s ease; }}
       .header.expanded .toggle::before {{ transform: rotate(90deg); }}
@@ -364,12 +368,14 @@ class JSONReporter:
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
         const testsContainer = document.getElementById('tests-container');
         const testElements = Array.from(testsContainer.querySelectorAll('.test'));
+        const errorCheckbox = document.getElementById('errorOnlyCheckbox');
 
         if (longestCheckbox.checked) {{
           failedCheckbox.checked = false;
           skippedCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           flakyCheckbox.checked = false;
+          errorCheckbox.checked = false;
           // Re-enable all tests before sorting
           testElements.forEach(el => el.style.display = 'block');
 
@@ -395,11 +401,13 @@ class JSONReporter:
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
+        const errorCheckbox = document.getElementById('errorOnlyCheckbox');
 
         if (checkbox.checked) {{
           longestCheckbox.checked = false;
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
+          errorCheckbox.checked = false;
           flakyCheckbox.checked = false
           testCards.forEach(card => {{
             const hasLink = card.querySelector('a[href]');
@@ -422,11 +430,13 @@ class JSONReporter:
           const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
           const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
           const failedCheckbox = document.getElementById('failedOnlyCheckbox');
+          const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
         if (checkbox.checked) {{
           longestCheckbox.checked = false;
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
+          errorCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           testElements.forEach(el => {{
             const isFlaky = el.querySelector('.is-flaky') !== null;
@@ -444,12 +454,14 @@ class JSONReporter:
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
+        const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
         if (failedCheckbox.checked) {{
           longestCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           skippedCheckbox.checked = false;
           flakyCheckbox.checked = false;
+          errorCheckbox.checked = false;
           testElements.forEach(el => {{
             const header = el.querySelector('.header');
             const isFailed = header.classList.contains('failed');
@@ -466,6 +478,7 @@ class JSONReporter:
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
+        const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
 
         if (skippedCheckbox.checked) {{
@@ -473,6 +486,7 @@ class JSONReporter:
           failedCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           flakyCheckbox.checked = false;
+          errorCheckbox.checked = false;
           testElements.forEach(el => {{
             const header = el.querySelector('.header');
             const isSkipped = header.classList.contains('skipped');
@@ -483,6 +497,31 @@ class JSONReporter:
         }}
 
         filterByMarkers(); // Reapply marker filter
+      }}
+
+      function toggleErrorOnly(errorCheckbox) {{
+        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
+        const failedCheckbox = document.getElementById('failedOnlyCheckbox');
+        const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
+        const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
+        const testElements = document.querySelectorAll('.test');
+
+        if (errorCheckbox.checked) {{
+          longestCheckbox.checked = false;
+          failedCheckbox.checked = false;
+          untrackedCheckbox.checked = false;
+          flakyCheckbox.checked = false;
+
+          testElements.forEach(el => {{
+            const header = el.querySelector('.header');
+            const isError = header.classList.contains('error');
+            el.style.display = isError ? 'block' : 'none';
+          }});
+        }} else {{
+          testElements.forEach(el => el.style.display = 'block');
+        }}
+
+        filterByMarkers();
       }}
 
       function initializeUniversalSearch() {{
@@ -506,19 +545,22 @@ class JSONReporter:
         const selected = Array.from(document.querySelectorAll('.marker-filter input[type="checkbox"]:checked')).map(cb => cb.value);
         const failedOnly = document.getElementById('failedOnlyCheckbox').checked;
         const skippedOnly = document.getElementById('skippedOnlyCheckbox').checked;
+        const errorOnly = document.getElementById('errorOnlyCheckbox').checked;
 
         document.querySelectorAll('.test').forEach(el => {{
           const header = el.querySelector('.header');
           const markers = el.getAttribute('data-markers').split(',');
           const isFailed = header.classList.contains('failed');
           const isSkipped = header.classList.contains('skipped');
+          const isError = header.classList.contains('error');
 
           const showAllMarkers = selected.length === 0;
           const matchesMarker = showAllMarkers || selected.some(m => markers.includes(m));
           const matchesFailed = !failedOnly || isFailed;
           const matchesSkipped = !skippedOnly || isSkipped;
+          const matchesError = !errorOnly || isError;
 
-          el.style.display = (matchesMarker && matchesFailed && matchesSkipped) ? 'block' : 'none';
+          el.style.display = (matchesMarker && matchesFailed && matchesSkipped && matchesError) ? 'block' : 'none';
         }});
       }}
 
@@ -529,9 +571,11 @@ class JSONReporter:
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
+        const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         failedCheckbox.checked = true;
         toggleFailedOnly(failedCheckbox);
         failedCheckbox.addEventListener('change', () => toggleFailedOnly(failedCheckbox));
+        errorCheckbox.addEventListener('change', () => toggleErrorOnly(errorCheckbox));
         longestCheckbox.addEventListener('change', () => toggleFilter(longestCheckbox));
         skippedCheckbox.addEventListener('change', () => toggleSkippedOnly(skippedCheckbox));
         untrackedCheckbox.addEventListener('change', () => toggleUntrackedOnly(untrackedCheckbox));
@@ -561,6 +605,10 @@ class JSONReporter:
       <label>
         <input type="checkbox" id="failedOnlyCheckbox" />
         Show only failed tests (<span>{self.filters.get("failed", 0)}</span>)
+      </label>
+      <label>
+        <input type="checkbox" id="errorOnlyCheckbox" />
+        Show only error tests (<span>{self.filters.get("error", 0)}</span>)
       </label>
       <label>
         <input type="checkbox" id="skippedOnlyCheckbox" />
@@ -645,6 +693,7 @@ class JSONReporter:
             status_class = (
                 'passed' if test['status'] == 'passed' else
                 'failed' if test['status'] == 'failed' else
+                'error'  if test['status'] == 'error' else
                 'skipped'
             )
             screenshot_path = self.find_screenshot_and_copy(test['test'])
