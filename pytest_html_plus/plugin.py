@@ -68,9 +68,13 @@ def pytest_runtest_makereport(item, call):
        screenshot_path = config.getoption("--screenshots") or "screenshots"
 
        should_capture_screenshot = (
-               capture_option == "all" or
-               (capture_option == "failed" and report.outcome == "failed")
-       )
+            report.when in ("setup", "call") and
+            (
+                capture_option == "all" or
+                (capture_option == "failed" and report.outcome == "failed")
+            )
+        )
+
 
        if should_capture_screenshot:
            driver = resolve_driver(item)
