@@ -504,6 +504,7 @@ class JSONReporter:
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
+        const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
 
         if (errorCheckbox.checked) {{
@@ -511,7 +512,7 @@ class JSONReporter:
           failedCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           flakyCheckbox.checked = false;
-
+          skippedCheckbox.checked = false;
           testElements.forEach(el => {{
             const header = el.querySelector('.header');
             const isError = header.classList.contains('error');
