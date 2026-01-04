@@ -48,21 +48,33 @@ def pytest_runtest_makereport(item, call):
        error = extract_error_block(error=full_error)
        trace = extract_trace_block(str(report.longrepr))
 
-   if report.when == "call" or (report.when == "setup" and report.skipped):
+   if (
+    report.when == "call"
+    or (report.when == "setup" and report.skipped)
+    or (report.when in ("setup", "teardown") and report.failed)
+):
        config = item.config
        capture_option = config.getoption("--capture-screenshots")
 
        caplog_text = None
-       if "caplog" in item.funcargs:
-           caplog = item.funcargs["caplog"]
-           caplog_text = "\n".join(caplog.messages) if caplog.messages else None
+       if report.when in ("call", "setup"):
+            if "caplog" in item.funcargs:
+                caplog = item.funcargs["caplog"]
+                try:
+                    caplog_text = "\n".join(caplog.messages) if caplog.messages else None
+                except KeyError:
+                    caplog_text = None
 
        screenshot_path = config.getoption("--screenshots") or "screenshots"
 
        should_capture_screenshot = (
-               capture_option == "all" or
-               (capture_option == "failed" and report.outcome == "failed")
-       )
+            report.when in ("setup", "call") and
+            (
+                capture_option == "all" or
+                (capture_option == "failed" and report.outcome == "failed")
+            )
+        )
+
 
        if should_capture_screenshot:
            driver = resolve_driver(item)
@@ -75,10 +87,13 @@ def pytest_runtest_makereport(item, call):
        reporter = config._json_reporter
        worker_id = os.getenv("PYTEST_XDIST_WORKER") or "main"
        test_name =  "".join(c if c.isalnum() else "_" for c in item.name)
+       status = report.outcome
+       if report.when in ("setup", "teardown") and report.failed:
+            status = "error"
        reporter.log_result(
            test_name=test_name,
            nodeid=item.nodeid,
-           status=report.outcome,
+           status=status,
            duration=report.duration,
            error=error,
            trace=trace if report.failed else None,

@@ -12,6 +12,8 @@ def compute_filter_count(results):
 
         if status == "failed" and not flaky:
             filters["failed"] += 1
+        if status == "error":
+            filters["error"] += 1
         if flaky:
             filters["flaky"] += 1
         if status == "skipped":
@@ -24,7 +26,12 @@ def compute_filter_count(results):
 
     total = len(results)
     filters["total"] = total
-    filters["passed"] = total - filters["failed"] - filters["skipped"]  # estimate
+    filters["passed"] = (
+    total
+    - filters["failed"]
+    - filters["skipped"]
+    - filters["error"]
+)
 
     filters["marker_counts"] = dict(marker_counts)
     return dict(filters)
