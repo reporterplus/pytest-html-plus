@@ -184,8 +184,8 @@ class JSONReporter:
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
     
-      body {{ font-family: Arial, sans-serif; padding: 1rem; background: #f2f4f7; }}
-      .test {{ border: 1px solid #ddd; margin-bottom: 0.5rem; border-radius: 5px; background: #ffffff; }}
+      body {{ font-family: Arial, sans-serif; padding: 1rem; background: #f9f9f9; }}
+      .test {{ border: 1px solid #ddd; margin-bottom: 0.5rem; border-radius: 5px; background: white; }}
       .header {{ padding: 0.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }}
       .header.passed {{ background: #e6f4ea; color: #2f7a33; }}
       .header.failed {{ background: #fdecea; color: #a83232; }}
@@ -293,13 +293,6 @@ class JSONReporter:
         width: 100%;
         border-collapse: collapse;
     }}
-    
-    .muted-hint code {{
-  background: #f1f5f9;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-size: 0.9em;
-}}
 
     .report-metadata th, .report-metadata td {{
         text-align: left;
@@ -594,8 +587,8 @@ class JSONReporter:
     </script>
     </head>
     <body>
-    <div class="report-metadata" style="background: #f2f4f7;">
-    <h2 onclick="this.nextElementSibling.classList.toggle('hidden')" style="cursor: pointer; font-size: 12px; ">
+    <div class="report-metadata">
+    <h2 onclick="this.nextElementSibling.classList.toggle('hidden')" style="cursor: pointer; font-size: 12px;">
         Execution Metadata (click to toggle)
          {self.generate_copy_button(self.metadata, "metadata")}
     </h2>
@@ -690,21 +683,9 @@ class JSONReporter:
 
         # Add checkboxes for all markers
         marker_counts = self.filters.get("marker_counts", {})
-        if not marker_counts:
-            html += (
-                '<span class="muted-hint">'
-                'Use <code>pytest.mark.*</code> to enable marker filters'
-                '</span>'
-            )
-        else:
-            for marker in sorted(marker_counts):
-                count = marker_counts[marker]
-                html += (
-                    f'<label>'
-                    f'<input type="checkbox" value="{marker}" /> '
-                    f'{marker} ({count})'
-                    f'</label> '
-                )
+        for marker in sorted(marker_counts):
+            count = marker_counts[marker]
+            html += f'<label><input type="checkbox" value="{marker}" /> {marker} ({count})</label> '
 
         html += '<div id="tests-container">'
 
