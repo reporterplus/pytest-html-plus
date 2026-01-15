@@ -6,11 +6,12 @@ so you always know *what* ran, *where*, and *when* — without extra configurati
 
 Included metadata fields:
 - **Report title** (defaults to output filename)
-- **Environment** — defaults to ``NA`` if not set.
-  You can specify it using the ``--env`` or ``--environment`` option
-  (these names are common in test automation workflows).
-- **Branch** (detected from Git)
-- **Commit SHA**
+- **Environment** — defaults to NA when not provided.
+    ReporterPlus primarily supports the ``--rp-env`` option.
+    For compatibility with existing test setups, if your project already defines and uses ``--env`` or ``--environment``, ReporterPlus will automatically pick up and display that value.
+    If none of these options are present, the environment field will remain unset.
+- **Branch** populated using the ``--git-branch`` and ``--git-commit`` option.
+- **Commit SHA** populated using the  ``--git-commit`` option.
 - **Generated timestamp**
 
 .. note::
@@ -43,7 +44,7 @@ Example metadata block
    {
        "report_title": "report_output",
        "environment": "staging",
-       "branch": "v0.3.8",
+       "branch": "v0.4.9",
        "commit": "e1b6737f87dgg93gd8de2ed5d368ee6206108",
        "generated_at": "2025-08-15T21:55:13.309670"
    }

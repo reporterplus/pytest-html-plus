@@ -177,14 +177,15 @@ def pytest_sessionfinish(session, exitstatus):
 
 def pytest_sessionstart(session):
     html_output = session.config.getoption("--html-output") or "report_output"
-    git_branch = session.config.getoption("--git-branch") or "NA"
-    git_commit = session.config.getoption("--git-commit") or "NA"
+    git_branch = session.config.getoption("--git-branch") or "Pass --git-branch to populate git metadata"
+    git_commit = session.config.getoption("--git-commit") or "Pass --git-commit to populate git metadata"
+    rp_env = session.config.getoption("--rp-env") or "Pass --env or --environment or --rp-env <name> to populate environment"
     configure_logging()
     session.config.addinivalue_line(
        "markers", "link(url): Add a link to external test case or documentation."
    )
     write_plus_metadata_if_main_worker(session.config, report_path=html_output,
-                                       git_branch=git_branch, git_commit=git_commit)
+                                       git_branch=git_branch, git_commit=git_commit, rp_env=rp_env)
 
 
 def pytest_load_initial_conftests(args):
@@ -242,14 +243,20 @@ def pytest_addoption(parser):
    parser.addoption(
        "--git-branch",
        action="store",
-       default="NA",
+       default="Pass --git-branch to populate git metadata",
        help="Helps show branch information on the report"
    )
    parser.addoption(
        "--git-commit",
        action="store",
-       default="NA",
+       default="Pass --git-commit to populate git metadata",
        help="Helps show commitId information on the report"
+   )
+   parser.addoption(
+       "--rp-env",
+       action="store",
+       default="Pass --env or --environment or --rp-env <name> to populate environment",
+       help="Helps show env information on the report"
    )
 
 import logging
