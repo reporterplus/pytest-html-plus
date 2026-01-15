@@ -12,12 +12,11 @@ def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_me
     commit = kwargs.get("git_commit", "Pass --git-commit to populate git metadata")
     metadata = {
         "report_title": get_report_title(output_path=report_path),
-        "environment": get_env_marker(config),
+        "environment": kwargs.get("rp_env") or get_env_marker(config),
         "branch": branch,
         "commit": commit,
         "python_version": get_python_version(),
         "generated_at": datetime.now().isoformat()
     }
     with open(output_path, "w") as f:
-        print(metadata)
         json.dump(metadata, f, indent=2)
