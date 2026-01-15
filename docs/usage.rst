@@ -140,7 +140,7 @@ Fields
 
 - ``environment`` (string)
   Target environment (e.g., ``staging``, ``prod-sim``). Auto-detected from common
-  CLI flags if present (``--env`` or ``--environment``). Defaults to ``"NA"`` if
+  CLI flags if present (``--env`` or ``--environment``). Defaults to ``"NA"`` unless additionally `--rp-env`` if
   not provided.
 
 - ``branch`` (string)
@@ -163,7 +163,7 @@ Behavior & Notes
 - **Zero-config:** All fields are collected automatically where possible.
 - **Overrides:**
   - Title: ``--plus-report-title="My Nightly Report"``
-  - Environment: pass your usual flag (``--env`` or ``--environment``); the plugin will pick it up.
+  - Environment: pass your usual flag (``--env`` or ``--environment``); if your project has it already, the plugin will pick it up, else pass --rp-env
 - **Non-git folders / CI without checkout:** Branch/commit gracefully become ``"NA"`` (no failures).
 - **xdist:** Metadata is written **once** (on the controller), not per worker.
 - **Portability:** The HTML report reads this file at render time and shows a compact,

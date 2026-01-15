@@ -60,6 +60,7 @@ class JSONReporter:
         else:
             self.metadata = {}
 
+
     def log_result(
             self,
             test_name,
@@ -148,6 +149,22 @@ class JSONReporter:
                     return os.path.join("screenshots", file)
         return None
 
+    def copy_json_report(self):
+        """
+        Copies the source JSON report into the report output directory.
+        """
+        if not os.path.exists(self.report_path):
+            return
+
+        os.makedirs(self.output_dir, exist_ok=True)
+
+        dest_path = os.path.join(
+            self.output_dir,
+            os.path.basename(self.report_path)
+        )
+
+        shutil.copyfile(self.report_path, dest_path)
+
     def generate_copy_button(self, content, label):
         if isinstance(content, list):
             # Convert list to string (for logs)
@@ -169,6 +186,7 @@ class JSONReporter:
 
     def generate_html_report(self):
         # Extract all unique markers
+        self.copy_json_report()
         ignore_markers = {"link"}
         all_markers = set()
         for test in self.results:
