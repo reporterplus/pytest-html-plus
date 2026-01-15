@@ -60,6 +60,7 @@ class JSONReporter:
         else:
             self.metadata = {}
 
+
     def log_result(
             self,
             test_name,
@@ -148,6 +149,22 @@ class JSONReporter:
                     return os.path.join("screenshots", file)
         return None
 
+    def copy_json_report(self):
+        """
+        Copies the source JSON report into the report output directory.
+        """
+        if not os.path.exists(self.report_path):
+            return
+
+        os.makedirs(self.output_dir, exist_ok=True)
+
+        dest_path = os.path.join(
+            self.output_dir,
+            os.path.basename(self.report_path)
+        )
+
+        shutil.copyfile(self.report_path, dest_path)
+
     def generate_copy_button(self, content, label):
         if isinstance(content, list):
             # Convert list to string (for logs)
@@ -169,6 +186,7 @@ class JSONReporter:
 
     def generate_html_report(self):
         # Extract all unique markers
+        self.copy_json_report()
         ignore_markers = {"link"}
         all_markers = set()
         for test in self.results:
@@ -184,16 +202,35 @@ class JSONReporter:
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
     
-      body {{ font-family: Arial, sans-serif; padding: 1rem; background: #f2f4f7; }}
-      .test {{ border: 1px solid #ddd; margin-bottom: 0.5rem; border-radius: 5px; background: #ffffff; }}
+      body {{
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  background: #FAF7F2;  
+}}
+      .test {{
+   border: 1px solid #D9C3A5; 
+  margin-bottom: 0.5rem;
+  border-radius: 5px;
+  background: #FDFBF7;     
+}}
       .header {{ padding: 0.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }}
-      .header.passed {{ background: #e6f4ea; color: #2f7a33; }}
-      .header.failed {{ background: #fdecea; color: #a83232; }}
-      .header.skipped {{  background: #fff8e1; color: #b36b00;  }}
+      .header.passed {{
+  background: #E1F3E8; 
+  color: #1E6B3A;   
+  border-left: 4px solid #2E7D32;
+}}
+      .header.failed {{
+  background: #FBE4E4;   
+  color: #8B1E1E;      
+  border-left: 4px solid #C62828;
+}}
+      .header.skipped {{
+  background: #fff8e1;
+  color: #b36b00;
+}}
       .header.error {{
-  background: #fdecea;   /* light red / pink */
-  color: #b71c1c;        /* deep red */
-  border-left: 4px solid #d32f2f;
+  background: #fdecea;
+  color: #b71c1c;
 }}
       .details {{ padding: 0.5rem 1rem; display: none; border-top: 1px solid #ddd; }}
       .toggle::before {{ content: "▶"; display: inline-block; margin-right: 0.5rem; transition: transform 0.3s ease; }}

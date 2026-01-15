@@ -1,4 +1,4 @@
-Version Control & Environment Metadata (``--git-branch``, ``--git-commit``, ``--env``)
+Version Control & Environment Metadata (``--git-branch``, ``--git-commit``, ``--env``, --rp-env, --environment)
 =======================================================================================
 
 These flags allow you to inject version control and environment metadata directly into
@@ -20,7 +20,7 @@ Flags Overview
   **Accepted Values:** Any valid commit hash (e.g., ``5bb4c87e9da4ff1780540b25a04725ade5c3bc37``)
   Helps ensure full traceability of test runs, especially in detached HEAD mode.
 
-- ``--env`` or ``--environment``
+- ``--env`` or ``--environment`` or ``-rp-env``
   Adds the value of a specific environment variable to the report metadata.
   **Default:** ``None``
   **Accepted Values:** A single environment variable key (e.g., ``BUILD_ID``) or any text of your choice for (e.g. your env name like staging)
@@ -40,6 +40,8 @@ Usage Examples
 .. code-block:: bash
 
    pytest --env BUILD_ID
+   pytest --environment BUILD_ID
+   pytest --rp-env BUILD_ID
 
 If ``BUILD_ID`` is set in your environment, the report will include:
 
@@ -73,7 +75,7 @@ Report Contents
 ---------------
 
 - When supplied, branch and commit information will be added to the report header.
-- The value of the environment variable provided through ``--env`` will appear as a key/value
+- The value of the environment variable provided through ``--env`` or ``--environment`` or ``--rp-env`` will appear as a key/value
   entry under execution metadata.
 - If the given environment variable does not exist, its value will be shown as ``NA``.
 
@@ -81,6 +83,6 @@ Important Notes
 ---------------
 
 - If not provided, both ``--git-branch`` and ``--git-commit`` default to ``NA``.
-- The ``--env`` flag accepts **only one environment variable key per usage**.
+- The ``--env`` or ``--environment`` or ``--rp-env`` flag accepts **only one environment variable key per usage**.
   If you need to include multiple variables, specify the flag multiple times.
-- Avoid using ``--env`` to expose sensitive information such as API tokens or passwords.
+- Avoid using ``--env`` or ``--environment`` or ``--rp-env`` to expose sensitive information such as API tokens or passwords.

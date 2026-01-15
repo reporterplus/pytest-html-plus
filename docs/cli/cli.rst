@@ -41,7 +41,7 @@ Overview
      - Path for XML report
      - ``None``
      - Useful when generating multiple output types
-   * - ``--env``
+   * - ``--env`` or ``--environment`` or ``--rp-env`
      - Include environment variables in the execution metadata.
      - Default: None
      - Useful for adding CI or custom environment metadata (safe values only).
