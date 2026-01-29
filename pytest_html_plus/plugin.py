@@ -115,10 +115,29 @@ import subprocess
 def pytest_sessionfinish(session, exitstatus):
    reporter = session.config._json_reporter
 
-   json_path = session.config.getoption("--json-report") or "final_report.json"
+   raw_json_report = session.config.getoption("--json-report")
    html_output = session.config.getoption("--html-output") or "report_output"
    screenshots_path = session.config.getoption("--screenshots") or "screenshots"
-   xml_path = session.config.getoption("--xml-report") or "final_xml.xml"
+   raw_xml_report = session.config.getoption("--xml-report")
+
+   if raw_xml_report:
+       if os.path.basename(raw_xml_report) != raw_xml_report:
+           raise pytest.UsageError("--xml-report must be a filename, not a path")
+       xml_filename = raw_xml_report
+   else:
+       xml_filename = "final_xml.xml"
+
+   xml_path = os.path.join(html_output, xml_filename)
+
+   os.makedirs(html_output, exist_ok=True)
+
+   if raw_json_report:
+       json_filename = raw_json_report
+   else:
+       json_filename = "final_report.json"
+
+   json_path = os.path.join(html_output, json_filename)
+   reporter.report_path = json_path
 
    is_worker = os.getenv("PYTEST_XDIST_WORKER") is not None
    try:
@@ -169,7 +188,7 @@ def pytest_sessionfinish(session, exitstatus):
    if session.config.getoption("--generate-xml"):
        try:
            json_path = reporter.report_path
-           convert_json_to_junit_xml(json_path, xml_path)
+           convert_json_to_junit_xml(reporter.report_path, xml_path)
            print(f"XML report generated: {xml_path}")
        except Exception as e:
            raise RuntimeError(f"Failed to generate XML report: {e}") from e
@@ -198,7 +217,7 @@ def pytest_addoption(parser):
        "--json-report",
        action="store",
        default="final_report.json",
-       help="Directory to save individual JSON test reports"
+       help="Name of the JSON report file generated alongside the HTML report"
    )
    parser.addoption(
        "--capture-screenshots",
@@ -238,7 +257,7 @@ def pytest_addoption(parser):
        "--xml-report",
        action="store",
        default=None,
-       help="Path to output the XML report (used with --generatexml)"
+       help="Name of the XML report file generated alongside the HTML report (used with --generatexml)"
    )
    parser.addoption(
        "--git-branch",
