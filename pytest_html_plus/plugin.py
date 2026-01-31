@@ -36,6 +36,19 @@ def pytest_runtest_setup(item):
    if "caplog" not in item.fixturenames:
        item.fixturenames.append("caplog")
 
+import warnings
+
+def _warn_python_39_deprecation():
+    if sys.version_info[:2] == (3, 9):
+        warnings.warn(
+            "pytest-html-plus is not actively tested in Python 3.9 and support will be dropped in v0.5.1. "
+            "Please upgrade to Python 3.10+.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+_warn_python_39_deprecation()
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
