@@ -188,6 +188,21 @@ def pytest_sessionfinish(session, exitstatus):
     except Exception as e:
         raise RuntimeError(f"Exception during HTML report generation: {e}") from e
 
+    # ---- Generate XML ----
+    if session.config.getoption("--generate-xml"):
+        try:
+            convert_json_to_junit_xml(json_path, xml_path)
+            print(f"XML report generated: {xml_path}")
+        except Exception as e:
+            raise RuntimeError(f"Failed to generate XML report: {e}") from e
+
+    if not os.getenv("PYTEST_XDIST_WORKER"):
+        if os.path.exists(screenshots_path):
+            try:
+                shutil.rmtree(screenshots_path)
+            except Exception:
+                logger.warning("Could not clean up screenshots directory")
+
     if session.config.getoption("--plus-email"):
         try:
             config = load_email_env()
@@ -203,14 +218,6 @@ def pytest_sessionfinish(session, exitstatus):
         json_path=json_path,
         config=session.config
     )
-
-    # ---- Generate XML ----
-    if session.config.getoption("--generate-xml"):
-        try:
-            convert_json_to_junit_xml(json_path, xml_path)
-            print(f"XML report generated: {xml_path}")
-        except Exception as e:
-            raise RuntimeError(f"Failed to generate XML report: {e}") from e
 
 def pytest_sessionstart(session):
     html_output = session.config.getoption("--html-output") or "report_output"
