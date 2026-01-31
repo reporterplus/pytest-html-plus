@@ -151,6 +151,15 @@ def pytest_sessionfinish(session, exitstatus):
 
     # ---- Worker behavior ----
     if is_worker:
+        worker_id = os.getenv("PYTEST_XDIST_WORKER")
+        worker_dir = ".pytest_worker_jsons"
+        os.makedirs(worker_dir, exist_ok=True)
+
+        reporter.report_path = os.path.join(
+            worker_dir,
+            f"{worker_id}.json"
+        )
+
         reporter.write_report()
         return
 
@@ -383,11 +392,14 @@ def open_html_report(report_path: str, json_path: str, config) -> None:
            report_data = json.load(f)
 
        results = report_data.get("results", [])
+       print(f"results is {results}")
+
 
        has_failures = any(
            t.get("status") == "failed" or t.get("error")
            for t in results
        )
+       print(f"has failures is {has_failures}")
 
        if should_open == "always" or (should_open == "failed" and has_failures):
            webbrowser.open(f"file://{os.path.abspath(report_path)}")
