@@ -238,65 +238,71 @@ def pytest_load_initial_conftests(args):
 
 
 def pytest_addoption(parser):
-   parser.addoption(
-       "--json-report",
-       action="store",
-       default="final_report.json",
-       help="Name of the JSON report file generated alongside the HTML report"
-   )
-   parser.addoption(
+    group = parser.getgroup(
+        "pytest-html-plus",
+        "pytest-html-plus reporting options"
+    )
+
+
+    group.addoption(
+           "--json-report",
+           action="store",
+           default="final_report.json",
+           help="Name of the JSON report file generated alongside the HTML report"
+       )
+    group.addoption(
        "--capture-screenshots",
        action="store",
        default="failed",
        choices=["failed", "all", "none"],
        help="Capture screenshots: failed (default), all, or none"
    )
-   parser.addoption("--html-output", default="report_output")
-   parser.addoption("--screenshots", default="screenshots")
-   parser.addoption(
+    group.addoption("--html-output", default="report_output")
+    group.addoption("--screenshots", default="screenshots")
+    group.addoption(
        "--plus-email",
        action="store_true",
        default=False,
        help="Send HTML test report via email after test run"
    )
-   parser.addoption(
+    group.addoption(
        "--detect-flake",
        action="store",
        default=False,
        help="Helps capture flaky tests in the last n number of builds"
    )
-   parser.addoption(
+    group.addoption(
        "--should-open-report",
        action="store",
        default="failed",
        choices=["always", "failed", "never"],
        help="When to open the HTML report: always, failed, or never (default: failed)",
    )
-   parser.addoption(
+    group.addoption(
        "--generate-xml",
        action="store_true",
        default=False,
        help="Generate JUnit-style XML from the final JSON report"
    )
-   parser.addoption(
+    group.addoption(
        "--xml-report",
        action="store",
        default=None,
        help="Name of the XML report file generated alongside the HTML report (used with --generatexml)"
    )
-   parser.addoption(
+    group.addoption(
        "--git-branch",
        action="store",
        default="Pass --git-branch to populate git metadata",
        help="Helps show branch information on the report"
    )
-   parser.addoption(
+    group.addoption(
        "--git-commit",
        action="store",
        default="Pass --git-commit to populate git metadata",
        help="Helps show commitId information on the report"
    )
-   parser.addoption(
+    group.addoption(
        "--rp-env",
        action="store",
        default="Pass --rp-env to populate environment",
