@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 import json
+import sys
 
 from pytest_html_plus.compute_report_metadata import write_plus_metadata_if_main_worker
 from pytest_html_plus.extract_link import extract_links_from_item
