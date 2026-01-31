@@ -302,7 +302,7 @@ def pytest_addoption(parser):
        "--xml-report",
        action="store",
        default=None,
-       help="Name of the XML report file generated alongside the HTML report (used with --generatexml)"
+       help="Name of the XML report file generated alongside the HTML report (used with --generate-xml)"
    )
     group.addoption(
        "--git-branch",
