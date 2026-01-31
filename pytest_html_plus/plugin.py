@@ -113,73 +113,117 @@ import subprocess
 
 
 def pytest_sessionfinish(session, exitstatus):
-   reporter = session.config._json_reporter
+    reporter = session.config._json_reporter
 
-   json_path = session.config.getoption("--json-report") or "final_report.json"
-   html_output = session.config.getoption("--html-output") or "report_output"
-   screenshots_path = session.config.getoption("--screenshots") or "screenshots"
-   xml_path = session.config.getoption("--xml-report") or "final_xml.xml"
+    raw_json_report = session.config.getoption("--json-report")
+    html_output = session.config.getoption("--html-output") or "report_output"
+    screenshots_path = session.config.getoption("--screenshots") or "screenshots"
+    raw_xml_report = session.config.getoption("--xml-report")
 
-   is_worker = os.getenv("PYTEST_XDIST_WORKER") is not None
-   try:
-       is_xdist = bool(session.config.getoption("-n"))
-   except ValueError:
-       is_xdist = False
+    # ---- XML filename validation ----
+    if raw_xml_report:
+        if os.path.basename(raw_xml_report) != raw_xml_report:
+            raise pytest.UsageError("--xml-report must be a filename, not a path")
+        xml_filename = raw_xml_report
+    else:
+        xml_filename = "final_xml.xml"
 
-   if is_worker:
-       reporter.write_report()
-       print(f"Worker {os.getenv('PYTEST_XDIST_WORKER')} finished – skipping merge.")
-       return
+    xml_path = os.path.join(html_output, xml_filename)
 
-   if is_xdist:
-       merge_json_reports(directory=".pytest_worker_jsons", output_path=json_path)
-   else:
-       reporter.results = mark_flaky_tests(reporter.results)
-       reporter.write_report()
+    os.makedirs(html_output, exist_ok=True)
 
-   script_path = os.path.join(os.path.dirname(__file__), "generate_html_report.py")
+    # ---- JSON filename validation ----
+    if raw_json_report:
+        if os.path.basename(raw_json_report) != raw_json_report:
+            raise pytest.UsageError("--json-report must be a filename, not a path")
+        json_filename = raw_json_report
+    else:
+        json_filename = "final_report.json"
 
-   if not os.path.exists(script_path):
-       logger.warning(f"Report generation script not found at {script_path}. Skipping HTML report generation.")
-       return
+    json_path = os.path.join(html_output, json_filename)
+    reporter.report_path = json_path
 
-   try:
-       subprocess.run([
-           sys.executable,
-           script_path,
-           "--report", json_path,
-           "--screenshots", screenshots_path,
-           "--output", html_output
-       ], check=True)
-   except Exception as e:
-       raise RuntimeError(f"Exception during HTML report generation: {e}") from e
+    is_worker = os.getenv("PYTEST_XDIST_WORKER") is not None
+    try:
+        is_xdist = bool(session.config.getoption("-n"))
+    except ValueError:
+        is_xdist = False
 
-   if session.config.getoption("--plus-email"):
-       print("📬 --plus-email enabled. Sending report...")
-       try:
-           config = load_email_env()
-           config["report_path"] = f"{html_output}"
-           sender = EmailSender(config, report_path=config["report_path"])
-           sender.send()
-       except Exception as e:
-           raise RuntimeError(f"Failed to send email: {e}") from e
+    # ---- Worker behavior ----
+    if is_worker:
+        worker_id = os.getenv("PYTEST_XDIST_WORKER")
+        worker_dir = ".pytest_worker_jsons"
+        os.makedirs(worker_dir, exist_ok=True)
 
-   open_html_report(report_path=f"{html_output}/report.html",json_path=json_path, config=session.config)
+        reporter.report_path = os.path.join(
+            worker_dir,
+            f"{worker_id}.json"
+        )
 
-   if session.config.getoption("--generate-xml"):
-       try:
-           json_path = reporter.report_path
-           convert_json_to_junit_xml(json_path, xml_path)
-           print(f"XML report generated: {xml_path}")
-       except Exception as e:
-           raise RuntimeError(f"Failed to generate XML report: {e}") from e
+        reporter.write_report()
+        return
 
+    # ---- Controller behavior ----
+    if is_xdist:
+        merge_json_reports(directory=".pytest_worker_jsons", output_path=json_path)
+    else:
+        reporter.results = mark_flaky_tests(reporter.results)
+        reporter.write_report()
+
+    script_path = os.path.join(os.path.dirname(__file__), "generate_html_report.py")
+    if not os.path.exists(script_path):
+        logger.warning(
+            f"Report generation script not found at {script_path}. Skipping HTML report generation."
+        )
+        return
+
+    try:
+        subprocess.run([
+            sys.executable,
+            script_path,
+            "--report", json_path,
+            "--screenshots", screenshots_path,
+            "--output", html_output
+        ], check=True)
+    except Exception as e:
+        raise RuntimeError(f"Exception during HTML report generation: {e}") from e
+
+    # ---- Generate XML ----
+    if session.config.getoption("--generate-xml"):
+        try:
+            convert_json_to_junit_xml(json_path, xml_path)
+            print(f"XML report generated: {xml_path}")
+        except Exception as e:
+            raise RuntimeError(f"Failed to generate XML report: {e}") from e
+
+    if not os.getenv("PYTEST_XDIST_WORKER"):
+        if os.path.exists(screenshots_path):
+            try:
+                shutil.rmtree(screenshots_path)
+            except Exception:
+                logger.warning("Could not clean up screenshots directory")
+
+    if session.config.getoption("--plus-email"):
+        try:
+            config = load_email_env()
+            config["report_path"] = html_output
+            sender = EmailSender(config, report_path=html_output)
+            sender.send()
+        except Exception as e:
+            raise RuntimeError(f"Failed to send email: {e}") from e
+
+    # ---- Open report (controller only) ----
+    open_html_report(
+        report_path=os.path.join(html_output, "report.html"),
+        json_path=json_path,
+        config=session.config
+    )
 
 def pytest_sessionstart(session):
     html_output = session.config.getoption("--html-output") or "report_output"
     git_branch = session.config.getoption("--git-branch") or "Pass --git-branch to populate git metadata"
     git_commit = session.config.getoption("--git-commit") or "Pass --git-commit to populate git metadata"
-    rp_env = session.config.getoption("--rp-env") or "Pass --env or --environment or --rp-env <name> to populate environment"
+    rp_env = session.config.getoption("--rp-env") or "Pass --rp-env <name> to populate environment"
     configure_logging()
     session.config.addinivalue_line(
        "markers", "link(url): Add a link to external test case or documentation."
@@ -198,7 +242,7 @@ def pytest_addoption(parser):
        "--json-report",
        action="store",
        default="final_report.json",
-       help="Directory to save individual JSON test reports"
+       help="Name of the JSON report file generated alongside the HTML report"
    )
    parser.addoption(
        "--capture-screenshots",
@@ -238,7 +282,7 @@ def pytest_addoption(parser):
        "--xml-report",
        action="store",
        default=None,
-       help="Path to output the XML report (used with --generatexml)"
+       help="Name of the XML report file generated alongside the HTML report (used with --generatexml)"
    )
    parser.addoption(
        "--git-branch",
@@ -255,7 +299,7 @@ def pytest_addoption(parser):
    parser.addoption(
        "--rp-env",
        action="store",
-       default="Pass --env or --environment or --rp-env <name> to populate environment",
+       default="Pass --rp-env to populate environment",
        help="Helps show env information on the report"
    )
 
@@ -355,6 +399,7 @@ def open_html_report(report_path: str, json_path: str, config) -> None:
            report_data = json.load(f)
 
        results = report_data.get("results", [])
+
 
        has_failures = any(
            t.get("status") == "failed" or t.get("error")

@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 
 from pytest_html_plus.utils import is_main_worker, get_env_marker, get_report_title, \
@@ -8,6 +9,7 @@ from pytest_html_plus.utils import is_main_worker, get_env_marker, get_report_ti
 def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_metadata.json", **kwargs):
     if not is_main_worker():
         return
+    metadata_path = os.path.join(report_path, output_path)
     branch = kwargs.get("git_branch", "Pass --git-branch to populate git metadata")
     commit = kwargs.get("git_commit", "Pass --git-commit to populate git metadata")
     metadata = {
@@ -18,5 +20,7 @@ def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_me
         "python_version": get_python_version(),
         "generated_at": datetime.now().isoformat()
     }
-    with open(output_path, "w") as f:
+    os.makedirs(report_path, exist_ok=True)
+
+    with open(metadata_path, "w") as f:
         json.dump(metadata, f, indent=2)
