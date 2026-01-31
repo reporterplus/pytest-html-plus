@@ -14,7 +14,7 @@ Overview
      - **Default**
      - **Use Case**
    * - ``--json-report``
-     - Path to save individual JSON test reports
+     - Name of the JSON report file generated alongside the HTML report
      - ``final_report.json``
      - Use in CI to parse/export test metadata
    * - ``--capture-screenshots``

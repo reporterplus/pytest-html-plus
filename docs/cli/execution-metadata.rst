@@ -20,11 +20,15 @@ Flags Overview
   **Accepted Values:** Any valid commit hash (e.g., ``5bb4c87e9da4ff1780540b25a04725ade5c3bc37``)
   Helps ensure full traceability of test runs, especially in detached HEAD mode.
 
-- ``--env`` or ``--environment`` or ``-rp-env``
-  Adds the value of a specific environment variable to the report metadata.
-  **Default:** ``None``
-  **Accepted Values:** A single environment variable key (e.g., ``BUILD_ID``) or any text of your choice for (e.g. your env name like staging)
-  Useful for adding CI job IDs, build numbers, or other contextual metadata.
+-  ``--env`` and ``--environment`` are **not owned or defined by pytest-html-plus**.
+  If these options are already provided by your test suite, plugins, or CI setup,
+  pytest-html-plus will capture and display their values in the report metadata
+  when they are available.
+
+  If your project does **not** define ``--env`` or ``--environment`` and you want
+  to explicitly add environment context (for example ``staging``, ``production``,
+  ``BUILD_ID``, or a CI job identifier), use ``--rp-env``, which is **owned and fully
+  supported by pytest-html-plus**.
 
 Usage Examples
 --------------

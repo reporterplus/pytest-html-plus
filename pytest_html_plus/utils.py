@@ -7,7 +7,7 @@ def get_env_marker(config):
     for arg in ("--env", "--environment"):
         if config.getoption(arg.lstrip("-").replace("-", "_"), default=None):
             return config.getoption(arg.lstrip("-").replace("-", "_"))
-    return "Pass --env or --rp-env or --environment <name> to populate environment"
+    return "Pass --rp-env to populate environment"
 
 def get_report_title(output_path):
     report_path = output_path
