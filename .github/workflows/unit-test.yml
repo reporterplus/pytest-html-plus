@@ -35,13 +35,13 @@ jobs:
         run: |
           export REPORT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           export REPORT_COMMIT="$(git rev-parse HEAD)"
-          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --xml-report report_output/final_xml_ubuntu.xml --git-branch "$REPORT_BRANCH" --git-commit "$REPORT_COMMIT"
+          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --xml-report final_xml_ubuntu.xml --git-branch "$REPORT_BRANCH" --git-commit "$REPORT_COMMIT"
 
       - name: 🧪 Run tests with warnings enabled
         run: |
           export REPORT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           export REPORT_COMMIT="$(git rev-parse HEAD)"
-          PYTHONWARNINGS=error poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --xml-report report_output/final_xml_ubuntu_warnings.xml --html-output=report_output_warnings --git-branch "$REPORT_BRANCH" --git-commit "$REPORT_COMMIT"
+          PYTHONWARNINGS=error poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --xml-report final_xml_ubuntu_warnings.xml --html-output=report_output_warnings --git-branch "$REPORT_BRANCH" --git-commit "$REPORT_COMMIT"
 
 
       - name: Upload HTML Report
