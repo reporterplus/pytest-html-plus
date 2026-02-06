@@ -1,4 +1,4 @@
-⚡ **Plug. Play. Debug without delay.**  
+⚡ **Test your code, not your reporting setup.**  
 > _Get started with rich pytest reports in under 3 seconds. Just install — no setup required. The simplest, fastest reporter for pytest._
 
 ## Get a self-contained, actionable, easy-to-read single page HTML unified reports summarizing all your test results — no hassle, just clarity. Detect **flaky tests**, **attach screenshots** automatically without hooks and optionally send reports via email**. Works beautifully with or without `xdist`.
@@ -23,6 +23,12 @@ If you don’t want the burden of installing pytest-html-plus manually and your 
 
 [![🚀 Checkout on GitHub Marketplace](https://img.shields.io/badge/Marketplace-Pytest%20HTML%20Plus-blue?logo=github)](https://github.com/marketplace/actions/pytest-html-plus-action)
 [![Documentation](https://img.shields.io/badge/docs-readthedocs.io-brightgreen)](https://pytest-html-plus.readthedocs.io/en/main/marketplace/usage.html)
+
+## Pytest HTML Plus VSCode
+
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/reporterplus.pytest-html-plus-vscode)]
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/reporterplus.pytest-html-plus-vscode)]
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/main/extensions/vscode/usage.html)
 
 ## ✨ Features
 
