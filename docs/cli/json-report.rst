@@ -7,7 +7,7 @@ Overview
 --------
 
 - **Default Output**: `final_report.json`
-- **Type**: File path
+- **Type**: File Name
 - **Usage Context**: CI pipelines, custom dashboards, post-processing
 
 Example
