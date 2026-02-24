@@ -1,20 +1,32 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+name: Feature Request
+about: Suggest an idea or improvement
+title: "[Feature] "
+labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Summary
+A one-line description of the feature you'd like.
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## Problem It Solves
+What's the current limitation or pain point? 
+_e.g. "When running a large test suite, I can't easily filter failures by..."_
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Proposed Solution
+Describe how you'd like it to work. If you have ideas on the API or CLI flags, show them:
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+```bash
+# e.g. a new CLI option
+pytest --html=report.html --html-group-by=module
+```
+
+```python
+# or a conftest hook / config option
+```
+
+## Alternatives Considered
+Any workarounds you've tried or other approaches you considered.
+
+## Additional Context
+Links to similar features in other tools, screenshots, mockups, or anything else useful.

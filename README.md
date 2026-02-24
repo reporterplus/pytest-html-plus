@@ -26,7 +26,7 @@ If you don’t want the burden of installing pytest-html-plus manually and your 
 
 ## Pytest HTML Plus VSCode
 
-[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/reporterplus.pytest-html-plus-vscode)]
+[![VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=reporterplus.pytest-html-plus-vscode)]
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/reporterplus.pytest-html-plus-vscode)]
 [![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/main/extensions/vscode/usage.html)
 

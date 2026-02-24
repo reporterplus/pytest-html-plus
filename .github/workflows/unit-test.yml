@@ -2,7 +2,13 @@ name: Unit Tests
 
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - "[0-9]+\\.[0-9]+\\.[0-9]+"
+
+  concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
   test:
@@ -10,14 +16,14 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13" ]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: 📥 Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🐍 Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -26,36 +32,63 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+      - name: 📦 Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+
       - name: 📦 Install dependencies with Poetry
-        run: |
-          poetry lock
-          poetry install --with dev
+        run: poetry install --with dev --frozen
+
+      - name: 🔍 Lint with ruff
+        run: poetry run ruff check .
 
       - name: 🧪 Run tests with coverage
         run: |
           export REPORT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           export REPORT_COMMIT="$(git rev-parse HEAD)"
-          poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --xml-report final_xml_ubuntu.xml --git-branch "$REPORT_BRANCH" --git-commit "$REPORT_COMMIT"
+          poetry run pytest \
+            --cov=pytest_html_plus \
+            --cov-fail-under=39 \
+            --cov-report=term \
+            --reruns 1 \
+            --ignore=tests/browser \
+            --generate-xml \
+            --xml-report final_xml_ubuntu.xml \
+            --git-branch "$REPORT_BRANCH" \
+            --git-commit "$REPORT_COMMIT" \
+            tests/
 
       - name: 🧪 Run tests with warnings enabled
         run: |
           export REPORT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           export REPORT_COMMIT="$(git rev-parse HEAD)"
-          PYTHONWARNINGS=error poetry run pytest --cov=pytest_html_plus tests/ --cov-fail-under=39 --cov-report=term --reruns 1 --ignore=tests/browser --generate-xml --xml-report final_xml_ubuntu_warnings.xml --html-output=report_output_warnings --git-branch "$REPORT_BRANCH" --git-commit "$REPORT_COMMIT"
+          PYTHONWARNINGS=error poetry run pytest \
+            --cov=pytest_html_plus \
+            --cov-fail-under=39 \
+            --cov-report=term \
+            --reruns 1 \
+            --ignore=tests/browser \
+            --generate-xml \
+            --xml-report final_xml_ubuntu_warnings.xml \
+            --html-output=report_output_warnings \
+            --git-branch "$REPORT_BRANCH" \
+            --git-commit "$REPORT_COMMIT" \
+            tests/
 
-
-      - name: Upload HTML Report
+      - name: 📤 Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: report-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
-          path:
-            report_output/
+          path: report_output/
 
-      - name: Upload HTML warnings Report
+      - name: 📤 Upload HTML Warnings Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: report-warnings-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
-          path:
-            report_output_warnings/
+          path: report_output_warnings/
