@@ -2,9 +2,15 @@ name: Reporterplus marketplace actions test
 
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - "[0-9]+\\.[0-9]+\\.[0-9]+"
 
   workflow_dispatch:
+
+  concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
   test:

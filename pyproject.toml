@@ -6,34 +6,38 @@ readme = "README.md"
 authors = ["reporterplus"]
 license = "MIT"
 packages = [{ include = "pytest_html_plus" }]
+maintainers = ["reporterplus"]
+[tool.poetry]
+classifiers = [
+    "Framework :: Pytest",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Quality Assurance",
+    "Intended Audience :: Developers",
+    "Development Status :: 4 - Beta",
+]
 keywords = [
     "pytest",
-    "pytest-html-plus",
     "pytest-plugin",
-    "html-test-report",
-    "beautiful-test-report",
-    "shareable-test-results",
+    "html-report",
     "test-report",
-    "test-results",
-    "unit-test-report",
-    "functional-test-report",
-    "test-summary",
-    "reporting",
-    "python-testing",
-    "automated-testing",
-    "test-runner",
-    "report-generator",
-    "continuous-integration",
-    "ci-cd",
-    "github-actions",
-    "jenkins",
-    "pytest-html",
-    "pytest-report"
+    "screenshot",
+    "mobile-report",
+    "xdist",
+    "allure-alternative",
+    "playwright",
+    "selenium",
 ]
 
 urls.Homepage = "https://github.com/reporterplus/pytest-html-plus"
 urls.Source = "https://github.com/reporterplus/pytest-html-plus"
 urls.Tracker = "https://github.com/reporterplus/pytest-html-plus/issues"
+urls.Documentation = "https://pytest-html-plus.readthedocs.io"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
@@ -49,6 +53,7 @@ pytest-playwright = "^0.7.0"
 pytest-xdist = "^3.8.0"
 selenium = "^4.8.0"
 webdriver-manager = "^3.8.5"
+ruff = "^0.15.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -57,4 +62,16 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.plugins."pytest11"]
 pytest_html_plus = "pytest_html_plus.plugin"
 
+[tool.ruff]
+line-length = 88
+target-version = "py39"
 
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+]
+ignore = []
