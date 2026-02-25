@@ -39,7 +39,7 @@ urls.Tracker = "https://github.com/reporterplus/pytest-html-plus/issues"
 urls.Documentation = "https://pytest-html-plus.readthedocs.io"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.10,<4.0"
 yagmail = ">=0.15.293,<0.16.0"
 keyring = ">=25.6.0,<26.0.0"
 
