@@ -1,5 +1,6 @@
 import pytest
 
+
 class FakePage:
     def __init__(self, screenshot_dir):
         self.screenshot_dir = screenshot_dir

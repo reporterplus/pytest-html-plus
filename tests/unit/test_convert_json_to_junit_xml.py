@@ -2,10 +2,13 @@ import json
 import os
 import tempfile
 import xml.etree.ElementTree as ET
-import pytest
-from pathlib import Path
 
-from pytest_html_plus.json_to_xml_converter import convert_json_to_junit_xml, sanitize_classname
+import pytest
+
+from pytest_html_plus.json_to_xml_converter import (
+    convert_json_to_junit_xml,
+    sanitize_classname,
+)
 
 
 @pytest.mark.skip(reason="Skipping for test coverage")

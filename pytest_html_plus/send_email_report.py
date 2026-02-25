@@ -1,6 +1,7 @@
 import os
 import smtplib
 from email.message import EmailMessage
+
 from pytest_html_plus.utils import zip_report_folder
 
 

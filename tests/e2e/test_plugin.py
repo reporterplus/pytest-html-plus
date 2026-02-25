@@ -5,6 +5,7 @@ import tempfile
 
 import pytest
 
+
 @pytest.mark.skip("optionally skipped")
 def test_plugin_logs_expected_results():
     with tempfile.TemporaryDirectory() as tmpdir:

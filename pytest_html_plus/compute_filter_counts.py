@@ -1,5 +1,6 @@
 from collections import Counter, defaultdict
 
+
 def compute_filter_count(results):
     filters = Counter()
     marker_counts = defaultdict(int)

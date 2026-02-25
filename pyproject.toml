@@ -53,6 +53,8 @@ pytest-xdist = "^3.8.0"
 selenium = "^4.8.0"
 webdriver-manager = "^3.8.5"
 ruff = "^0.15.2"
+black ="^24.0.0"
+isort = "^5.13.0"
 
 [build-system]
 requires = ["poetry-core"]

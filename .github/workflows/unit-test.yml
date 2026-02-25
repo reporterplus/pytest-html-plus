@@ -39,8 +39,8 @@ jobs:
       - name: 📦 Install dependencies with Poetry
         run: poetry install --with dev
 
-#      - name: 🔍 Lint with ruff
-#        run: poetry run ruff check .
+      - name: 🔍 Lint with ruff
+        run: poetry run ruff check .
 
       - name: 🧪 Run tests with coverage
         run: |

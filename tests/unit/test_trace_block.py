@@ -1,5 +1,6 @@
 from pytest_html_plus.utils import extract_trace_block
 
+
 def test_trace_block_basic():
     trace = "line 1\nline 2\nE this is an error\nline 4"
     expected = "line 1\nline 2"

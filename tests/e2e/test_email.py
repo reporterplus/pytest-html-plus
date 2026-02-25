@@ -1,9 +1,10 @@
-from email.message import EmailMessage
+
+from unittest.mock import MagicMock, patch
 
 import pytest
-from unittest.mock import patch, mock_open, MagicMock
 
 from pytest_html_plus.send_email_report import EmailSender
+
 
 @pytest.fixture
 def config():

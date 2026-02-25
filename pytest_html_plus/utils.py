@@ -1,7 +1,7 @@
-import platform
-import subprocess
-import shutil
 import os
+import platform
+import shutil
+
 
 def get_env_marker(config):
     for arg in ("--env", "--environment"):
@@ -53,7 +53,7 @@ def load_email_env(filepath="emailenv"):
         raise FileNotFoundError("emailenv file not found!")
 
     config = {}
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         for line in f:
             if "=" in line:
                 key, value = line.strip().split("=", 1)

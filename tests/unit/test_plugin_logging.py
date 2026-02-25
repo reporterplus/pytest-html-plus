@@ -1,7 +1,9 @@
 import json
 import subprocess
 import textwrap
+
 import pytest
+
 
 @pytest.mark.skip("this is skipped due to report path issue")
 def test_passing_test_logged_even_if_screenshot_not_taken(tmp_path):

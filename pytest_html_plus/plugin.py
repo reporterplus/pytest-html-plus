@@ -1,20 +1,23 @@
+import json
 import shutil
+import sys
 import webbrowser
-from datetime import datetime
 from pathlib import Path
 
 import pytest
-import json
-import sys
 
 from pytest_html_plus.compute_report_metadata import write_plus_metadata_if_main_worker
 from pytest_html_plus.extract_link import extract_links_from_item
 from pytest_html_plus.generate_html_report import JSONReporter
 from pytest_html_plus.json_merge import merge_json_reports
 from pytest_html_plus.json_to_xml_converter import convert_json_to_junit_xml
-from pytest_html_plus.resolver_driver import take_screenshot_generic, resolve_driver
+from pytest_html_plus.resolver_driver import resolve_driver, take_screenshot_generic
 from pytest_html_plus.send_email_report import EmailSender
-from pytest_html_plus.utils import extract_error_block, extract_trace_block, load_email_env
+from pytest_html_plus.utils import (
+   extract_error_block,
+   extract_trace_block,
+   load_email_env,
+)
 
 python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
@@ -38,6 +41,7 @@ def pytest_runtest_setup(item):
        item.fixturenames.append("caplog")
 
 import warnings
+
 
 def _warn_python_39_deprecation():
     if sys.version_info[:2] == (3, 9):
@@ -324,7 +328,6 @@ def pytest_addoption(parser):
    )
 
 import logging
-import sys
 
 
 def configure_logging():
@@ -415,7 +418,7 @@ def open_html_report(report_path: str, json_path: str, config) -> None:
        return
 
    try:
-       with open(json_path, "r", encoding="utf-8") as f:
+       with open(json_path, encoding="utf-8") as f:
            report_data = json.load(f)
 
        results = report_data.get("results", [])

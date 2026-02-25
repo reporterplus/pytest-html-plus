@@ -2,8 +2,12 @@ import json
 import os
 from datetime import datetime
 
-from pytest_html_plus.utils import is_main_worker, get_env_marker, get_report_title, \
-    get_python_version
+from pytest_html_plus.utils import (
+    get_env_marker,
+    get_python_version,
+    get_report_title,
+    is_main_worker,
+)
 
 
 def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_metadata.json", **kwargs):

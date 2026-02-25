@@ -18,13 +18,15 @@ def resolve_driver(item):
 
    # 4. Manual override
    if hasattr(item, "page_for_screenshot"):
-       print(f"[resolve_driver] Using manually attached screenshot object")
+       print("[resolve_driver] Using manually attached screenshot object")
        return item.page_for_screenshot
 
    return None
 
 
 import os
+
+
 def sanitize_filename(name):
    return "".join(c if c.isalnum() else "_" for c in name)
 

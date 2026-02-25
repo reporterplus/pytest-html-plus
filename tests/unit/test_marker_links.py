@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from pytest_html_plus.extract_link import extract_links_from_item
 
 

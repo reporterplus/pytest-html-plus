@@ -1,6 +1,7 @@
 import json
 import os
 from collections import defaultdict
+
 from pytest_html_plus.compute_filter_counts import compute_filter_count
 
 
@@ -50,4 +51,4 @@ def merge_json_reports(directory=".pytest_worker_jsons", output_path="final_repo
        raise RuntimeError(f"Failed to write merged report to {output_path}: {e}") from e
 
 
-   
+

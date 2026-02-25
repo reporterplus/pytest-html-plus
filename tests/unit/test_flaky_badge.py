@@ -1,5 +1,3 @@
-import random
-import pytest
 
 attempt_counter = {"count": 0}
 

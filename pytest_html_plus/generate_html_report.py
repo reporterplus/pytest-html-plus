@@ -4,11 +4,10 @@ import json
 import os
 import shutil
 from datetime import datetime, timezone
-import html
 from sys import path
 
 from pytest_html_plus.compute_filter_counts import compute_filter_count
-from pytest_html_plus.utils import extract_trace_block, extract_error_block
+from pytest_html_plus.utils import extract_error_block, extract_trace_block
 
 
 def main():
@@ -158,7 +157,7 @@ class JSONReporter:
             content_str = ""
         else:
             content_str = str(content)
-            
+
         # Encode content as base64 to avoid any JavaScript syntax issues
         content_b64 = base64.b64encode(content_str.encode('utf-8')).decode('ascii')
         return f"""<button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('{content_b64}', this)" title="Copy {label}">
@@ -772,19 +771,19 @@ class JSONReporter:
 
             trace_html = ""
             error_html = ""
-            
+
             if test.get('error'):
                 full_error = test['error']
                 full_trace = test['trace']
                 trace_content = extract_trace_block(full_trace)
                 error_content = extract_error_block(full_error)
-                
+
                 if trace_content and trace_content.strip():
                     trace_html = f"""
                     <div class="trace-content"><strong>Trace:</strong> {self.generate_copy_button(trace_content, 'trace')}
                     <pre>{trace_content}</pre></div>
                     """
-                
+
                 if error_content and error_content.strip():
                     error_html = f"""
                     <div class="error-content"><strong>Error:</strong> {self.generate_copy_button(error_content, 'error')}

@@ -1,6 +1,7 @@
 import json
 import xml.etree.ElementTree as ET
 
+
 def sanitize_classname(filepath):
     if not filepath:
         return "default"
@@ -10,7 +11,7 @@ def sanitize_test_name(test):
     return test.get("test") or test.get("nodeid", "unknown").split("::")[-1]
 
 def convert_json_to_junit_xml(json_path, xml_path):
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
          payload = json.load(f)
 
     if not isinstance(payload, dict):

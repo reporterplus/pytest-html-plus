@@ -1,8 +1,8 @@
 import json
+
 import pytest
 
 from pytest_html_plus.json_merge import merge_json_reports
-
 
 # Sample test inputs
 basic_test_list = [

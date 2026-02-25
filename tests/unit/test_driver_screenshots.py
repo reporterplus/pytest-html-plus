@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+
 from pytest_html_plus.resolver_driver import resolve_driver
 
 
@@ -76,7 +77,8 @@ def test_resolve_driver_returns_none_when_no_match():
     assert resolve_driver(item) is None
 
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import patch
+
 from pytest_html_plus.resolver_driver import take_screenshot_generic
 
 
@@ -127,7 +129,8 @@ def test_take_screenshot_raises_on_invalid_driver(mock_makedirs):
         assert False, "Expected RuntimeError was not raised"
 
 
-from unittest.mock import Mock, patch
+from unittest.mock import patch
+
 from pytest_html_plus.plugin import take_screenshot_generic
 
 
