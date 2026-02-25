@@ -11,10 +11,18 @@ from pytest_html_plus.utils import extract_error_block, extract_trace_block
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate HTML report from Playwright JSON report")
+    parser = argparse.ArgumentParser(
+        description="Generate HTML report from Playwright JSON report"
+    )
     parser.add_argument("--report", required=True, help="Path to the JSON report file")
-    parser.add_argument("--screenshots", default="screenshots", help="Folder path where screenshots are saved")
-    parser.add_argument("--output", default="report_output", help="Output folder for HTML report")
+    parser.add_argument(
+        "--screenshots",
+        default="screenshots",
+        help="Folder path where screenshots are saved",
+    )
+    parser.add_argument(
+        "--output", default="report_output", help="Output folder for HTML report"
+    )
     args = parser.parse_args()
 
     reporter = JSONReporter(
@@ -27,7 +35,12 @@ def main():
 
 
 class JSONReporter:
-    def __init__(self, report_path="final_report.json", screenshots_dir="screenshots", output_dir="report_output"):
+    def __init__(
+        self,
+        report_path="final_report.json",
+        screenshots_dir="screenshots",
+        output_dir="report_output",
+    ):
         self.filters = None
         self.parsed_data = None
         self.report_path = report_path
@@ -52,31 +65,32 @@ class JSONReporter:
         else:
             raise ValueError("Unexpected report format.")
 
-        metadata_path = os.path.join(os.path.dirname(self.report_path), "plus_metadata.json")
+        metadata_path = os.path.join(
+            os.path.dirname(self.report_path), "plus_metadata.json"
+        )
         if os.path.exists(metadata_path):
             with open(metadata_path) as meta_file:
                 self.metadata = json.load(meta_file)
         else:
             self.metadata = {}
 
-
     def log_result(
-            self,
-            test_name,
-            nodeid,
-            status,
-            duration,
-            trace=None,
-            error=None,
-            markers=None,
-            filepath=None,
-            lineno=None,
-            stdout=None,
-            stderr=None,
-            screenshot=None,
-            logs=None,
-            worker=None,
-            links=None
+        self,
+        test_name,
+        nodeid,
+        status,
+        duration,
+        trace=None,
+        error=None,
+        markers=None,
+        filepath=None,
+        lineno=None,
+        stdout=None,
+        stderr=None,
+        screenshot=None,
+        logs=None,
+        worker=None,
+        links=None,
     ):
         result = {
             "test": test_name,
@@ -94,7 +108,7 @@ class JSONReporter:
             "screenshot": screenshot,
             "logs": logs or [],
             "worker": worker,
-            "links": links
+            "links": links,
         }
         if error:
             result["error"] = error
@@ -107,11 +121,7 @@ class JSONReporter:
         if dir_path and not os.path.exists(dir_path):
             os.makedirs(dir_path, exist_ok=True)
 
-
-        data = {
-            "filters": compute_filter_count(self.results),
-            "results": self.results
-        }
+        data = {"filters": compute_filter_count(self.results), "results": self.results}
 
         try:
             with open(self.report_path, "w") as f:
@@ -133,8 +143,10 @@ class JSONReporter:
     def find_screenshot_and_copy(self, test_name):
         screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
         os.makedirs(screenshots_output_dir, exist_ok=True)
-
-        # We'll look for any .png file where test_name is contained in the filename (partial match)
+        """
+        We'll look for any .png file where test_name 
+        is contained in the filename (partial match)
+        """
         for root, _, files in os.walk(self.screenshots_dir):
             for file in files:
                 if file.endswith(".png") and test_name in file:
@@ -148,18 +160,17 @@ class JSONReporter:
                     return os.path.join("screenshots", file)
         return None
 
-
     def generate_copy_button(self, content, label):
         if isinstance(content, list):
             # Convert list to string (for logs)
-            content_str = '\n'.join(str(item) for item in content)
+            content_str = "\n".join(str(item) for item in content)
         elif content is None:
             content_str = ""
         else:
             content_str = str(content)
 
         # Encode content as base64 to avoid any JavaScript syntax issues
-        content_b64 = base64.b64encode(content_str.encode('utf-8')).decode('ascii')
+        content_b64 = base64.b64encode(content_str.encode("utf-8")).decode("ascii")
         return f"""<button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('{content_b64}', this)" title="Copy {label}">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -620,12 +631,12 @@ class JSONReporter:
          {self.generate_copy_button(self.metadata, "metadata")}
     </h2>
     <table class="hidden" style="margin-top:10px;">
-        <tr><th>Title</th><td>{self.metadata.get('report_title', '')}</td></tr>
-        <tr><th>Environment</th><td>{self.metadata.get('environment', '')}</td></tr>
-        <tr><th>Branch</th><td>{self.metadata.get('branch', '')}</td></tr>
-        <tr><th>Commit</th><td>{self.metadata.get('commit', '')}</td></tr>
-        <tr><th>Generated At</th><td>{self.metadata.get('generated_at', '')}</td></tr>
-        <tr><th>Python version</th><td>{self.metadata.get('python_version', '')}</td></tr>
+        <tr><th>Title</th><td>{self.metadata.get("report_title", "")}</td></tr>
+        <tr><th>Environment</th><td>{self.metadata.get("environment", "")}</td></tr>
+        <tr><th>Branch</th><td>{self.metadata.get("branch", "")}</td></tr>
+        <tr><th>Commit</th><td>{self.metadata.get("commit", "")}</td></tr>
+        <tr><th>Generated At</th><td>{self.metadata.get("generated_at", "")}</td></tr>
+        <tr><th>Python version</th><td>{self.metadata.get("python_version", "")}</td></tr>
     </table>
 </div>
     <div id="fullscreen-overlay" class="fullscreen-overlay" onclick="closeFullscreen()"></div>
@@ -707,23 +718,22 @@ class JSONReporter:
       <strong>Filter by Markers:</strong><br/>
     """
 
-
         # Add checkboxes for all markers
         marker_counts = self.filters.get("marker_counts", {})
         if not marker_counts:
             html += (
                 '<span class="muted-hint">'
-                'Use <code>pytest.mark.*</code> to enable marker filters'
-                '</span>'
+                "Use <code>pytest.mark.*</code> to enable marker filters"
+                "</span>"
             )
         else:
             for marker in sorted(marker_counts):
                 count = marker_counts[marker]
                 html += (
-                    f'<label>'
+                    f"<label>"
                     f'<input type="checkbox" value="{marker}" /> '
-                    f'{marker} ({count})'
-                    f'</label> '
+                    f"{marker} ({count})"
+                    f"</label> "
                 )
 
         html += '<div id="tests-container">'
@@ -731,62 +741,69 @@ class JSONReporter:
         # Generate test blocks
         for test in self.results:
             status_class = (
-                'passed' if test['status'] == 'passed' else
-                'failed' if test['status'] == 'failed' else
-                'error'  if test['status'] == 'error' else
-                'skipped'
+                "passed"
+                if test["status"] == "passed"
+                else (
+                    "failed"
+                    if test["status"] == "failed"
+                    else "error" if test["status"] == "error" else "skipped"
+                )
             )
-            screenshot_path = self.find_screenshot_and_copy(test['test'])
-            screenshot_html = f'<div class="details-screenshot"><img src="{screenshot_path}" alt="Screenshot" onclick="toggleFullscreen(this)"></div>' if screenshot_path else ""
+            screenshot_path = self.find_screenshot_and_copy(test["test"])
+            screenshot_html = (
+                f'<div class="details-screenshot"><img src="{screenshot_path}" alt="Screenshot" onclick="toggleFullscreen(this)"></div>'
+                if screenshot_path
+                else ""
+            )
             markers = test.get("markers")
             marker_str = ",".join(markers) if isinstance(markers, list) else ""
             stdout_html = ""
-            if test.get('stdout'):
-                stdout_escaped = test['stdout'].replace("`", "\\`")  # Escape backticks
+            if test.get("stdout"):
+                stdout_escaped = test["stdout"].replace("`", "\\`")  # Escape backticks
                 stdout_html = f"""
-                <div><strong>STDOUT:</strong> {self.generate_copy_button(stdout_escaped, 'stdout')}
-                <pre>{test['stdout']}</pre></div>
+                <div><strong>STDOUT:</strong> {self.generate_copy_button(stdout_escaped, "stdout")}
+                <pre>{test["stdout"]}</pre></div>
                 """
 
             stderr_html = ""
-            if test.get('stderr'):
-                stderr_escaped = test['stderr'].replace("`", "\\`")
+            if test.get("stderr"):
+                stderr_escaped = test["stderr"].replace("`", "\\`")
                 stderr_html = f"""
-                <div><strong>STDERR:</strong> {self.generate_copy_button(stderr_escaped, 'stderr')}
-                <pre>{test['stderr']}</pre></div>
+                <div><strong>STDERR:</strong> {self.generate_copy_button(stderr_escaped, "stderr")}
+                <pre>{test["stderr"]}</pre></div>
                 """
 
             logs_html = ""
-            logs_content = test.get('logs')
+            logs_content = test.get("logs")
             if logs_content:
                 if isinstance(logs_content, list):
-                    logs_display = '\n'.join(str(item) for item in logs_content if item)
+                    logs_display = "\n".join(str(item) for item in logs_content if item)
                 else:
                     logs_display = str(logs_content)
                 if logs_display.strip():
                     logs_html = f"""
-                    <div><strong>Logs:</strong> {self.generate_copy_button(logs_content, 'logs')}
+                    <div><strong>Logs:</strong> {self.generate_copy_button(logs_content, "logs")}
                     <pre>{logs_display}</pre></div>
                     """
 
             trace_html = ""
             error_html = ""
 
-            if test.get('error'):
-                full_error = test['error']
-                full_trace = test['trace']
+            if test.get("error"):
+                full_error = test["error"]
+                full_trace = test["trace"]
                 trace_content = extract_trace_block(full_trace)
                 error_content = extract_error_block(full_error)
 
                 if trace_content and trace_content.strip():
                     trace_html = f"""
-                    <div class="trace-content"><strong>Trace:</strong> {self.generate_copy_button(trace_content, 'trace')}
+                    <div class="trace-content"><strong>Trace:</strong> {self.generate_copy_button(trace_content, "trace")}
                     <pre>{trace_content}</pre></div>
                     """
 
                 if error_content and error_content.strip():
                     error_html = f"""
-                    <div class="error-content"><strong>Error:</strong> {self.generate_copy_button(error_content, 'error')}
+                    <div class="error-content"><strong>Error:</strong> {self.generate_copy_button(error_content, "error")}
                     <pre>{error_content}</pre></div>
                     """
 
@@ -798,8 +815,10 @@ class JSONReporter:
                     'border-radius:3px;font-weight:bold;font-size:0.85em;">FLAKY</span>'
                 )
             else:
-                 # Invisible placeholder to preserve layout
-                flaky_badge = '<span style="display:inline-block; min-width:40px;"></span>'
+                # Invisible placeholder to preserve layout
+                flaky_badge = (
+                    '<span style="display:inline-block; min-width:40px;"></span>'
+                )
 
             link_html = ""
             links = test.get("links", [])
@@ -808,16 +827,17 @@ class JSONReporter:
                     link_html += (
                         f'<a href="{url}" target="_blank" '
                         f'style="background:#3498db;color:white;padding:2px 6px;'
-                        f'border-radius:3px;font-weight:bold;font-size:0.85em;'
+                        f"border-radius:3px;font-weight:bold;font-size:0.85em;"
                         f'text-decoration:none;margin-right:6px;"> Link </a>'
                     )
             else:
-              # Invisible placeholder to preserve layout
-              link_html = '<span style="display:inline-block; min-width:45px;"></span>'
+                # Invisible placeholder to preserve layout
+                link_html = (
+                    '<span style="display:inline-block; min-width:45px;"></span>'
+                )
 
-            html += f'''
-    
-<div class="test test-card" data-name="{test['test']}" data-link="{','.join(test.get('links') or [])}" data-markers="{marker_str}">
+            html += f"""    
+<div class="test test-card" data-name="{test["test"]}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}">
   <div class="header {status_class}" onclick="toggleDetails(this)">
     <div class="header-section test-info">
       <span class="toggle"></span>
@@ -853,27 +873,43 @@ class JSONReporter:
   </div>
 </div>
 
-    '''
+    """
 
         # Add summary
         total_tests = len(self.results)
-        failed_tests = sum(1 for t in self.results if t['status'] == 'failed')
-        error_tests = sum(1 for t in self.results if t['status'] == 'error')
-        slowest_test = max(self.results, key=lambda x: x.get('duration', 0), default=None)
-        slowest_test_name = slowest_test['test'] if slowest_test else 'N/A'
-        slowest_test_duration = slowest_test.get('duration', 0) if slowest_test else 0
+        failed_tests = sum(1 for t in self.results if t["status"] == "failed")
+        error_tests = sum(1 for t in self.results if t["status"] == "error")
+        slowest_test = max(
+            self.results, key=lambda x: x.get("duration", 0), default=None
+        )
+        slowest_test_name = slowest_test["test"] if slowest_test else "N/A"
+        slowest_test_duration = slowest_test.get("duration", 0) if slowest_test else 0
 
         summary_html = f"""
-            <div style="padding: 1rem; background: {'#e6f4ea' if failed_tests == 0 and error_tests == 0 else '#fdecea'}; 
-            border: 1px solid {'#2f7a33' if failed_tests == 0 and error_tests == 0 else '#a83232'}; 
+            <div style="padding: 1rem; background: {
+            "#e6f4ea" if failed_tests == 0 and error_tests == 0 else "#fdecea"
+        }; 
+            border: 1px solid {
+            "#2f7a33" if failed_tests == 0 and
+                         error_tests == 0
+            else "#a83232"
+        }; 
             border-radius: 5px; margin-bottom: 1rem;">
-              {'<strong>Bingo!</strong> All your tests passed!' if failed_tests == 0 and error_tests == 0 else
-        f'Total tests: {total_tests}, Failures: {failed_tests}, Errors: {error_tests}.'}
-              The slowest test was <strong>{slowest_test_name}</strong> at {slowest_test_duration:.2f}s.
+              {
+            "<strong>Bingo!</strong> All your tests passed!"
+            if failed_tests == 0 and error_tests == 0
+            else (f"Total tests: {total_tests}, "
+                  f"Failures: {failed_tests}, "
+                  f"Errors: {error_tests}.")
+        }
+              The slowest test was <strong>{slowest_test_name}</strong> at {
+            slowest_test_duration:.2f}s.
             </div>
             """
 
-        html = html.replace('<div id="tests-container">', summary_html + '<div id="tests-container">')
+        html = html.replace(
+            '<div id="tests-container">', summary_html + '<div id="tests-container">'
+        )
         html += "</div></body></html>"
 
         # Save report
@@ -881,6 +917,7 @@ class JSONReporter:
         output_file = os.path.join(self.output_dir, "report.html")
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(html)
+
 
 if __name__ == "__main__":
     main()

@@ -24,6 +24,7 @@ def make_driver(request):
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
+
 def test_example_dot_com_screenshot(request):
     driver = make_driver(request)
     try:

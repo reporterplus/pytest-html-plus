@@ -1,13 +1,9 @@
-
 from pytest_html_plus.plugin import mark_flaky_tests
 
 
 class TestMarkFlakyTests:
-
     def test_single_non_flaky_test(self):
-        results = [
-            {"nodeid": "test_sample.py::test_a", "status": "passed"}
-        ]
+        results = [{"nodeid": "test_sample.py::test_a", "status": "passed"}]
         marked = mark_flaky_tests(results)
         assert len(marked) == 1
         assert marked[0]["nodeid"] == "test_sample.py::test_a"
@@ -40,7 +36,10 @@ class TestMarkFlakyTests:
 
         # test_x is flaky
         assert by_nodeid["test_sample.py::test_x"]["flaky"] is True
-        assert by_nodeid["test_sample.py::test_x"]["flaky_attempts"] == ["failed", "passed"]
+        assert by_nodeid["test_sample.py::test_x"]["flaky_attempts"] == [
+            "failed",
+            "passed",
+        ]
 
         # test_y is not flaky
         assert by_nodeid["test_sample.py::test_y"]["flaky"] is False
@@ -48,8 +47,16 @@ class TestMarkFlakyTests:
 
     def test_preserves_other_fields(self):
         results = [
-            {"nodeid": "test_sample.py::test_meta", "status": "failed", "duration": 0.3},
-            {"nodeid": "test_sample.py::test_meta", "status": "passed", "duration": 0.2},
+            {
+                "nodeid": "test_sample.py::test_meta",
+                "status": "failed",
+                "duration": 0.3,
+            },
+            {
+                "nodeid": "test_sample.py::test_meta",
+                "status": "passed",
+                "duration": 0.2,
+            },
         ]
         marked = mark_flaky_tests(results)
         assert len(marked) == 1

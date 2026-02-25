@@ -1,6 +1,7 @@
-from unittest.mock import Mock
+import os
+from unittest.mock import Mock, patch
 
-from pytest_html_plus.resolver_driver import resolve_driver
+from pytest_html_plus.resolver_driver import resolve_driver, take_screenshot_generic
 
 
 def test_resolve_driver_prefers_page_over_others():
@@ -8,11 +9,7 @@ def test_resolve_driver_prefers_page_over_others():
     mock_driver.screenshot = Mock()
 
     item = Mock()
-    item.funcargs = {
-        "page": mock_driver,
-        "driver": Mock(),
-        "browser": Mock()
-    }
+    item.funcargs = {"page": mock_driver, "driver": Mock(), "browser": Mock()}
 
     assert resolve_driver(item) is mock_driver
 
@@ -22,9 +19,7 @@ def test_resolve_driver_fallback_to_driver():
     mock_driver.screenshot = Mock()
 
     item = Mock()
-    item.funcargs = {
-        "driver": mock_driver
-    }
+    item.funcargs = {"driver": mock_driver}
 
     assert resolve_driver(item) is mock_driver
 
@@ -34,9 +29,7 @@ def test_resolve_driver_fallback_to_browser():
     mock_driver.screenshot = Mock()
 
     item = Mock()
-    item.funcargs = {
-        "browser": mock_driver
-    }
+    item.funcargs = {"browser": mock_driver}
 
     assert resolve_driver(item) is mock_driver
 
@@ -75,11 +68,6 @@ def test_resolve_driver_returns_none_when_no_match():
     item.funcargs = {"x": object()}
     item.page_for_screenshot = None
     assert resolve_driver(item) is None
-
-import os
-from unittest.mock import patch
-
-from pytest_html_plus.resolver_driver import take_screenshot_generic
 
 
 @patch("os.makedirs")
@@ -129,13 +117,10 @@ def test_take_screenshot_raises_on_invalid_driver(mock_makedirs):
         assert False, "Expected RuntimeError was not raised"
 
 
-from unittest.mock import patch
-
-from pytest_html_plus.plugin import take_screenshot_generic
-
-
 @patch("pytest_html_plus.plugin.os.makedirs")
-@patch("pytest_html_plus.plugin.os.path.join", return_value="custom_dir/custom_file.png")
+@patch(
+    "pytest_html_plus.plugin.os.path.join", return_value="custom_dir/custom_file.png"
+)
 def test_take_screenshot_with_custom_path(mock_join, mock_makedirs):
     mock_driver = Mock()
     mock_driver.screenshot = Mock()
@@ -149,4 +134,3 @@ def test_take_screenshot_with_custom_path(mock_join, mock_makedirs):
     mock_join.assert_called_once_with("custom_dir", "custom_test_failure.png")
     mock_driver.screenshot.assert_called_once_with(path="custom_dir/custom_file.png")
     assert path == "custom_dir/custom_file.png"
-

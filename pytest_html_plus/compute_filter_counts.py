@@ -28,11 +28,8 @@ def compute_filter_count(results):
     total = len(results)
     filters["total"] = total
     filters["passed"] = (
-    total
-    - filters["failed"]
-    - filters["skipped"]
-    - filters["error"]
-)
+        total - filters["failed"] - filters["skipped"] - filters["error"]
+    )
 
     filters["marker_counts"] = dict(marker_counts)
     return dict(filters)

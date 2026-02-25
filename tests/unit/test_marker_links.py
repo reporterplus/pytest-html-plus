@@ -33,6 +33,8 @@ def test_extract_links_with_no_markers():
 
 def test_extract_links_with_non_string_args():
     item = MagicMock()
-    item.iter_markers.side_effect = lambda name: [MagicMock(args=[123, True])] if name == "link" else []
+    item.iter_markers.side_effect = lambda name: (
+        [MagicMock(args=[123, True])] if name == "link" else []
+    )
     result = extract_links_from_item(item)
     assert result == ["123", "True"]

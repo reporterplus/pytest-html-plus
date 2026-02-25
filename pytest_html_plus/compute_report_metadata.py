@@ -10,7 +10,9 @@ from pytest_html_plus.utils import (
 )
 
 
-def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_metadata.json", **kwargs):
+def write_plus_metadata_if_main_worker(
+    config, report_path, output_path="plus_metadata.json", **kwargs
+):
     if not is_main_worker():
         return
     metadata_path = os.path.join(report_path, output_path)
@@ -22,7 +24,7 @@ def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_me
         "branch": branch,
         "commit": commit,
         "python_version": get_python_version(),
-        "generated_at": datetime.now().isoformat()
+        "generated_at": datetime.now().isoformat(),
     }
     os.makedirs(report_path, exist_ok=True)
 

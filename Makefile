@@ -15,6 +15,10 @@ test:
 test-with-xdist:
 	docker run --rm pytest-html-plus poetry run pytest tests/unit --reruns 1 -n auto
 
+install-formatter:
+	pip install pre-commit
+	pre-commit install
+
 lint:
 	docker run --rm pytest-html-plus poetry run ruff check .
 
@@ -22,9 +26,6 @@ fix:
 	docker run --rm pytest-html-plus poetry run ruff check . --fix
 	docker run --rm pytest-html-plus poetry run ruff format .
 
-format:
-	docker run --rm -v $(PWD):/app -w /app pytest-html-plus isort .
-	docker run --rm -v $(PWD):/app -w /app pytest-html-plus black .
 
 clean:
 	docker rmi pytest-html-plus

@@ -1,4 +1,3 @@
-
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -17,7 +16,7 @@ def config():
         "EMAIL_PASSWORD": "password",
         "smtp_username": "smtp_user",
         "EMAIL_USE_TLS": True,
-        "use_ssl": False
+        "use_ssl": False,
     }
 
 
@@ -37,6 +36,7 @@ def test_send_with_smtp(mock_smtp, mock_zip, config):
     mock_server.send_message.assert_called_once()
     mock_server.quit.assert_called_once()
 
+
 @patch("pytest_html_plus.send_email_report.EmailSender.zip_and_attach")
 @patch("smtplib.SMTP_SSL")
 def test_send_with_ssl(mock_ssl, mock_zip, config):
@@ -52,4 +52,3 @@ def test_send_with_ssl(mock_ssl, mock_zip, config):
     mock_server.login.assert_called_once()
     mock_server.send_message.assert_called_once()
     mock_server.quit.assert_called_once()
-
