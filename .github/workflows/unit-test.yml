@@ -37,7 +37,7 @@ jobs:
             ${{ runner.os }}-poetry-${{ matrix.python-version }}-
 
       - name: 📦 Install dependencies with Poetry
-        run: poetry install --with dev --frozen
+        run: poetry install --with dev
 
       - name: 🔍 Lint with ruff
         run: poetry run ruff check .
