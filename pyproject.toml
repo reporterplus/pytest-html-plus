@@ -7,7 +7,6 @@ authors = ["reporterplus"]
 license = "MIT"
 packages = [{ include = "pytest_html_plus" }]
 maintainers = ["reporterplus"]
-[tool.poetry]
 classifiers = [
     "Framework :: Pytest",
     "Programming Language :: Python :: 3",
