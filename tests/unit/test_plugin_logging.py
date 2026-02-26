@@ -1,15 +1,21 @@
 import json
 import subprocess
 import textwrap
+
 import pytest
+
 
 @pytest.mark.skip("this is skipped due to report path issue")
 def test_passing_test_logged_even_if_screenshot_not_taken(tmp_path):
     test_file = tmp_path / "test_sample.py"
-    test_file.write_text(textwrap.dedent("""
+    test_file.write_text(
+        textwrap.dedent(
+            """
         def test_always_passes():
             assert True
-    """))
+    """
+        )
+    )
 
     report_file = tmp_path / "report.json"
     result = subprocess.run(
@@ -17,11 +23,11 @@ def test_passing_test_logged_even_if_screenshot_not_taken(tmp_path):
             "pytest",
             str(test_file),
             "--capture-screenshots=failed",
-            f"--json-report={report_file}"
+            f"--json-report={report_file}",
         ],
         cwd=tmp_path,
         capture_output=True,
-        text=True
+        text=True,
     )
 
     assert result.returncode == 0, f"Pytest failed:\n{result.stderr}\n{result.stdout}"

@@ -1,7 +1,5 @@
-import random
-import pytest
-
 attempt_counter = {"count": 0}
+
 
 def test_flaky_network_call():
     attempt_counter["count"] += 1

@@ -2,11 +2,17 @@ import json
 import os
 from datetime import datetime
 
-from pytest_html_plus.utils import is_main_worker, get_env_marker, get_report_title, \
-    get_python_version
+from pytest_html_plus.utils import (
+    get_env_marker,
+    get_python_version,
+    get_report_title,
+    is_main_worker,
+)
 
 
-def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_metadata.json", **kwargs):
+def write_plus_metadata_if_main_worker(
+    config, report_path, output_path="plus_metadata.json", **kwargs
+):
     if not is_main_worker():
         return
     metadata_path = os.path.join(report_path, output_path)
@@ -18,7 +24,7 @@ def write_plus_metadata_if_main_worker(config, report_path, output_path="plus_me
         "branch": branch,
         "commit": commit,
         "python_version": get_python_version(),
-        "generated_at": datetime.now().isoformat()
+        "generated_at": datetime.now().isoformat(),
     }
     os.makedirs(report_path, exist_ok=True)
 

@@ -1,6 +1,7 @@
 import os
 import smtplib
 from email.message import EmailMessage
+
 from pytest_html_plus.utils import zip_report_folder
 
 
@@ -13,7 +14,9 @@ class EmailSender:
         self.smtp_server = config.get("SMTP_SERVER") or os.getenv("SMTP_HOST")
         self.smtp_port = int(config.get("SMTP_PORT") or os.getenv("SMTP_PORT", "587"))
         self.password = config.get("EMAIL_PASSWORD") or os.getenv("SMTP_PASSWORD")
-        self.username = config.get("smtp_username") or self.sender or os.getenv("SMTP_USERNAME")
+        self.username = (
+            config.get("smtp_username") or self.sender or os.getenv("SMTP_USERNAME")
+        )
         self.use_tls = str(config.get("EMAIL_USE_TLS", True)).lower() == "true"
         self.use_ssl = str(config.get("use_ssl", False)).lower() == "true"
 
@@ -22,7 +25,9 @@ class EmailSender:
         filename = os.path.basename(zip_path)
         with open(zip_path, "rb") as f:
             report_data = f.read()
-        msg.add_attachment(report_data, maintype="application", subtype="zip", filename=filename)
+        msg.add_attachment(
+            report_data, maintype="application", subtype="zip", filename=filename
+        )
         return filename
 
     def send(self):

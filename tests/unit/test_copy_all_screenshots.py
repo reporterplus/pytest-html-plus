@@ -1,6 +1,6 @@
 import os
-from pathlib import Path
 import shutil
+
 
 def test_copy_all_screenshots(tmp_path):
     screenshots_dir = tmp_path / "screenshots_src"

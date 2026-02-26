@@ -2,15 +2,19 @@ import json
 import os
 import tempfile
 import xml.etree.ElementTree as ET
-import pytest
-from pathlib import Path
 
-from pytest_html_plus.json_to_xml_converter import convert_json_to_junit_xml, sanitize_classname
+import pytest
+
+from pytest_html_plus.json_to_xml_converter import (
+    convert_json_to_junit_xml,
+    sanitize_classname,
+)
 
 
 @pytest.mark.skip(reason="Skipping for test coverage")
 def test_skipped_example():
     assert True
+
 
 @pytest.fixture
 def sample_json_file():
@@ -31,19 +35,25 @@ def sample_json_file():
             "logs": ["POST /login", "200 OK"],
             "worker": "main",
             "links": ["http://example.com/login-trace"],
-            "flaky": False
+            "flaky": False,
         }
     ]
 
     payload = {
         "filters": {
             "total": len(test_data),
-            "passed": sum(1 for t in test_data if (t.get("status") or "").lower() == "passed"),
-            "failed": sum(1 for t in test_data if (t.get("status") or "").lower() == "failed"),
-            "skipped": sum(1 for t in test_data if (t.get("status") or "").lower() == "skipped"),
-            "marker_counts": {}
+            "passed": sum(
+                1 for t in test_data if (t.get("status") or "").lower() == "passed"
+            ),
+            "failed": sum(
+                1 for t in test_data if (t.get("status") or "").lower() == "failed"
+            ),
+            "skipped": sum(
+                1 for t in test_data if (t.get("status") or "").lower() == "skipped"
+            ),
+            "marker_counts": {},
         },
-        "results": test_data
+        "results": test_data,
     }
 
     with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as tmp:
@@ -104,12 +114,16 @@ def test_convert_json_to_xml(sample_json_file):
         if os.path.exists(xml_path):
             os.remove(xml_path)
 
-@pytest.mark.parametrize("filepath, expected", [
-    ("tests/test_login.py", "tests.test_login"),
-    ("tests\\test_user.py", "tests.test_user"),       # Windows path
-    ("tests/utils/helpers.py", "tests.utils.helpers"),
-    (None, "default"),                                # Missing value
-    ("", "default"),                                  # Empty string
-])
+
+@pytest.mark.parametrize(
+    "filepath, expected",
+    [
+        ("tests/test_login.py", "tests.test_login"),
+        ("tests\\test_user.py", "tests.test_user"),  # Windows path
+        ("tests/utils/helpers.py", "tests.utils.helpers"),
+        (None, "default"),  # Missing value
+        ("", "default"),  # Empty string
+    ],
+)
 def test_sanitize_classname(filepath, expected):
     assert sanitize_classname(filepath) == expected

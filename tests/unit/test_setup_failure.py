@@ -1,5 +1,6 @@
 import pytest
 
+
 class FakePage:
     def __init__(self, screenshot_dir):
         self.screenshot_dir = screenshot_dir
@@ -20,13 +21,13 @@ def failing_ui_fixture(tmp_path):
 
     # teardown never reached, but fixture exists
 
+
 @pytest.fixture
 def broken_ui_fixture(failing_ui_fixture):
     raise RuntimeError("UI setup failed")
 
-def test_ui_fixture_failure_captures_screenshot(
-    tmp_path, monkeypatch
-):
+
+def test_ui_fixture_failure_captures_screenshot(tmp_path, monkeypatch):
     from pytest_html_plus.plugin import take_screenshot_generic
 
     screenshots_dir = tmp_path / "screenshots"
@@ -35,10 +36,7 @@ def test_ui_fixture_failure_captures_screenshot(
     page = FakePage(screenshots_dir)
 
     # simulate resolve_driver returning page
-    monkeypatch.setattr(
-        "pytest_html_plus.plugin.resolve_driver",
-        lambda item: page
-    )
+    monkeypatch.setattr("pytest_html_plus.plugin.resolve_driver", lambda item: page)
 
     # simulate pytest item
     class FakeItem:
@@ -49,11 +47,7 @@ def test_ui_fixture_failure_captures_screenshot(
 
     item = FakeItem()
 
-    screenshot_path = take_screenshot_generic(
-        str(screenshots_dir),
-        item,
-        page
-    )
+    screenshot_path = take_screenshot_generic(str(screenshots_dir), item, page)
 
     # Assertions
     assert page.called is True
@@ -61,4 +55,3 @@ def test_ui_fixture_failure_captures_screenshot(
     assert screenshot_path.endswith(".png")
 
     assert len(list(screenshots_dir.glob("*.png"))) == 1
-

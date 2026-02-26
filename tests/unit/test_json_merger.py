@@ -1,20 +1,25 @@
 import json
+
 import pytest
 
 from pytest_html_plus.json_merge import merge_json_reports
-
 
 # Sample test inputs
 basic_test_list = [
     {"nodeid": "test_1", "status": "passed", "markers": [], "links": []},
     {"nodeid": "test_2", "status": "failed", "markers": ["flaky"], "links": []},
-    {"nodeid": "test_3", "status": "error", "markers": [], "links": []}
+    {"nodeid": "test_3", "status": "error", "markers": [], "links": []},
 ]
 
 wrapped_test_dict = {
     "results": [
         {"nodeid": "test_3", "status": "skipped", "markers": [], "links": []},
-        {"nodeid": "test_2", "status": "passed", "markers": ["flaky"], "links": []},  # Same nodeid as above
+        {
+            "nodeid": "test_2",
+            "status": "passed",
+            "markers": ["flaky"],
+            "links": [],
+        },  # Same nodeid as above
     ]
 }
 
@@ -84,7 +89,7 @@ def test_compute_filter_count_failed_non_flaky():
             "status": "failed",
             "flaky": False,
             "links": ["some-link"],
-            "markers": ["smoke"]
+            "markers": ["smoke"],
         }
     ]
 
@@ -97,6 +102,7 @@ def test_compute_filter_count_failed_non_flaky():
     assert filters["total"] == 1
     assert filters["marker_counts"]["smoke"] == 1
 
+
 def test_compute_filter_count_error_non_flaky():
     from pytest_html_plus.compute_filter_counts import compute_filter_count
 
@@ -105,7 +111,7 @@ def test_compute_filter_count_error_non_flaky():
             "status": "error",
             "flaky": False,
             "links": ["some-link"],
-            "markers": ["setup"]
+            "markers": ["setup"],
         }
     ]
 
@@ -118,4 +124,3 @@ def test_compute_filter_count_error_non_flaky():
     assert filters["passed"] == 0
     assert filters["total"] == 1
     assert filters["marker_counts"]["setup"] == 1
-

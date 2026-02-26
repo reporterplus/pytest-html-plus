@@ -42,6 +42,9 @@ urls.Documentation = "https://pytest-html-plus.readthedocs.io"
 python = ">=3.10,<4.0"
 yagmail = ">=0.15.293,<0.16.0"
 keyring = ">=25.6.0,<26.0.0"
+black = "^26.1.0"
+isort = "^8.0.0"
+pre-commit = "^4.5.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest-rerunfailures = "^15.1"
@@ -64,6 +67,14 @@ pytest_html_plus = "pytest_html_plus.plugin"
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+ignore = [
+    "E501",  # line too long — let black handle
+    "W291",  # trailing whitespace — let black handle
+    "W293",  # blank line whitespace — let black handle
+]
+exclude = [
+    "pytest_html_plus/generate_html_report.py"
+]
 
 [tool.ruff.lint]
 select = [
