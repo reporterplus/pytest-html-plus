@@ -47,11 +47,6 @@ class JSONReporter:
         self.screenshots_dir = screenshots_dir
         self.output_dir = output_dir
         self.results = []
-        all_markers = set()
-        for test in self.results:
-            for marker in test.get("markers", []):
-                all_markers.add(marker)
-        all_markers = sorted(all_markers)
 
     def load_report(self):
         with open(self.report_path) as f:
