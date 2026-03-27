@@ -31,14 +31,28 @@ def merge_json_reports(
     # Create merged results with flaky info
     merged_results = []
     for nodeid, attempts in tests_by_nodeid.items():
-        final_test = attempts[-1].copy()
-        statuses = [t.get("status") for t in attempts]
-        final_status = statuses[-1] if statuses else None
-        had_prior_failure = any(s == "failed" for s in statuses[:-1])
+        if not attempts:
+            continue
 
-        # Mark flaky only if the test eventually passes after one or more failures
+        attempts.sort(key=lambda x: x.get("timestamp", ""))
+
+        final_test = attempts[-1].copy()
+        statuses = [t.get("status", "unknown") for t in attempts]
+
+        final_status = statuses[-1]
+        had_prior_failure = any(s in ("failed", "error") for s in statuses[:-1])
+
         final_test["flaky"] = final_status == "passed" and had_prior_failure
-        final_test["flaky_attempts"] = statuses
+        final_test["attempt_statuses"] = statuses
+        final_test["attempt_count"] = len(attempts)
+
+        # 🔥 Preserve attempts (key feature)
+        final_test["attempts"] = attempts
+
+        first_failure_index = next(
+            (i for i, s in enumerate(statuses) if s in ("failed", "error")), None
+        )
+        final_test["first_failure_index"] = first_failure_index
 
         merged_results.append(final_test)
 

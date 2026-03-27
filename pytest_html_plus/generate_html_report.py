@@ -46,7 +46,7 @@ class JSONReporter:
         self.report_path = report_path
         self.screenshots_dir = screenshots_dir
         self.output_dir = output_dir
-        self.results = []
+        self.results = {}
 
     def load_report(self):
         with open(self.report_path) as f:
@@ -86,28 +86,57 @@ class JSONReporter:
         logs=None,
         worker=None,
         links=None,
+        attempt=None,
     ):
-        result = {
-            "test": test_name,
-            "nodeid": nodeid,
-            "status": status,
-            "duration": duration,
-            "trace": trace,
-            "error": error,
-            "markers": markers or [],
-            "file": filepath,
-            "line": lineno,
-            "stdout": stdout,
-            "stderr": stderr,
-            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-            "screenshot": screenshot,
-            "logs": logs or [],
-            "worker": worker,
-            "links": links,
-        }
+        # Initialize test entry if not exists
+        if nodeid not in self.results:
+            self.results[nodeid] = {
+                "test": test_name,
+                "nodeid": nodeid,
+                "status": status,
+                "duration": duration,
+                "trace": trace,
+                "error": error,
+                "markers": markers or [],
+                "file": filepath,
+                "line": lineno,
+                "stdout": stdout,
+                "stderr": stderr,
+                "timestamp": datetime.now(timezone.utc)
+                .isoformat()
+                .replace("+00:00", "Z"),
+                "screenshot": screenshot,
+                "logs": logs or [],
+                "worker": worker,
+                "links": links,
+                "attempts": [],
+            }
+
+        result = self.results[nodeid]
+
+        # Append attempt (only for call phase)
+        if attempt:
+            result["attempts"].append(attempt)
+
+        # Always update latest state (last run wins)
+        result["status"] = status
+        result["duration"] = duration
+
+        # Update trace/error only if present (avoid overwriting with None)
+        if trace:
+            result["trace"] = trace
         if error:
             result["error"] = error
-        self.results.append(result)
+
+        # Optional: update other fields if needed
+        if stdout:
+            result["stdout"] = stdout
+        if stderr:
+            result["stderr"] = stderr
+        if screenshot:
+            result["screenshot"] = screenshot
+        if logs:
+            result["logs"] = logs
 
     def write_report(self):
         dir_path = os.path.dirname(os.path.abspath(self.report_path))
@@ -122,7 +151,9 @@ class JSONReporter:
             with open(self.report_path, "w") as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
-            raise RuntimeError(f"Failed to write report to '{self.report_path}': {e}") from e
+            raise RuntimeError(
+                f"Failed to write report to '{self.report_path}': {e}"
+            ) from e
 
     def copy_all_screenshots(self):
         screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
@@ -137,7 +168,7 @@ class JSONReporter:
 
     def find_screenshot_and_copy(self, test_name):
         """
-        We'll look for any .png file where test_name 
+        We'll look for any .png file where test_name
         is contained in the filename (partial match)
         """
         screenshots_output_dir = os.path.join(self.output_dir, "screenshots")

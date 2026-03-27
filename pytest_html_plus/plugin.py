@@ -63,10 +63,21 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
     error = None
     trace = None
-    if report.failed:
-        full_error = str(report.longrepr)
-        error = extract_error_block(error=full_error)
-        trace = extract_trace_block(str(report.longrepr))
+    rerun = getattr(report, "rerun", 0)
+    attempt_data = None
+    if report.when == "call":
+        attempt_data = {
+            "attempt": rerun + 1,
+            "status": report.outcome,
+        }
+
+        if report.failed:
+            full_error = str(report.longrepr)
+            error = extract_error_block(error=full_error)
+            trace = extract_trace_block(full_error)
+
+            attempt_data["trace"] = trace
+            attempt_data["error"] = error
 
     if (
         report.when == "call"
@@ -115,8 +126,9 @@ def pytest_runtest_makereport(item, call):
             nodeid=item.nodeid,
             status=status,
             duration=report.duration,
+            attempt=attempt_data,
             error=error,
-            trace=trace if report.failed else None,
+            trace=trace,
             markers=[m.name for m in item.iter_markers()],
             filepath=item.location[0],
             lineno=item.location[1],
