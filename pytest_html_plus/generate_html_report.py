@@ -122,7 +122,7 @@ class JSONReporter:
             with open(self.report_path, "w") as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
-            raise RuntimeError(f"Failed to write report to '{path}': {e}") from e
+            raise RuntimeError(f"Failed to write report to '{self.report_path}': {e}") from e
 
     def copy_all_screenshots(self):
         screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
