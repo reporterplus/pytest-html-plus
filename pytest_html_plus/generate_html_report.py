@@ -122,7 +122,7 @@ class JSONReporter:
             with open(self.report_path, "w") as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
-            raise RuntimeError(f"Failed to write report to '{path}': {e}") from e
+            raise RuntimeError(f"Failed to write report to '{self.report_path}': {e}") from e
 
     def copy_all_screenshots(self):
         screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
@@ -136,12 +136,12 @@ class JSONReporter:
                         shutil.copyfile(src_path, dest_path)
 
     def find_screenshot_and_copy(self, test_name):
-        screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
-        os.makedirs(screenshots_output_dir, exist_ok=True)
         """
         We'll look for any .png file where test_name 
         is contained in the filename (partial match)
         """
+        screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
+        os.makedirs(screenshots_output_dir, exist_ok=True)
         for root, _, files in os.walk(self.screenshots_dir):
             for file in files:
                 if file.endswith(".png") and test_name in file:
@@ -228,7 +228,7 @@ class JSONReporter:
       .details-content {{ display: flex; gap: 1rem; align-items: flex-start; }}
       .details-text {{ flex: 1; min-width: 0; }}
       .details-screenshot {{ flex-shrink: 0; margin: 1rem; box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); }}
-      .details-screenshot img {{width: 300px; height: 200px; object-fit: contain; border: 1px solid #ccc; border-radius: 3px; background: #f8f8f8; cursor: pointer; transition: transform 0.2s ease; transform: scale(1.05); }}
+      .details-screenshot img {{width: 300px; height: 200px; object-fit: contain; border: 1px solid #ccc; border-radius: 3px; background: #f8f8f8; cursor: pointer; transition: transform 0.2s ease; }}
       .details-screenshot img:hover {{  transform: scale(1.05); }}
       
       /* Handle content wrapping */
@@ -310,7 +310,7 @@ class JSONReporter:
     }}
 
     .report-metadata summary {{
-        font-size: 0.5em;
+        font-size: 0.9em;
         cursor: pointer;
         margin-bottom: 5px;
     }}
@@ -441,7 +441,7 @@ class JSONReporter:
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
           errorCheckbox.checked = false;
-          flakyCheckbox.checked = false
+          flakyCheckbox.checked = false;
           testCards.forEach(card => {{
             const hasLink = card.querySelector('a[href]');
             card.style.display = hasLink ? 'none' : 'block';
