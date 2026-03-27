@@ -136,12 +136,12 @@ class JSONReporter:
                         shutil.copyfile(src_path, dest_path)
 
     def find_screenshot_and_copy(self, test_name):
-        screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
-        os.makedirs(screenshots_output_dir, exist_ok=True)
         """
         We'll look for any .png file where test_name 
         is contained in the filename (partial match)
         """
+        screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
+        os.makedirs(screenshots_output_dir, exist_ok=True)
         for root, _, files in os.walk(self.screenshots_dir):
             for file in files:
                 if file.endswith(".png") and test_name in file:
