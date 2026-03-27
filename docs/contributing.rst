@@ -23,7 +23,7 @@ Useful commands:
 
    * - Command
      - Description
-   * - ``make build-dev``
+   * - ``make build-with-dev-dependencies``
      - Build the dev Docker image
    * - ``make test``
      - Run the full test suite
