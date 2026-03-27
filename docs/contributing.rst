@@ -11,7 +11,7 @@ Setting Up the Project
 
 .. code-block:: bash
 
-   make build-dev   # build the dev container (includes dev dependencies)
+   make build-with-dev-dependencies   # build the dev container (includes dev dependencies)
 
 That's it. All development happens inside the container — no need to manage Python versions or Poetry locally.
 
