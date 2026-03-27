@@ -441,7 +441,7 @@ class JSONReporter:
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
           errorCheckbox.checked = false;
-          flakyCheckbox.checked = false
+          flakyCheckbox.checked = false;
           testCards.forEach(card => {{
             const hasLink = card.querySelector('a[href]');
             card.style.display = hasLink ? 'none' : 'block';
