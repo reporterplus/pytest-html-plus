@@ -33,10 +33,11 @@ def merge_json_reports(
     for nodeid, attempts in tests_by_nodeid.items():
         final_test = attempts[-1].copy()
         statuses = [t.get("status") for t in attempts]
-        unique_statuses = set(statuses)
+        final_status = statuses[-1] if statuses else None
+        had_prior_failure = any(s == "failed" for s in statuses[:-1])
 
-        # Mark flaky only if test status changed across runs
-        final_test["flaky"] = len(unique_statuses) > 1
+        # Mark flaky only if the test eventually passes after one or more failures
+        final_test["flaky"] = final_status == "passed" and had_prior_failure
         final_test["flaky_attempts"] = statuses
 
         merged_results.append(final_test)
