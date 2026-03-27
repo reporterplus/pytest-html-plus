@@ -310,7 +310,7 @@ class JSONReporter:
     }}
 
     .report-metadata summary {{
-        font-size: 0.5em;
+        font-size: 0.9em;
         cursor: pointer;
         margin-bottom: 5px;
     }}
