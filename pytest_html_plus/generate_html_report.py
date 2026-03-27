@@ -228,7 +228,7 @@ class JSONReporter:
       .details-content {{ display: flex; gap: 1rem; align-items: flex-start; }}
       .details-text {{ flex: 1; min-width: 0; }}
       .details-screenshot {{ flex-shrink: 0; margin: 1rem; box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); }}
-      .details-screenshot img {{width: 300px; height: 200px; object-fit: contain; border: 1px solid #ccc; border-radius: 3px; background: #f8f8f8; cursor: pointer; transition: transform 0.2s ease; transform: scale(1.05); }}
+      .details-screenshot img {{width: 300px; height: 200px; object-fit: contain; border: 1px solid #ccc; border-radius: 3px; background: #f8f8f8; cursor: pointer; transition: transform 0.2s ease; }}
       .details-screenshot img:hover {{  transform: scale(1.05); }}
       
       /* Handle content wrapping */
