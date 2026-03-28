@@ -114,7 +114,18 @@ class JSONReporter:
             }
 
         result = self.results[nodeid]
-
+        if status:
+            result["attempts"].append(
+                {
+                    "status": status,
+                    "trace": trace,
+                    "error": error,
+                    "duration": duration,
+                    "timestamp": datetime.now(timezone.utc)
+                    .isoformat()
+                    .replace("+00:00", "Z"),
+                }
+            )
         # Append attempt (only for call phase)
         if attempt:
             result["attempts"].append(attempt)
@@ -832,13 +843,37 @@ class JSONReporter:
                     first_failure_html = f"""
                     <div style="margin-bottom: 12px; padding:10px; border:1px solid #f39c12; border-radius:5px; background:#fff7e6;">
                       <strong>⚠️ First Failure</strong>
-                      {f'<div class="error-content"><pre>{error_content}</pre></div>' if error_content else ""}
-                      {f'<div class="trace-content"><pre>{trace_content}</pre></div>' if trace_content else ""}
                     </div>
                     """
 
             trace_html = ""
             error_html = ""
+
+            attempts_html = ""
+
+            if test.get("attempt_count", 0) > 1 and test.get("attempts"):
+                attempts_html = (
+                    '<div style="margin-top:10px;"><strong>Attempts:</strong>'
+                )
+
+                for i, attempt in enumerate(test["attempts"], start=1):
+                    status_icon = "✅" if attempt.get("status") == "passed" else "❌"
+
+                    error = attempt.get("error") or ""
+                    trace = attempt.get("trace") or ""
+
+                    error_block = f"<pre>{error}</pre>" if error else ""
+                    trace_block = f"<pre>{trace}</pre>" if trace else ""
+
+                    attempts_html += f"""
+                    <div style="margin-top:8px; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                        <div><strong>Attempt {i} {status_icon}</strong></div>
+                        {error_block}
+                        {trace_block}
+                    </div>
+                    """
+
+                attempts_html += "</div>"
 
             if test.get("error"):
                 full_error = test["error"]
@@ -913,12 +948,13 @@ class JSONReporter:
   <div class="details">
     <div class="details-content">
       <div class="details-text">
-        {first_failure_html}
-        {error_html}
-        {trace_html}
-        {stdout_html}
-        {stderr_html}
-        {logs_html}
+    {first_failure_html}
+    {error_html}
+    {trace_html}
+    {stdout_html}
+    {stderr_html}
+    {logs_html}
+    {attempts_html}
       </div>
       {screenshot_html}
     </div>

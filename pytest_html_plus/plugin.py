@@ -62,32 +62,17 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
-    reporter = item.config._json_reporter
+    reporter = getattr(item.config, "_json_reporter", None)
+    if not reporter:
+        return
     error = None
     trace = None
-    attempt_data = None
 
     if report.when == "call":
-        nodeid = item.nodeid
-
-        if nodeid not in reporter.attempt_counters:
-            reporter.attempt_counters[nodeid] = 0
-
-        reporter.attempt_counters[nodeid] += 1
-        attempt_number = reporter.attempt_counters[nodeid]
-
-        attempt_data = {
-            "attempt": attempt_number,
-            "status": report.outcome,
-        }
-
         if report.failed:
             full_error = str(report.longrepr)
             error = extract_error_block(error=full_error)
             trace = extract_trace_block(full_error)
-
-            attempt_data["trace"] = trace
-            attempt_data["error"] = error
 
     if (
         report.when == "call"
@@ -132,7 +117,7 @@ def pytest_runtest_makereport(item, call):
             nodeid=item.nodeid,
             status=status,
             duration=report.duration,
-            attempt=attempt_data,
+            attempt=None,
             error=error if report.failed else None,
             trace=trace if report.failed else None,
             markers=[m.name for m in item.iter_markers()],
@@ -388,7 +373,9 @@ def pytest_configure(config):
         name, ext = os.path.splitext(report_path)
         report_path = INTERNAL_JSON_DIR / f"{name}_{worker_id}{ext}"
 
-    config._json_reporter = JSONReporter(report_path=report_path)
+    reporter = JSONReporter(report_path=report_path)
+    config._json_reporter = reporter
+    config.attempt_counters = {}
 
 
 def pytest_collectreport(report):

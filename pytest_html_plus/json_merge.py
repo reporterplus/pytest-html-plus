@@ -41,8 +41,11 @@ def merge_json_reports(
 
         final_test = attempts[-1].copy()
 
-        # Extract statuses
-        statuses = [t.get("status", "unknown") for t in attempts]
+        # If attempts already exist inside test, use them
+        if "attempts" in final_test and final_test["attempts"]:
+            statuses = [a.get("status", "unknown") for a in final_test["attempts"]]
+        else:
+            statuses = [t.get("status", "unknown") for t in attempts]
         final_status = statuses[-1]
 
         had_prior_failure = any(s in ("failed", "error") for s in statuses[:-1])
@@ -51,20 +54,39 @@ def merge_json_reports(
         final_test["flaky"] = final_status == "passed" and had_prior_failure
 
         # Attempt metadata
+        # Attempt metadata
         final_test["attempt_statuses"] = statuses
-        final_test["attempt_count"] = len(attempts)
 
-        # Lightweight attempts (important)
-        simplified_attempts = [
-            {
-                "status": t.get("status"),
-                "trace": t.get("trace"),
-                "error": t.get("error"),
-                "duration": t.get("duration"),
-                "timestamp": t.get("timestamp"),
-            }
-            for t in attempts
-        ]
+        if "attempts" in final_test and final_test["attempts"]:
+            simplified_attempts = final_test["attempts"]
+        else:
+            simplified_attempts = [
+                {
+                    "status": t.get("status"),
+                    "trace": t.get("trace"),
+                    "error": t.get("error"),
+                    "duration": t.get("duration"),
+                    "timestamp": t.get("timestamp"),
+                }
+                for t in attempts
+            ]
+
+        final_test["attempts"] = simplified_attempts
+        final_test["attempt_count"] = len(simplified_attempts)
+
+        if "attempts" in final_test and final_test["attempts"]:
+            simplified_attempts = final_test["attempts"]
+        else:
+            simplified_attempts = [
+                {
+                    "status": t.get("status"),
+                    "trace": t.get("trace"),
+                    "error": t.get("error"),
+                    "duration": t.get("duration"),
+                    "timestamp": t.get("timestamp"),
+                }
+                for t in attempts
+            ]
 
         final_test["attempts"] = simplified_attempts
 
