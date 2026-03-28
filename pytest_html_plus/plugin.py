@@ -68,11 +68,14 @@ def pytest_runtest_makereport(item, call):
     error = None
     trace = None
 
-    if report.when == "call":
-        if report.failed:
-            full_error = str(report.longrepr)
-            error = extract_error_block(error=full_error)
-            trace = extract_trace_block(full_error)
+    if (
+        report.when == "call"
+        or (report.when == "setup" and report.skipped)
+        or (report.when in ("setup", "teardown") and report.failed)
+    ):
+        full_error = str(report.longrepr)
+        error = extract_error_block(error=full_error)
+        trace = extract_trace_block(full_error)
 
     if (
         report.when == "call"
