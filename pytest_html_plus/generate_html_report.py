@@ -114,6 +114,7 @@ class JSONReporter:
             }
 
         result = self.results[nodeid]
+        result["attempt_count"] = len(result.get("attempts", []))
         if status:
             result["attempts"].append(
                 {
@@ -828,8 +829,6 @@ class JSONReporter:
                     <pre>{logs_display}</pre></div>
                     """
 
-            first_failure_html = ""
-
             if test.get("flaky") and test.get("first_failure"):
                 first = test["first_failure"]
 
@@ -895,10 +894,16 @@ class JSONReporter:
 
             flaky_badge = ""
             if test.get("flaky"):
+                attempt_count = test.get("attempt_count", 1)
+
+                label = "FLAKY"
+                if attempt_count > 1:
+                    label = f"FLAKY ({attempt_count} attempts)"
+
                 flaky_badge = (
-                    '<span class="is-flaky" '
-                    'style="background:#f39c12;color:white;padding:2px 6px;'
-                    'border-radius:3px;font-weight:bold;font-size:0.85em;">FLAKY</span>'
+                    f'<span class="is-flaky" '
+                    f'style="background:#f39c12;color:white;padding:2px 6px;'
+                    f'border-radius:3px;font-weight:bold;font-size:0.85em;">{label}</span>'
                 )
             else:
                 # Invisible placeholder to preserve layout
@@ -948,7 +953,6 @@ class JSONReporter:
   <div class="details">
     <div class="details-content">
       <div class="details-text">
-    {first_failure_html}
     {error_html}
     {trace_html}
     {stdout_html}
