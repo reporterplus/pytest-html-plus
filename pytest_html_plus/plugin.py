@@ -61,12 +61,21 @@ _warn_python_39_deprecation()
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
+
+    reporter = getattr(item.config, "_json_reporter", None)
+    if not reporter:
+        return
     error = None
     trace = None
-    if report.failed:
+
+    if (
+        report.when == "call"
+        or (report.when == "setup" and report.skipped)
+        or (report.when in ("setup", "teardown") and report.failed)
+    ):
         full_error = str(report.longrepr)
         error = extract_error_block(error=full_error)
-        trace = extract_trace_block(str(report.longrepr))
+        trace = extract_trace_block(full_error)
 
     if (
         report.when == "call"
@@ -97,25 +106,22 @@ def pytest_runtest_makereport(item, call):
         if should_capture_screenshot:
             driver = resolve_driver(item)
             if driver:
-                try:
-                    screenshot_path = take_screenshot_generic(
-                        screenshot_path, item, driver
-                    )
-                except Exception as e:
-                    raise RuntimeError(f"Failed to capture screenshot: {e}") from e
+                screenshot_path = take_screenshot_generic(screenshot_path, item, driver)
 
-        reporter = config._json_reporter
         worker_id = os.getenv("PYTEST_XDIST_WORKER") or "main"
         test_name = "".join(c if c.isalnum() else "_" for c in item.name)
+
         status = report.outcome
         if report.when in ("setup", "teardown") and report.failed:
             status = "error"
+
         reporter.log_result(
             test_name=test_name,
             nodeid=item.nodeid,
             status=status,
             duration=report.duration,
-            error=error,
+            attempt=None,
+            error=error if report.failed else None,
             trace=trace if report.failed else None,
             markers=[m.name for m in item.iter_markers()],
             filepath=item.location[0],
@@ -178,11 +184,14 @@ def pytest_sessionfinish(session, exitstatus):
         return
 
     # ---- Controller behavior ----
-    if is_xdist:
-        merge_json_reports(directory=".pytest_worker_jsons", output_path=json_path)
-    else:
-        reporter.results = mark_flaky_tests(reporter.results)
-        reporter.write_report()
+    # Always write raw results first
+    reporter.write_report()
+
+    # Always run merge (even for single worker)
+    merge_json_reports(
+        directory=".pytest_worker_jsons" if is_xdist else html_output,
+        output_path=json_path,
+    )
 
     script_path = os.path.join(os.path.dirname(__file__), "generate_html_report.py")
     if not os.path.exists(script_path):
@@ -367,7 +376,9 @@ def pytest_configure(config):
         name, ext = os.path.splitext(report_path)
         report_path = INTERNAL_JSON_DIR / f"{name}_{worker_id}{ext}"
 
-    config._json_reporter = JSONReporter(report_path=report_path)
+    reporter = JSONReporter(report_path=report_path)
+    config._json_reporter = reporter
+    config.attempt_counters = {}
 
 
 def pytest_collectreport(report):

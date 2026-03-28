@@ -9,6 +9,8 @@ def merge_json_reports(
     directory=".pytest_worker_jsons", output_path="final_report.json"
 ):
     all_tests = []
+
+    # Collect all test results
     for filename in sorted(os.listdir(directory)):
         if filename.endswith(".json"):
             filepath = os.path.join(directory, filename)
@@ -22,31 +24,96 @@ def merge_json_reports(
                 except (json.JSONDecodeError, UnicodeDecodeError) as e:
                     raise ValueError(f"Could not parse {filename}: {e}") from e
 
-    # Group tests by nodeid
+    # Group by nodeid
     tests_by_nodeid = defaultdict(list)
     for test in all_tests:
-        nodeid = test.get("nodeid") or test.get("test")  # fallback if needed
+        nodeid = test.get("nodeid") or test.get("test")
         tests_by_nodeid[nodeid].append(test)
 
-    # Create merged results with flaky info
     merged_results = []
-    for nodeid, attempts in tests_by_nodeid.items():
-        final_test = attempts[-1].copy()
-        statuses = [t.get("status") for t in attempts]
-        final_status = statuses[-1] if statuses else None
-        had_prior_failure = any(s == "failed" for s in statuses[:-1])
 
-        # Mark flaky only if the test eventually passes after one or more failures
+    for nodeid, attempts in tests_by_nodeid.items():
+        if not attempts:
+            continue
+
+        # Sort attempts chronologically
+        attempts.sort(key=lambda x: x.get("timestamp") or "")
+
+        final_test = attempts[-1].copy()
+
+        # If attempts already exist inside test, use them
+        if "attempts" in final_test and final_test["attempts"]:
+            statuses = [a.get("status", "unknown") for a in final_test["attempts"]]
+        else:
+            statuses = [t.get("status", "unknown") for t in attempts]
+        final_status = statuses[-1]
+
+        had_prior_failure = any(s in ("failed", "error") for s in statuses[:-1])
+
+        # Flaky detection
         final_test["flaky"] = final_status == "passed" and had_prior_failure
-        final_test["flaky_attempts"] = statuses
+
+        # Attempt metadata
+        # Attempt metadata
+        final_test["attempt_statuses"] = statuses
+
+        if "attempts" in final_test and final_test["attempts"]:
+            simplified_attempts = final_test["attempts"]
+        else:
+            simplified_attempts = [
+                {
+                    "status": t.get("status"),
+                    "trace": t.get("trace"),
+                    "error": t.get("error"),
+                    "duration": t.get("duration"),
+                    "timestamp": t.get("timestamp"),
+                }
+                for t in attempts
+            ]
+
+        final_test["attempts"] = simplified_attempts
+        final_test["attempt_count"] = len(simplified_attempts)
+
+        if "attempts" in final_test and final_test["attempts"]:
+            simplified_attempts = final_test["attempts"]
+        else:
+            simplified_attempts = [
+                {
+                    "status": t.get("status"),
+                    "trace": t.get("trace"),
+                    "error": t.get("error"),
+                    "duration": t.get("duration"),
+                    "timestamp": t.get("timestamp"),
+                }
+                for t in attempts
+            ]
+
+        final_test["attempts"] = simplified_attempts
+
+        # First failure detection
+        first_failure_index = next(
+            (i for i, s in enumerate(statuses) if s in ("failed", "error")),
+            None,
+        )
+
+        final_test["first_failure_index"] = first_failure_index
+
+        # UI-friendly direct object (optional but powerful)
+        final_test["first_failure"] = (
+            simplified_attempts[first_failure_index]
+            if first_failure_index is not None
+            else None
+        )
 
         merged_results.append(final_test)
 
+    # Final report structure
     report_data = {
         "filters": compute_filter_count(merged_results),
         "results": merged_results,
     }
 
+    # Write output
     try:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, indent=2)
