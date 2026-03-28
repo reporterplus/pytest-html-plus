@@ -833,19 +833,6 @@ class JSONReporter:
             if test.get("flaky") and test.get("first_failure"):
                 first = test["first_failure"]
 
-                first_error = first.get("error")
-                first_trace = first.get("trace")
-
-                trace_content = extract_trace_block(first_trace) if first_trace else ""
-                error_content = extract_error_block(first_error) if first_error else ""
-
-                if trace_content or error_content:
-                    first_failure_html = f"""
-                    <div style="margin-bottom: 12px; padding:10px; border:1px solid #f39c12; border-radius:5px; background:#fff7e6;">
-                      <strong>⚠️ First Failure</strong>
-                    </div>
-                    """
-
             trace_html = ""
             error_html = ""
 
@@ -862,8 +849,21 @@ class JSONReporter:
                     error = attempt.get("error") or ""
                     trace = attempt.get("trace") or ""
 
-                    error_block = f"<pre>{error}</pre>" if error else ""
-                    trace_block = f"<pre>{trace}</pre>" if trace else ""
+                    error_block = (
+                        f'<div class="error-content"><strong>Error:</strong> '
+                        f'{self.generate_copy_button(error, "error")}'
+                        f"<pre>{error}</pre></div>"
+                        if error
+                        else ""
+                    )
+
+                    trace_block = (
+                        f'<div class="trace-content"><strong>Trace:</strong> '
+                        f'{self.generate_copy_button(trace, "trace")}'
+                        f"<pre>{trace}</pre></div>"
+                        if trace
+                        else ""
+                    )
 
                     attempts_html += f"""
                     <div style="margin-top:8px; padding:8px; border:1px solid #ddd; border-radius:4px;">
