@@ -47,6 +47,7 @@ class JSONReporter:
         self.screenshots_dir = screenshots_dir
         self.output_dir = output_dir
         self.results = {}
+        self.attempt_counters = {}
 
     def load_report(self):
         with open(self.report_path) as f:
@@ -141,11 +142,15 @@ class JSONReporter:
     def write_report(self):
         dir_path = os.path.dirname(os.path.abspath(self.report_path))
 
-        # Ensure directory exists
         if dir_path and not os.path.exists(dir_path):
             os.makedirs(dir_path, exist_ok=True)
 
-        data = {"filters": compute_filter_count(self.results), "results": self.results}
+        if isinstance(self.results, dict):
+            results_list = list(self.results.values())
+        else:
+            results_list = self.results
+
+        data = {"filters": compute_filter_count(results_list), "results": results_list}
 
         try:
             with open(self.report_path, "w") as f:
@@ -812,6 +817,26 @@ class JSONReporter:
                     <pre>{logs_display}</pre></div>
                     """
 
+            first_failure_html = ""
+
+            if test.get("flaky") and test.get("first_failure"):
+                first = test["first_failure"]
+
+                first_error = first.get("error")
+                first_trace = first.get("trace")
+
+                trace_content = extract_trace_block(first_trace) if first_trace else ""
+                error_content = extract_error_block(first_error) if first_error else ""
+
+                if trace_content or error_content:
+                    first_failure_html = f"""
+                    <div style="margin-bottom: 12px; padding:10px; border:1px solid #f39c12; border-radius:5px; background:#fff7e6;">
+                      <strong>⚠️ First Failure</strong>
+                      {f'<div class="error-content"><pre>{error_content}</pre></div>' if error_content else ""}
+                      {f'<div class="trace-content"><pre>{trace_content}</pre></div>' if trace_content else ""}
+                    </div>
+                    """
+
             trace_html = ""
             error_html = ""
 
@@ -888,7 +913,8 @@ class JSONReporter:
   <div class="details">
     <div class="details-content">
       <div class="details-text">
-         {error_html}
+        {first_failure_html}
+        {error_html}
         {trace_html}
         {stdout_html}
         {stderr_html}
