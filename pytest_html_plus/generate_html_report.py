@@ -46,7 +46,8 @@ class JSONReporter:
         self.report_path = report_path
         self.screenshots_dir = screenshots_dir
         self.output_dir = output_dir
-        self.results = []
+        self.results = {}
+        self.attempt_counters = {}
 
     def load_report(self):
         with open(self.report_path) as f:
@@ -86,43 +87,90 @@ class JSONReporter:
         logs=None,
         worker=None,
         links=None,
+        attempt=None,
     ):
-        result = {
-            "test": test_name,
-            "nodeid": nodeid,
-            "status": status,
-            "duration": duration,
-            "trace": trace,
-            "error": error,
-            "markers": markers or [],
-            "file": filepath,
-            "line": lineno,
-            "stdout": stdout,
-            "stderr": stderr,
-            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-            "screenshot": screenshot,
-            "logs": logs or [],
-            "worker": worker,
-            "links": links,
-        }
+        # Initialize test entry if not exists
+        if nodeid not in self.results:
+            self.results[nodeid] = {
+                "test": test_name,
+                "nodeid": nodeid,
+                "status": status,
+                "duration": duration,
+                "trace": trace,
+                "error": error,
+                "markers": markers or [],
+                "file": filepath,
+                "line": lineno,
+                "stdout": stdout,
+                "stderr": stderr,
+                "timestamp": datetime.now(timezone.utc)
+                .isoformat()
+                .replace("+00:00", "Z"),
+                "screenshot": screenshot,
+                "logs": logs or [],
+                "worker": worker,
+                "links": links,
+                "attempts": [],
+            }
+
+        result = self.results[nodeid]
+        result["attempt_count"] = len(result.get("attempts", []))
+        if status:
+            result["attempts"].append(
+                {
+                    "status": status,
+                    "trace": trace,
+                    "error": error,
+                    "duration": duration,
+                    "timestamp": datetime.now(timezone.utc)
+                    .isoformat()
+                    .replace("+00:00", "Z"),
+                }
+            )
+        # Append attempt (only for call phase)
+        if attempt:
+            result["attempts"].append(attempt)
+
+        # Always update latest state (last run wins)
+        result["status"] = status
+        result["duration"] = duration
+
+        # Update trace/error only if present (avoid overwriting with None)
+        if trace:
+            result["trace"] = trace
         if error:
             result["error"] = error
-        self.results.append(result)
+
+        # Optional: update other fields if needed
+        if stdout:
+            result["stdout"] = stdout
+        if stderr:
+            result["stderr"] = stderr
+        if screenshot:
+            result["screenshot"] = screenshot
+        if logs:
+            result["logs"] = logs
 
     def write_report(self):
         dir_path = os.path.dirname(os.path.abspath(self.report_path))
 
-        # Ensure directory exists
         if dir_path and not os.path.exists(dir_path):
             os.makedirs(dir_path, exist_ok=True)
 
-        data = {"filters": compute_filter_count(self.results), "results": self.results}
+        if isinstance(self.results, dict):
+            results_list = list(self.results.values())
+        else:
+            results_list = self.results
+
+        data = {"filters": compute_filter_count(results_list), "results": results_list}
 
         try:
             with open(self.report_path, "w") as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
-            raise RuntimeError(f"Failed to write report to '{self.report_path}': {e}") from e
+            raise RuntimeError(
+                f"Failed to write report to '{self.report_path}': {e}"
+            ) from e
 
     def copy_all_screenshots(self):
         screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
@@ -137,7 +185,7 @@ class JSONReporter:
 
     def find_screenshot_and_copy(self, test_name):
         """
-        We'll look for any .png file where test_name 
+        We'll look for any .png file where test_name
         is contained in the filename (partial match)
         """
         screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
@@ -784,6 +832,45 @@ class JSONReporter:
             trace_html = ""
             error_html = ""
 
+            attempts_html = ""
+
+            if test.get("attempt_count", 0) > 1 and test.get("attempts"):
+                attempts_html = (
+                    '<div style="margin-top:10px;"><strong>Attempts:</strong>'
+                )
+
+                for i, attempt in enumerate(test["attempts"], start=1):
+                    status_icon = "✅" if attempt.get("status") == "passed" else "❌"
+
+                    error = attempt.get("error") or ""
+                    trace = attempt.get("trace") or ""
+
+                    error_block = (
+                        f'<div class="error-content"><strong>Error:</strong> '
+                        f'{self.generate_copy_button(error, "error")}'
+                        f"<pre>{error}</pre></div>"
+                        if error
+                        else ""
+                    )
+
+                    trace_block = (
+                        f'<div class="trace-content"><strong>Trace:</strong> '
+                        f'{self.generate_copy_button(trace, "trace")}'
+                        f"<pre>{trace}</pre></div>"
+                        if trace
+                        else ""
+                    )
+
+                    attempts_html += f"""
+                    <div style="margin-top:8px; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                        <div><strong>Attempt {i} {status_icon}</strong></div>
+                        {error_block}
+                        {trace_block}
+                    </div>
+                    """
+
+                attempts_html += "</div>"
+
             if test.get("error"):
                 full_error = test["error"]
                 full_trace = test["trace"]
@@ -804,10 +891,16 @@ class JSONReporter:
 
             flaky_badge = ""
             if test.get("flaky"):
+                attempt_count = test.get("attempt_count", 1)
+
+                label = "FLAKY"
+                if attempt_count > 1:
+                    label = f"FLAKY ({attempt_count} attempts)"
+
                 flaky_badge = (
-                    '<span class="is-flaky" '
-                    'style="background:#f39c12;color:white;padding:2px 6px;'
-                    'border-radius:3px;font-weight:bold;font-size:0.85em;">FLAKY</span>'
+                    f'<span class="is-flaky" '
+                    f'style="background:#f39c12;color:white;padding:2px 6px;'
+                    f'border-radius:3px;font-weight:bold;font-size:0.85em;">{label}</span>'
                 )
             else:
                 # Invisible placeholder to preserve layout
@@ -857,11 +950,12 @@ class JSONReporter:
   <div class="details">
     <div class="details-content">
       <div class="details-text">
-         {error_html}
-        {trace_html}
-        {stdout_html}
-        {stderr_html}
-        {logs_html}
+    {error_html}
+    {trace_html}
+    {stdout_html}
+    {stderr_html}
+    {logs_html}
+    {attempts_html}
       </div>
       {screenshot_html}
     </div>

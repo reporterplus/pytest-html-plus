@@ -57,7 +57,7 @@ def test_merge_json_reports_creates_merged_file(mock_json_files):
     for test in results:
         if test["nodeid"] == "test_2":
             assert test["flaky"] is True
-            assert "flaky_attempts" in test
+            assert "attempt_count" in test
 
 
 def test_merge_json_reports_handles_bad_json(tmp_path):
