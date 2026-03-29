@@ -44,7 +44,7 @@ Export a fully merged JUnit XML report effortlessly — no external tools or plu
 #### 🔄 Flaky Tests, Explained Visually
 Instantly see how a test behaved across retries — from failure to recovery. No guesswork, just clarity.
 
-![Screen Recording 2026-03-29 at 2 06 48 PM](https://github.com/user-attachments/assets/30bec014-0f91-47cd-aaf1-f8e78cde8d5c)
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/1f7e0cd8-d2f9-47fd-8909-6f12adf8a800)
 
 
 #### 🏷️ Tag your tests on the fly!
