@@ -44,6 +44,9 @@ Export a fully merged JUnit XML report effortlessly — no external tools or plu
 #### 🔄 Flaky Tests, Explained Visually
 Instantly see how a test behaved across retries — from failure to recovery. No guesswork, just clarity.
 
+![Screen Recording 2026-03-29 at 2 06 48 PM](https://github.com/user-attachments/assets/30bec014-0f91-47cd-aaf1-f8e78cde8d5c)
+
+
 #### 🏷️ Tag your tests on the fly!
 With dynamic markers, you can assign tags like `api`, `critical`, or `slow` — or any custom label — at runtime using standard `pytest.mark.*`.
 No need for custom marker definitions. Perfect for smarter filtering, reporting, and analysis.
