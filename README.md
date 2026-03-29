@@ -39,8 +39,13 @@ Export a fully merged JUnit XML report effortlessly — no external tools or plu
 ✔ Works out-of-the-box with your test management tools (like TestRail, XRay, Zephyr)
 ✔ Just one flag. No extra lines of code. Total traceability.
 
-
 ![ScreenRecording2025-07-06at11 38 21PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/02da5cc9-7ef5-4a3a-a475-88907964a9c6)
+
+#### 🔄 Flaky Tests, Explained Visually
+Instantly see how a test behaved across retries — from failure to recovery. No guesswork, just clarity.
+
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/1f7e0cd8-d2f9-47fd-8909-6f12adf8a800)
+
 
 #### 🏷️ Tag your tests on the fly!
 With dynamic markers, you can assign tags like `api`, `critical`, or `slow` — or any custom label — at runtime using standard `pytest.mark.*`.
@@ -74,10 +79,6 @@ Just start typing, and the dashboard will instantly filter tests by:
 ✅ Custom URLs or keywords present in the links
 
 ![ScreenRecording2025-06-21at3 10 06PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f81c9a81-f98d-4151-ad7a-c1184cd199eb)
-
-#### 🔄 Flaky Test Detection: Automatically flags flaky tests so you can spot and fix inconsistent failures quickly.
-
-![ScreenRecording2025-06-21at2 37 31PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/90f694bf-189c-45e1-8e1d-7acd2a975f91)
 
 #### 📸 Screenshot Support: View screenshots directly in the report to understand failures faster.
 

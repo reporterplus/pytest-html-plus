@@ -1,31 +1,49 @@
 .PHONY: build shell test lint clean
 
+IMAGE_NAME = pytest-html-plus
+SRC_DIR    = $(shell pwd)
+
+# Mount local source into container — no rebuild needed on code changes
+DOCKER_RUN = docker run --rm \
+    -v $(SRC_DIR):/app \
+    -w /app \
+    $(IMAGE_NAME)
+
+DOCKER_RUN_REPORTS = docker run --rm \
+    -v $(SRC_DIR):/app \
+    -w /app \
+    $(IMAGE_NAME)
+
 build:
-	docker build -t pytest-html-plus .
+	docker build -t $(IMAGE_NAME) .
 
 build-with-dev-dependencies:
-	docker build --build-arg INSTALL_DEV=true -t pytest-html-plus .
+	docker build --build-arg INSTALL_DEV=true -t $(IMAGE_NAME) .
 
 shell:
-	docker run -it pytest-html-plus /bin/bash
+	docker run -it \
+        -v $(SRC_DIR):/app \
+        -w /app \
+        $(IMAGE_NAME) /bin/bash
 
 test:
-	docker run --rm pytest-html-plus poetry run pytest tests/unit --reruns 1
+	poetry run pytest tests/unit --reruns 1
 
 test-with-xdist:
-	docker run --rm pytest-html-plus poetry run pytest tests/unit --reruns 1 -n auto
+	mkdir -p $(REPORTS_DIR)
+	$(DOCKER_RUN_REPORTS) poetry run poetry run pytest tests/unit --reruns 1 -n auto
+
+lint:
+	$(DOCKER_RUN) poetry run ruff check .
+
+fix:
+	$(DOCKER_RUN) poetry run ruff check . --fix
+	$(DOCKER_RUN) poetry run ruff format .
 
 install-formatter:
 	pip install pre-commit
 	pre-commit install
 
-lint:
-	docker run --rm pytest-html-plus poetry run ruff check .
-
-fix:
-	docker run --rm pytest-html-plus poetry run ruff check . --fix
-	docker run --rm pytest-html-plus poetry run ruff format .
-
-
 clean:
-	docker rmi pytest-html-plus
+	docker rmi $(IMAGE_NAME)
+	rm -rf $(REPORTS_DIR)
