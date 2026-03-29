@@ -829,9 +829,6 @@ class JSONReporter:
                     <pre>{logs_display}</pre></div>
                     """
 
-            if test.get("flaky") and test.get("first_failure"):
-                first = test["first_failure"]
-
             trace_html = ""
             error_html = ""
 
