@@ -41,11 +41,10 @@ Export a fully merged JUnit XML report effortlessly — no external tools or plu
 
 ![ScreenRecording2025-07-06at11 38 21PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/02da5cc9-7ef5-4a3a-a475-88907964a9c6)
 
-#### 🔄 Flaky Tests, Explained Visually
-Instantly see how a test behaved across retries — from failure to recovery. No guesswork, just clarity.
+#### 🔄 Stop Guessing — See What’s Breaking Your Flaky Tests
+Instantly see how your tests behave across retries — from failure to recovery. Spot patterns like cache issues, race conditions, and random crashes without the guesswork.
 
 ![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/1f7e0cd8-d2f9-47fd-8909-6f12adf8a800)
-
 
 #### 🏷️ Tag your tests on the fly!
 With dynamic markers, you can assign tags like `api`, `critical`, or `slow` — or any custom label — at runtime using standard `pytest.mark.*`.
@@ -64,7 +63,6 @@ No need for custom marker definitions. Perfect for smarter filtering, reporting,
 #### Easily track Untracked test scenarios
 
 ![ScreenRecording2025-06-29at1 06 02AM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
-
 
 #### 🔍 Universal Test Search + Smart Link Navigation
 
