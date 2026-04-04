@@ -862,11 +862,15 @@ class JSONReporter:
                     )
 
                     attempts_html += f"""
-                    <div style="margin-top:8px; padding:8px; border:1px solid #ddd; border-radius:4px;">
-                        <div><strong>Attempt {i} {status_icon}</strong></div>
-                        {error_block}
-                        {trace_block}
-                    </div>
+                    <details style="margin-top:8px; border:1px solid #ddd; border-radius:4px; padding:6px;">
+                        <summary style="cursor:pointer;">
+                            <strong>Attempt {i} {status_icon}</strong>
+                        </summary>
+                        <div style="margin-top:8px;">
+                            {error_block}
+                            {trace_block}
+                        </div>
+                    </details>
                     """
 
                 attempts_html += "</div>"
