@@ -30,7 +30,6 @@ test:
 	poetry run pytest tests/unit --reruns 1
 
 test-with-xdist:
-	mkdir -p $(REPORTS_DIR)
 	$(DOCKER_RUN_REPORTS) poetry run poetry run pytest tests/unit --reruns 1 -n auto
 
 lint:
