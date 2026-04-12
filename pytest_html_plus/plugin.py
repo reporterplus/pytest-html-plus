@@ -8,6 +8,7 @@ import webbrowser
 from pathlib import Path
 
 import pytest
+
 try:
     import tomllib
 except ModuleNotFoundError:  # pragma: no cover - Python < 3.11
@@ -81,9 +82,7 @@ def _read_profiles_from_pyproject(start_path=None):
         with pyproject_file.open("rb") as fh:
             pyproject_data = tomllib.load(fh)
     except tomllib.TOMLDecodeError as exc:
-        raise pytest.UsageError(
-            f"Invalid TOML in {pyproject_file}: {exc}"
-        ) from exc
+        raise pytest.UsageError(f"Invalid TOML in {pyproject_file}: {exc}") from exc
 
     profiles = pyproject_data
     for section in PROFILE_SECTION:
@@ -135,7 +134,8 @@ def _build_profile_args(profile_name, start_path=None):
 
         if not isinstance(value, (str, int, float)):
             raise pytest.UsageError(
-                f"Profile '{profile_name}' option '{raw_key}' must be a string-like value"
+                f"Profile '{profile_name}' option '{raw_key}' "
+                "must be a string-like value"
             )
 
         profile_args.append(f"{option['flag']}={value}")
@@ -163,9 +163,7 @@ def apply_plus_profile_args(args, start_path=None):
 
         if arg == PROFILE_OPTION:
             if profile_name is not None:
-                raise pytest.UsageError(
-                    f"{PROFILE_OPTION} can only be specified once"
-                )
+                raise pytest.UsageError(f"{PROFILE_OPTION} can only be specified once")
             if index + 1 >= len(args):
                 raise pytest.UsageError(f"{PROFILE_OPTION} requires a profile name")
             profile_name = args[index + 1]
@@ -174,9 +172,7 @@ def apply_plus_profile_args(args, start_path=None):
 
         if arg.startswith(f"{PROFILE_OPTION}="):
             if profile_name is not None:
-                raise pytest.UsageError(
-                    f"{PROFILE_OPTION} can only be specified once"
-                )
+                raise pytest.UsageError(f"{PROFILE_OPTION} can only be specified once")
             profile_name = arg.split("=", 1)[1]
             if not profile_name:
                 raise pytest.UsageError(f"{PROFILE_OPTION} requires a profile name")
