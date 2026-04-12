@@ -9,6 +9,11 @@ from pathlib import Path
 
 import pytest
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python < 3.11
+    import tomli as tomllib
+
 from pytest_html_plus.compute_report_metadata import write_plus_metadata_if_main_worker
 from pytest_html_plus.extract_link import extract_links_from_item
 from pytest_html_plus.generate_html_report import JSONReporter
@@ -24,6 +29,22 @@ from pytest_html_plus.utils import (
 
 python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
+PROFILE_OPTION = "--plus-profile"
+PROFILE_SECTION = ("tool", "pytest-html-plus", "profiles")
+PROFILE_OPTION_MAP = {
+    "json-report": {"flag": "--json-report", "kind": "value"},
+    "capture-screenshots": {"flag": "--capture-screenshots", "kind": "value"},
+    "html-output": {"flag": "--html-output", "kind": "value"},
+    "screenshots": {"flag": "--screenshots", "kind": "value"},
+    "plus-email": {"flag": "--plus-email", "kind": "bool"},
+    "detect-flake": {"flag": "--detect-flake", "kind": "value"},
+    "should-open-report": {"flag": "--should-open-report", "kind": "value"},
+    "generate-xml": {"flag": "--generate-xml", "kind": "bool"},
+    "xml-report": {"flag": "--xml-report", "kind": "value"},
+    "git-branch": {"flag": "--git-branch", "kind": "value"},
+    "git-commit": {"flag": "--git-commit", "kind": "value"},
+    "rp-env": {"flag": "--rp-env", "kind": "value"},
+}
 
 
 logger = logging.getLogger()
@@ -34,6 +55,136 @@ if not logger.handlers:
     formatter = logging.Formatter("%(levelname)s - %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+def _normalize_profile_key(key):
+    return key.replace("_", "-")
+
+
+def _find_pyproject_toml(start_path=None):
+    current = Path(start_path or Path.cwd()).resolve()
+    for candidate in (current, *current.parents):
+        pyproject_file = candidate / "pyproject.toml"
+        if pyproject_file.exists():
+            return pyproject_file
+    return None
+
+
+def _read_profiles_from_pyproject(start_path=None):
+    pyproject_file = _find_pyproject_toml(start_path=start_path)
+    if pyproject_file is None:
+        raise pytest.UsageError(
+            f"{PROFILE_OPTION} requires a pyproject.toml file in the current "
+            "directory or a parent directory"
+        )
+
+    try:
+        with pyproject_file.open("rb") as fh:
+            pyproject_data = tomllib.load(fh)
+    except tomllib.TOMLDecodeError as exc:
+        raise pytest.UsageError(f"Invalid TOML in {pyproject_file}: {exc}") from exc
+
+    profiles = pyproject_data
+    for section in PROFILE_SECTION:
+        profiles = profiles.get(section, {})
+
+    if not isinstance(profiles, dict):
+        raise pytest.UsageError(
+            f"Expected [{'.'.join(PROFILE_SECTION)}] to be a TOML table"
+        )
+
+    return profiles
+
+
+def _build_profile_args(profile_name, start_path=None):
+    profiles = _read_profiles_from_pyproject(start_path=start_path)
+    profile = profiles.get(profile_name)
+
+    if profile is None:
+        available_profiles = ", ".join(sorted(profiles)) or "none"
+        raise pytest.UsageError(
+            f"Unknown profile '{profile_name}' for {PROFILE_OPTION}. "
+            f"Available profiles: {available_profiles}"
+        )
+
+    if not isinstance(profile, dict):
+        raise pytest.UsageError(
+            f"Profile '{profile_name}' must be defined as a TOML table"
+        )
+
+    profile_args = []
+    invalid_keys = []
+
+    for raw_key, value in profile.items():
+        key = _normalize_profile_key(raw_key)
+        option = PROFILE_OPTION_MAP.get(key)
+
+        if option is None:
+            invalid_keys.append(raw_key)
+            continue
+
+        if option["kind"] == "bool":
+            if not isinstance(value, bool):
+                raise pytest.UsageError(
+                    f"Profile '{profile_name}' option '{raw_key}' must be true or false"
+                )
+            if value:
+                profile_args.append(option["flag"])
+            continue
+
+        if not isinstance(value, (str, int, float)):
+            raise pytest.UsageError(
+                f"Profile '{profile_name}' option '{raw_key}' "
+                "must be a string-like value"
+            )
+
+        profile_args.append(f"{option['flag']}={value}")
+
+    if invalid_keys:
+        valid_keys = ", ".join(sorted(PROFILE_OPTION_MAP))
+        invalid = ", ".join(sorted(invalid_keys))
+        raise pytest.UsageError(
+            f"Invalid key(s) in profile '{profile_name}': {invalid}. "
+            f"Valid keys: {valid_keys}"
+        )
+
+    return profile_args
+
+
+def apply_plus_profile_args(args, start_path=None):
+    profile_name = None
+    remaining_args = []
+    skip_next = False
+
+    for index, arg in enumerate(args):
+        if skip_next:
+            skip_next = False
+            continue
+
+        if arg == PROFILE_OPTION:
+            if profile_name is not None:
+                raise pytest.UsageError(f"{PROFILE_OPTION} can only be specified once")
+            if index + 1 >= len(args):
+                raise pytest.UsageError(f"{PROFILE_OPTION} requires a profile name")
+            profile_name = args[index + 1]
+            skip_next = True
+            continue
+
+        if arg.startswith(f"{PROFILE_OPTION}="):
+            if profile_name is not None:
+                raise pytest.UsageError(f"{PROFILE_OPTION} can only be specified once")
+            profile_name = arg.split("=", 1)[1]
+            if not profile_name:
+                raise pytest.UsageError(f"{PROFILE_OPTION} requires a profile name")
+            continue
+
+        remaining_args.append(arg)
+
+    if not profile_name:
+        return list(args)
+
+    profile_args = _build_profile_args(profile_name, start_path=start_path)
+    return profile_args + remaining_args
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -263,6 +414,7 @@ def pytest_sessionstart(session):
 
 
 def pytest_load_initial_conftests(args):
+    args[:] = apply_plus_profile_args(args, start_path=Path.cwd())
     if not any(arg.startswith("--capture") for arg in args):
         args.append("--capture=tee-sys")
 
@@ -270,6 +422,12 @@ def pytest_load_initial_conftests(args):
 def pytest_addoption(parser):
     group = parser.getgroup("pytest-html-plus", "pytest-html-plus reporting options")
 
+    group.addoption(
+        PROFILE_OPTION,
+        action="store",
+        default=None,
+        help="Load pytest-html-plus options from a named profile in pyproject.toml",
+    )
     group.addoption(
         "--json-report",
         action="store",

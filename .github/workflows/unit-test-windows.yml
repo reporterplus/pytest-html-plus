@@ -59,8 +59,7 @@ jobs:
             --cov-report=term `
             --reruns 1 `
             --ignore=tests/browser `
-            --generate-xml `
-            --xml-report final_xml_windows.xml `
+            --plus-profile=ci `
             --git-branch "$BRANCH" `
             --git-commit "$COMMIT" `
             tests/
@@ -76,9 +75,7 @@ jobs:
             --cov-report=term `
             --reruns 1 `
             --ignore=tests/browser `
-            --generate-xml `
-            --xml-report final_xml_windows_with_warnings.xml `
-            --html-output=report_output_warnings `
+            --plus-profile=ci-warnings `
             --git-branch "$BRANCH" `
             --git-commit "$COMMIT" `
             tests/

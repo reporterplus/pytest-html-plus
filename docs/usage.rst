@@ -24,6 +24,34 @@ This will:
 - Generate a combined JSON test report called final_report.json
 - Create a visual HTML report inside the `report_output/` folder
 
+Reusable Profiles
+-----------------
+
+If you want to reuse the same reporting options across local runs and CI jobs,
+define a named profile in ``pyproject.toml`` and activate it with
+``--plus-profile``.
+
+.. code-block:: toml
+
+   [tool.pytest-html-plus.profiles.ci]
+   html-output = "ci-report"
+   json-report = "ci.json"
+   capture-screenshots = "failed"
+   generate-xml = true
+   xml-report = "ci.xml"
+
+.. code-block:: bash
+
+   pytest --plus-profile=ci
+
+Profile keys must match existing ``pytest-html-plus`` CLI option names without
+the leading ``--``. Regular CLI flags still win, so you can override a profile
+for a specific run:
+
+.. code-block:: bash
+
+   pytest --plus-profile=ci --json-report=override.json
+
 The JSON report (`final_report.json`)
 --------------------------------------
 
@@ -175,4 +203,3 @@ Tip
 Keep metadata lean and high-value. We intentionally avoid low-actionability fields
 (e.g., full ``pip freeze`` or OS package lists) to keep reports **fast**, **portable**, and
 **CI-artifact friendly**.
-

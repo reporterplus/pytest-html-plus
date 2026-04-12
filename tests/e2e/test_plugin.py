@@ -42,9 +42,9 @@ def test_plugin_logs_expected_results():
             name = test["test"]
             expected_status = expected.get(name)
             if expected_status:
-                assert (
-                    test["status"] == expected_status
-                ), f"{name} should be {expected_status}, got {test['status']}"
+                assert test["status"] == expected_status, (
+                    f"{name} should be {expected_status}, got {test['status']}"
+                )
 
                 assert "stdout" in test
                 assert "stderr" in test
