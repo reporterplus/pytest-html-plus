@@ -25,6 +25,10 @@ Overview
      - Directory for HTML output
      - ``report_output``
      - Customize output directory per CI job
+   * - ``--plus-profile``
+     - Load a named profile from ``pyproject.toml``
+     - ``None``
+     - Reuse a standard reporting configuration across local runs and CI
    * - ``--plus-email``
      - Send HTML report via email
      - ``False``
