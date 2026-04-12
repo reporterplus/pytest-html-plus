@@ -1,13 +1,34 @@
 name: Unit Tests
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
       - "[0-9]+\\.[0-9]+\\.[0-9]+"
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   test:
+    if: |
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        contains(github.event.comment.body, 'run tests') &&
+        (
+          github.event.comment.author_association == 'OWNER' ||
+          github.event.comment.author_association == 'MEMBER' ||
+          github.event.comment.author_association == 'COLLABORATOR'
+        )
+      )
     runs-on: ubuntu-latest
 
     strategy:
@@ -17,6 +38,8 @@ jobs:
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || github.ref }}
 
       - name: 🐍 Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -50,6 +73,7 @@ jobs:
             --cov=pytest_html_plus \
             --cov-fail-under=39 \
             --cov-report=term \
+            --cov-report=xml:coverage.xml \
             --reruns 1 \
             --ignore=tests/browser \
             --generate-xml \
@@ -88,3 +112,61 @@ jobs:
         with:
           name: report-warnings-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
           path: report_output_warnings/
+
+      - name: 📤 Upload Coverage XML
+        if: always() && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
+          path: coverage.xml
+
+  notify:
+    if: always() && github.event_name == 'issue_comment'
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Download Coverage XML
+        if: needs.test.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-test-${{ github.run_number }}-3.11
+          path: coverage-artifact
+
+      - name: 📊 Read Coverage Percentage
+        if: needs.test.result == 'success'
+        id: coverage
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import xml.etree.ElementTree as ET
+
+          tree = ET.parse("coverage-artifact/coverage.xml")
+          line_rate = float(tree.getroot().attrib["line-rate"]) * 100
+          print(f"value={line_rate:.2f}%")
+          PY
+
+      - name: Comment PR with success
+        if: needs.test.result == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ Unit Tests passed successfully.\n\nCoverage: ${{ steps.coverage.outputs.value }}\n\nView the logs: ${runUrl}`
+            });
+
+      - name: Comment PR with failure
+        if: needs.test.result != 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ Unit Tests failed.\n\nView the logs: ${runUrl}`
+            });
