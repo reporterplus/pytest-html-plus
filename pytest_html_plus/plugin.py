@@ -1,3 +1,4 @@
+
 import json
 import logging
 import os
@@ -6,8 +7,9 @@ import subprocess
 import sys
 import webbrowser
 from pathlib import Path
-
+from pytest_html_plus.uploader import upload_report
 import pytest
+from datetime import datetime
 
 try:
     import tomllib
@@ -23,8 +25,10 @@ from pytest_html_plus.resolver_driver import resolve_driver, take_screenshot_gen
 from pytest_html_plus.send_email_report import EmailSender
 from pytest_html_plus.utils import (
     extract_error_block,
+    extract_errors_from_attempts,
     extract_trace_block,
     load_email_env,
+    to_bool,
 )
 
 python_executable = shutil.which("python3") or shutil.which("python")
@@ -328,6 +332,40 @@ def pytest_sessionfinish(session, exitstatus):
         directory=".pytest_worker_jsons" if is_xdist else html_output,
         output_path=json_path,
     )
+    # -- Upload behavior --
+    # Upload to reporterplus cloud on user consent
+    if session.config.getoption("--upload"):
+        try:
+            API_URL = "https://us-central1-reporterplus-6f164.cloudfunctions.net/uploadReport"
+            API_KEY = "rp_6fc4d3adb1746d8ed17fffcfd015409a"
+
+            if not API_KEY:
+                print("ReporterPlus: API key not set ❌")
+            else:
+                with open(json_path, "r") as f:
+                    data = json.load(f)
+
+                summary = data.get("filters", {})
+                raw_tests = data.get("results", [])
+                tests = [
+                {
+                    "name": t.get("test"),
+                    "status": t.get("status"),
+                    "duration": float(t.get("duration", 0)),
+                    "flaky": to_bool(t.get("flaky")),
+                    "file": t.get("file"),
+                    "errors": extract_errors_from_attempts(t),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                for t in raw_tests
+                    if t.get("test") and t.get("status")
+            ]
+                            
+
+                upload_report(API_URL, API_KEY, summary, tests)
+
+        except Exception as e:
+            print(f"ReporterPlus upload failed ❌ {e}")
 
     script_path = os.path.join(os.path.dirname(__file__), "generate_html_report.py")
     if not os.path.exists(script_path):
@@ -384,6 +422,7 @@ def pytest_sessionfinish(session, exitstatus):
         json_path=json_path,
         config=session.config,
     )
+
 
 
 def pytest_sessionstart(session):
@@ -492,6 +531,12 @@ def pytest_addoption(parser):
         default="Pass --rp-env to populate environment",
         help="Helps show env information on the report",
     )
+    parser.addoption(
+        "--upload",
+        action="store_true",
+        help="Upload test results to ReporterPlus"
+    )
+
 
 
 def configure_logging():

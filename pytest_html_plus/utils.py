@@ -78,3 +78,34 @@ def get_python_version():
         return platform.python_version()
     except Exception:
         return "NA"
+    
+def to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() == "true"
+    return False
+
+def extract_errors_from_attempts(t):
+    errors = set()
+
+    for attempt in t.get("attempts", []):
+        if not attempt:
+            continue
+
+        err = attempt.get("error")
+        if err:
+            cleaned = extract_error_block(err)
+            first_line = cleaned.splitlines()[0].replace("E ", "").strip()
+            errors.add(first_line)
+
+    if not errors:
+        first_failure = t.get("first_failure") or {}
+        raw_error = t.get("error") or first_failure.get("error")
+
+        if raw_error:
+            cleaned = extract_error_block(raw_error)
+            first_line = cleaned.splitlines()[0].replace("E ", "").strip()
+            errors.add(first_line)
+
+    return list(errors)
