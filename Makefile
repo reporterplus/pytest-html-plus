@@ -30,7 +30,7 @@ test:
 	poetry run pytest tests/unit --reruns 1
 
 test-with-xdist:
-	$(DOCKER_RUN_REPORTS) poetry run poetry run pytest tests/unit --reruns 1 -n auto
+	$(DOCKER_RUN_REPORTS) poetry run poetry run pytest -s tests/unit --reruns 1 -n auto
 
 lint:
 	$(DOCKER_RUN) poetry run ruff check .
