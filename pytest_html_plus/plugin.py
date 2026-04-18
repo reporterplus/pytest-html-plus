@@ -217,6 +217,7 @@ def pytest_runtest_makereport(item, call):
         error = extract_error_block(error=full_error)
         trace = extract_trace_block(full_error)
 
+
     if (
         report.when == "call"
         or (report.when == "setup" and report.skipped)
@@ -254,7 +255,8 @@ def pytest_runtest_makereport(item, call):
         status = report.outcome
         if report.when in ("setup", "teardown") and report.failed:
             status = "error"
-
+       
+                
         reporter.log_result(
             test_name=test_name,
             nodeid=item.nodeid,

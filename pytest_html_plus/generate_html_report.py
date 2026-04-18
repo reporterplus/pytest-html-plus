@@ -149,6 +149,7 @@ class JSONReporter:
             result["screenshot"] = screenshot
         if logs:
             result["logs"] = logs
+        
 
     def write_report(self):
         dir_path = os.path.dirname(os.path.abspath(self.report_path))
