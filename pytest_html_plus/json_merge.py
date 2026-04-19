@@ -3,7 +3,6 @@ import os
 from collections import defaultdict
 
 from pytest_html_plus.compute_filter_counts import compute_filter_count
-from pytest_html_plus.utils import build_error_meta
 
 
 def merge_json_reports(
@@ -55,6 +54,7 @@ def merge_json_reports(
         final_test["flaky"] = final_status == "passed" and had_prior_failure
 
         # Attempt metadata
+        # Attempt metadata
         final_test["attempt_statuses"] = statuses
 
         if "attempts" in final_test and final_test["attempts"]:
@@ -98,39 +98,12 @@ def merge_json_reports(
 
         final_test["first_failure_index"] = first_failure_index
 
+        # UI-friendly direct object (optional but powerful)
         final_test["first_failure"] = (
             simplified_attempts[first_failure_index]
             if first_failure_index is not None
             else None
         )
-
-        error_meta = None
-        error_source = None
-
-        if final_test.get("first_failure"):
-            error_source = final_test["first_failure"].get("error")
-        else:
-            error_source = final_test.get("error")
-
-        if error_source:
-            try:
-                print("\n--- DEBUG START ---")
-                print("nodeid:", nodeid)
-                print("first_failure:", final_test.get("first_failure"))
-                print("error_source:", error_source)
-                print("--- DEBUG END ---\n")
-                print("BUILD META INPUT:", error_source)
-
-                error_meta = build_error_meta({"error": error_source})
-
-                print("BUILD META OUTPUT:", error_meta)
-                error_meta = build_error_meta({"error": error_source})
-            except Exception as e:
-                print("ERROR IN build_error_meta:", e)
-                raise
-
-        # if error_meta:
-            final_test["error_meta"] = error_meta
 
         merged_results.append(final_test)
 

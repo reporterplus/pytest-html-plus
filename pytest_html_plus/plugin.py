@@ -1,15 +1,16 @@
-
 import json
 import logging
 import os
 import shutil
 import subprocess
 import sys
+import uuid
 import webbrowser
 from pathlib import Path
-from pytest_html_plus.uploader import upload_report
+
 import pytest
-from datetime import datetime
+
+from pytest_html_plus.uploader import build_upload_payload, upload_report
 
 try:
     import tomllib
@@ -25,9 +26,9 @@ from pytest_html_plus.resolver_driver import resolve_driver, take_screenshot_gen
 from pytest_html_plus.send_email_report import EmailSender
 from pytest_html_plus.utils import (
     extract_error_block,
-    extract_errors_from_attempts,
     extract_trace_block,
     load_email_env,
+    sanitize_metadata,
     to_bool,
 )
 
@@ -217,7 +218,6 @@ def pytest_runtest_makereport(item, call):
         error = extract_error_block(error=full_error)
         trace = extract_trace_block(full_error)
 
-
     if (
         report.when == "call"
         or (report.when == "setup" and report.skipped)
@@ -255,8 +255,7 @@ def pytest_runtest_makereport(item, call):
         status = report.outcome
         if report.when in ("setup", "teardown") and report.failed:
             status = "error"
-       
-                
+
         reporter.log_result(
             test_name=test_name,
             nodeid=item.nodeid,
@@ -338,33 +337,71 @@ def pytest_sessionfinish(session, exitstatus):
     # Upload to reporterplus cloud on user consent
     if session.config.getoption("--upload"):
         try:
-            API_URL = "https://us-central1-reporterplus-6f164.cloudfunctions.net/uploadReport"
-            API_KEY = "rp_6fc4d3adb1746d8ed17fffcfd015409a"
+            API_URL = (
+                "https://us-central1-reporterplus-6f164.cloudfunctions.net/uploadReport"
+            )
+            API_KEY = "rp_1a1ffb665ba7a1ae42ed75e5fecb70d8"
 
             if not API_KEY:
                 print("ReporterPlus: API key not set ❌")
             else:
-                with open(json_path, "r") as f:
+                with open(json_path) as f:
                     data = json.load(f)
 
-                summary = data.get("filters", {})
-                raw_tests = data.get("results", [])
-                tests = [
+            summary = data.get("filters") or data.get("summary") or {}
+            raw_tests = data.get("results", [])
+
+            print("RAW TEST COUNT:", len(raw_tests))
+
+            tests = [
                 {
+                    "nodeid": t.get("nodeid"),
                     "name": t.get("test"),
                     "status": t.get("status"),
                     "duration": float(t.get("duration", 0)),
                     "flaky": to_bool(t.get("flaky")),
                     "file": t.get("file"),
-                    "errors": extract_errors_from_attempts(t),
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": t.get("timestamp"),
+                    "attempts": t.get("attempts"),
+                    "attempt_count": t.get("attempt_count"),
+                    "attempt_statuses": t.get("attempt_statuses"),
+                    "first_failure": t.get("first_failure"),
                 }
                 for t in raw_tests
-                    if t.get("test") and t.get("status")
+                if t.get("test") and t.get("status")
             ]
-                            
 
-                upload_report(API_URL, API_KEY, summary, tests)
+            print("FILTERED TEST COUNT:", len(tests))
+
+            meta_path = Path(json_path).parent.parent / "plus_metadata.json"
+
+            with open(html_output / meta_path) as f:
+                meta = json.load(f)
+
+            run_meta = {
+                "run_id": str(uuid.uuid4()),
+                "report_title": sanitize_metadata(meta.get("report_title")),
+                "environment": sanitize_metadata(meta.get("environment")),
+                "branch": sanitize_metadata(meta.get("branch")),
+                "commit": sanitize_metadata(meta.get("commit")),
+                "python_version": meta.get("python_version"),
+                "generated_at": meta.get("generated_at"),
+            }
+
+            payload = {
+                "schema_version": "1.0",
+                "run": run_meta,
+                "summary": summary,
+                "results": tests,
+            }
+
+            print("PAYLOAD KEYS:", payload.keys())
+            print("RESULT COUNT:", len(payload["results"]))
+            print(json.dumps(payload, indent=2))
+
+            upload_payload = build_upload_payload(API_KEY, payload)
+
+            upload_report(API_URL, API_KEY, upload_payload)
 
         except Exception as e:
             print(f"ReporterPlus upload failed ❌ {e}")
@@ -424,7 +461,6 @@ def pytest_sessionfinish(session, exitstatus):
         json_path=json_path,
         config=session.config,
     )
-
 
 
 def pytest_sessionstart(session):
@@ -534,11 +570,8 @@ def pytest_addoption(parser):
         help="Helps show env information on the report",
     )
     parser.addoption(
-        "--upload",
-        action="store_true",
-        help="Upload test results to ReporterPlus"
+        "--upload", action="store_true", help="Upload test results to ReporterPlus"
     )
-
 
 
 def configure_logging():

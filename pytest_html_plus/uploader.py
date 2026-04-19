@@ -4,11 +4,29 @@ from typing import Any
 
 import requests
 
-
 DEFAULT_TIMEOUT_SECONDS = 12
 
 
-def upload_report(api_url: str, api_key: str, summary: dict, tests: list) -> bool:
+def build_upload_payload(api_key, data):
+    raw_summary = data.get("summary", {})
+    raw_tests = data.get("results", [])
+
+    passed = raw_summary.get("passed", 0)
+    total = raw_summary.get("total", len(raw_tests))
+    failed = total - passed
+
+    return {
+        "api_key": api_key,
+        "summary": {
+            "passed": passed,
+            "failed": failed,
+            "skipped": raw_summary.get("skipped", 0),
+        },
+        "tests": raw_tests,
+    }
+
+
+def upload_report(api_url: str, api_key: str, payload: dict) -> bool:
     """Upload a normalized pytest report to a remote API endpoint.
 
     This function is intentionally defensive and must never raise exceptions
@@ -16,18 +34,14 @@ def upload_report(api_url: str, api_key: str, summary: dict, tests: list) -> boo
     """
 
     try:
-        test_count = len(tests) if isinstance(tests, list) else 0
+        print(payload)
+        test_count = len(payload.get("tests", []))
         print(f"Uploading {test_count} tests...")
-
-        payload = {
-            "api_key": api_key,
-            "summary": summary,
-            "tests": tests,
-        }
 
         response = requests.post(
             api_url,
             json=payload,
+            headers={"Authorization": f"Bearer {api_key}"},
             timeout=DEFAULT_TIMEOUT_SECONDS,
         )
 
@@ -110,14 +124,16 @@ if __name__ == "__main__":
             "flaky": False,
             "file": "tests/test_login.py",
         },
-         {
+        {
             "name": "test_login_flaky",
             "status": "failed",
             "duration": 1.2,
             "flaky": True,
             "file": "tests/test_login_flaky.py",
-        }
+        },
     ]
 
-    success = upload_report(api_url=api_url, api_key=api_key, summary=summary, tests=tests)
+    success = upload_report(
+        api_url=api_url, api_key=api_key, summary=summary, tests=tests
+    )
     print(f"Upload result: {success}")

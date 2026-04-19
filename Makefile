@@ -30,7 +30,7 @@ test:
 	poetry run pytest tests/unit --reruns 1
 
 test-with-xdist:
-	$(DOCKER_RUN_REPORTS) poetry run poetry run pytest -s tests/unit --reruns 1 -n auto
+	$(DOCKER_RUN_REPORTS) poetry run poetry run pytest -s tests/unit --reruns 1 -n auto --upload 
 
 lint:
 	$(DOCKER_RUN) poetry run ruff check .
@@ -40,8 +40,7 @@ fix:
 	$(DOCKER_RUN) poetry run ruff format .
 
 install-formatter:
-	pip install pre-commit
-	pre-commit install
+	$(DOCKER_RUN) sh -c "pip install pre-commit && pre-commit install"
 
 clean:
 	docker rmi $(IMAGE_NAME)
