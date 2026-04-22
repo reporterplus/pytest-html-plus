@@ -6,6 +6,7 @@ name: Coverage (main baseline)
 on:
   schedule:
     - cron: "0 3 */2 * *"   # ~every other day at 03:00 UTC
+  workflow_dispatch:        # allow manual runs from the Actions tab
 
 permissions:
   contents: read
