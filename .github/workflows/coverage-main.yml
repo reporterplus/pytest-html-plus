@@ -1,0 +1,63 @@
+name: Coverage (main baseline)
+
+# Keeps Codecov's view of `main` fresh without re-running CI on every merge.
+# Runs on a schedule every other day at 03:00 UTC, or manually on demand.
+
+on:
+  schedule:
+    - cron: "0 3 */2 * *"   # ~every other day at 03:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0  # Codecov uses git history for blame/annotations
+
+      - name: 🐍 Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: 📦 Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-3.12-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-3.12-
+
+      - name: 📦 Install dependencies with Poetry
+        run: poetry install --with dev
+
+      - name: 🧪 Run tests with coverage
+        run: |
+          poetry run pytest \
+            --cov=pytest_html_plus \
+            --cov-report=term \
+            --cov-report=xml:coverage.xml \
+            --reruns 1 \
+            --ignore=tests/browser \
+            tests/
+
+      - name: ☂️ Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-pytest-html-plus-main
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+          verbose: true
