@@ -6,9 +6,9 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 
 project = "pytest-html-plus"
-copyright = "2025, ReporterPlus"
+copyright = "2026, ReporterPlus"
 author = "ReporterPlus"
-release = "0.5.0"
+release = "1.0.0"
 
 extensions = [
     "sphinx.ext.autodoc",
