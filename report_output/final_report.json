@@ -1,0 +1,2696 @@
+{
+  "filters": {
+    "skipped": 2,
+    "untracked": 71,
+    "failed": 17,
+    "flaky": 1,
+    "total": 71,
+    "passed": 52,
+    "marker_counts": {
+      "skip": 2,
+      "parametrize": 5
+    }
+  },
+  "results": [
+    {
+      "test": "test_skipped_example",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_skipped_example",
+      "status": "skipped",
+      "duration": 0.0001598750000013638,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "skip"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 13,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.241087Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "skipped",
+          "trace": null,
+          "error": null,
+          "duration": 0.0001598750000013638,
+          "timestamp": "2026-04-21T16:25:01.241097Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "skipped"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_convert_json_to_xml",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_convert_json_to_xml",
+      "status": "passed",
+      "duration": 0.0005320830000030696,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 66,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.286403Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0005320830000030696,
+          "timestamp": "2026-04-21T16:25:01.286409Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_on_object_with_screenshot_method",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_on_object_with_screenshot_method",
+      "status": "passed",
+      "duration": 0.0006255000000052746,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 47,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.327506Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006255000000052746,
+          "timestamp": "2026-04-21T16:25:01.327519Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_on_object_with_save_screenshot",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_on_object_with_save_screenshot",
+      "status": "passed",
+      "duration": 0.0009091249999997331,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 56,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.368529Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0009091249999997331,
+          "timestamp": "2026-04-21T16:25:01.368537Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_returns_none_when_no_match",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_returns_none_when_no_match",
+      "status": "passed",
+      "duration": 0.0003194589999964137,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 65,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.408960Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0003194589999964137,
+          "timestamp": "2026-04-21T16:25:01.408974Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_multiple_failures_not_flaky",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_multiple_failures_not_flaky",
+      "status": "passed",
+      "duration": 0.00021474999999782085,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 66,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.450614Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00021474999999782085,
+          "timestamp": "2026-04-21T16:25:01.450627Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_links_with_no_markers",
+      "nodeid": "tests/unit/test_marker_links.py::test_extract_links_with_no_markers",
+      "status": "passed",
+      "duration": 0.000945166999997582,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_marker_links.py",
+      "line": 26,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.497289Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.000945166999997582,
+          "timestamp": "2026-04-21T16:25:01.497298Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_args_are_prepended_so_cli_can_override",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_args_are_prepended_so_cli_can_override",
+      "status": "passed",
+      "duration": 0.0004702909999991789,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 11,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.538468Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0004702909999991789,
+          "timestamp": "2026-04-21T16:25:01.538481Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_key_error",
+      "nodeid": "tests/unit/test_saas.py::test_key_error",
+      "status": "failed",
+      "duration": 0.00015312499999708962,
+      "trace": "def test_key_error():\n        d = {\"a\": 1}\n>       _ = d[\"b\"]",
+      "error": "E       KeyError: 'b'",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 20,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.608591Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_key_error():\n        d = {\"a\": 1}\n>       _ = d[\"b\"]",
+          "error": "E       KeyError: 'b'",
+          "duration": 8.941699999809316e-05,
+          "timestamp": "2026-04-21T16:25:01.608599Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_key_error():\n        d = {\"a\": 1}\n>       _ = d[\"b\"]",
+          "error": "E       KeyError: 'b'",
+          "duration": 0.00015312499999708962,
+          "timestamp": "2026-04-21T16:25:01.611689Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_key_error():\n        d = {\"a\": 1}\n>       _ = d[\"b\"]",
+        "error": "E       KeyError: 'b'",
+        "duration": 8.941699999809316e-05,
+        "timestamp": "2026-04-21T16:25:01.608599Z"
+      }
+    },
+    {
+      "test": "test_attribute_error",
+      "nodeid": "tests/unit/test_saas.py::test_attribute_error",
+      "status": "failed",
+      "duration": 4.9083000000393895e-05,
+      "trace": "def test_attribute_error():\n        x = None\n>       x.some_method()",
+      "error": "E       AttributeError: 'NoneType' object has no attribute 'some_method'",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 57,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.628194Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_attribute_error():\n        x = None\n>       x.some_method()",
+          "error": "E       AttributeError: 'NoneType' object has no attribute 'some_method'",
+          "duration": 5.0041999998029496e-05,
+          "timestamp": "2026-04-21T16:25:01.628200Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_attribute_error():\n        x = None\n>       x.some_method()",
+          "error": "E       AttributeError: 'NoneType' object has no attribute 'some_method'",
+          "duration": 4.9083000000393895e-05,
+          "timestamp": "2026-04-21T16:25:01.632792Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_attribute_error():\n        x = None\n>       x.some_method()",
+        "error": "E       AttributeError: 'NoneType' object has no attribute 'some_method'",
+        "duration": 5.0041999998029496e-05,
+        "timestamp": "2026-04-21T16:25:01.628200Z"
+      }
+    },
+    {
+      "test": "test_ui_fixture_failure_captures_screenshot",
+      "nodeid": "tests/unit/test_setup_failure.py::test_ui_fixture_failure_captures_screenshot",
+      "status": "passed",
+      "duration": 0.0007154999999983147,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_setup_failure.py",
+      "line": 29,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.669890Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0007154999999983147,
+          "timestamp": "2026-04-21T16:25:01.669905Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_none",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_none",
+      "status": "passed",
+      "duration": 5.649999999945976e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 26,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.711778Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw0",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.649999999945976e-05,
+          "timestamp": "2026-04-21T16:25:01.711788Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname_tests_test_login_py_tests_test_login_",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests/test_login.py-tests.test_login]",
+      "status": "passed",
+      "duration": 5.133299999471319e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.242270Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.133299999471319e-05,
+          "timestamp": "2026-04-21T16:25:01.242276Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname_tests__test_user_py_tests_test_user_",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests\\\\test_user.py-tests.test_user]",
+      "status": "passed",
+      "duration": 4.429100000180597e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.282706Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.429100000180597e-05,
+          "timestamp": "2026-04-21T16:25:01.282713Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_take_screenshot_with_custom_path",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_with_custom_path",
+      "status": "passed",
+      "duration": 0.0025548750000012888,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 119,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.329161Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0025548750000012888,
+          "timestamp": "2026-04-21T16:25:01.329168Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_basic",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_basic",
+      "status": "passed",
+      "duration": 9.908300000205372e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.365607Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 9.908300000205372e-05,
+          "timestamp": "2026-04-21T16:25:01.365647Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_spaces_and_blank_lines",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_spaces_and_blank_lines",
+      "status": "failed",
+      "duration": 0.00018345800000219015,
+      "trace": "def test_error_block_spaces_and_blank_lines():\n        error = \"\\n\\n   E TypeError\\n\\n   \\nE IndexError\\n\"\n        expected = \"E TypeError\\nE IndexErrorr\"\n>       assert extract_error_block(error) == expected",
+      "error": "E       AssertionError: assert 'E TypeError\\nE IndexError' == 'E TypeError\\nE IndexErrorr'\nE           E TypeError\nE         - E IndexErrorr\nE         ?             -\nE         + E IndexError",
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 9,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.424808Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_error_block_spaces_and_blank_lines():\n        error = \"\\n\\n   E TypeError\\n\\n   \\nE IndexError\\n\"\n        expected = \"E TypeError\\nE IndexErrorr\"\n>       assert extract_error_block(error) == expected",
+          "error": "E       AssertionError: assert 'E TypeError\\nE IndexError' == 'E TypeError\\nE IndexErrorr'\nE           E TypeError\nE         - E IndexErrorr\nE         ?             -\nE         + E IndexError",
+          "duration": 0.0002915000000029977,
+          "timestamp": "2026-04-21T16:25:01.424820Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_error_block_spaces_and_blank_lines():\n        error = \"\\n\\n   E TypeError\\n\\n   \\nE IndexError\\n\"\n        expected = \"E TypeError\\nE IndexErrorr\"\n>       assert extract_error_block(error) == expected",
+          "error": "E       AssertionError: assert 'E TypeError\\nE IndexError' == 'E TypeError\\nE IndexErrorr'\nE           E TypeError\nE         - E IndexErrorr\nE         ?             -\nE         + E IndexError",
+          "duration": 0.00018345800000219015,
+          "timestamp": "2026-04-21T16:25:01.426957Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_error_block_spaces_and_blank_lines():\n        error = \"\\n\\n   E TypeError\\n\\n   \\nE IndexError\\n\"\n        expected = \"E TypeError\\nE IndexErrorr\"\n>       assert extract_error_block(error) == expected",
+        "error": "E       AssertionError: assert 'E TypeError\\nE IndexError' == 'E TypeError\\nE IndexErrorr'\nE           E TypeError\nE         - E IndexErrorr\nE         ?             -\nE         + E IndexError",
+        "duration": 0.0002915000000029977,
+        "timestamp": "2026-04-21T16:25:01.424820Z"
+      }
+    },
+    {
+      "test": "test_single_non_flaky_test",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_single_non_flaky_test",
+      "status": "passed",
+      "duration": 5.35420000034037e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 4,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.452594Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.35420000034037e-05,
+          "timestamp": "2026-04-21T16:25:01.452605Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_flaky_test_with_multiple_attempts",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_flaky_test_with_multiple_attempts",
+      "status": "passed",
+      "duration": 6.362500000278715e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 12,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.495047Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 6.362500000278715e-05,
+          "timestamp": "2026-04-21T16:25:01.495062Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_duplicate_profile_keys_surface_toml_error",
+      "nodeid": "tests/unit/test_profile_loading.py::test_duplicate_profile_keys_surface_toml_error",
+      "status": "passed",
+      "duration": 0.0004925000000000068,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 69,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.538084Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0004925000000000068,
+          "timestamp": "2026-04-21T16:25:01.538095Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_assertion_failure",
+      "nodeid": "tests/unit/test_saas.py::test_assertion_failure",
+      "status": "failed",
+      "duration": 0.00016604099999995015,
+      "trace": "def test_assertion_failure():\n>       assert 1 == 2",
+      "error": "E       assert 1 == 2",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 4,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.587176Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_assertion_failure():\n>       assert 1 == 2",
+          "error": "E       assert 1 == 2",
+          "duration": 0.00023291600000163726,
+          "timestamp": "2026-04-21T16:25:01.587194Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_assertion_failure():\n>       assert 1 == 2",
+          "error": "E       assert 1 == 2",
+          "duration": 0.00016604099999995015,
+          "timestamp": "2026-04-21T16:25:01.594161Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_assertion_failure():\n>       assert 1 == 2",
+        "error": "E       assert 1 == 2",
+        "duration": 0.00023291600000163726,
+        "timestamp": "2026-04-21T16:25:01.587194Z"
+      }
+    },
+    {
+      "test": "test_nested_failure",
+      "nodeid": "tests/unit/test_saas.py::test_nested_failure",
+      "status": "failed",
+      "duration": 5.1917000000401003e-05,
+      "trace": "def test_nested_failure():\n        try:\n            try:\n                x = [1]\n>               _ = x[10]  # IndexError",
+      "error": "E               IndexError: list index out of range\nE               ValueError: Inner failure\nE           AssertionError: Final assertion failure",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 45,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.632802Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_nested_failure():\n        try:\n            try:\n                x = [1]\n>               _ = x[10]  # IndexError",
+          "error": "E               IndexError: list index out of range\nE               ValueError: Inner failure\nE           AssertionError: Final assertion failure",
+          "duration": 7.883399999997209e-05,
+          "timestamp": "2026-04-21T16:25:01.632810Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_nested_failure():\n        try:\n            try:\n                x = [1]\n>               _ = x[10]  # IndexError",
+          "error": "E               IndexError: list index out of range\nE               ValueError: Inner failure\nE           AssertionError: Final assertion failure",
+          "duration": 5.1917000000401003e-05,
+          "timestamp": "2026-04-21T16:25:01.636849Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_nested_failure():\n        try:\n            try:\n                x = [1]\n>               _ = x[10]  # IndexError",
+        "error": "E               IndexError: list index out of range\nE               ValueError: Inner failure\nE           AssertionError: Final assertion failure",
+        "duration": 7.883399999997209e-05,
+        "timestamp": "2026-04-21T16:25:01.632810Z"
+      }
+    },
+    {
+      "test": "test_group_mixed_1",
+      "nodeid": "tests/unit/test_saas.py::test_group_mixed_1",
+      "status": "failed",
+      "duration": 0.0001455419999984997,
+      "trace": "def test_group_mixed_1():\n        try:\n>           raise TypeError(\"bad type\")",
+      "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 86,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.669003Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_group_mixed_1():\n        try:\n>           raise TypeError(\"bad type\")",
+          "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+          "duration": 7.40000000050145e-05,
+          "timestamp": "2026-04-21T16:25:01.669019Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_group_mixed_1():\n        try:\n>           raise TypeError(\"bad type\")",
+          "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+          "duration": 0.0001455419999984997,
+          "timestamp": "2026-04-21T16:25:01.672435Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_group_mixed_1():\n        try:\n>           raise TypeError(\"bad type\")",
+        "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+        "duration": 7.40000000050145e-05,
+        "timestamp": "2026-04-21T16:25:01.669019Z"
+      }
+    },
+    {
+      "test": "test_extract_trace_block_with_invalid_input",
+      "nodeid": "tests/unit/test_trace_block.py::test_extract_trace_block_with_invalid_input",
+      "status": "passed",
+      "duration": 6.287500000468071e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 35,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.708219Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw1",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 6.287500000468071e-05,
+          "timestamp": "2026-04-21T16:25:01.708227Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname_tests_utils_helpers_py_tests_utils_helpers_",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests/utils/helpers.py-tests.utils.helpers]",
+      "status": "passed",
+      "duration": 9.808299999747305e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.242596Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 9.808299999747305e-05,
+          "timestamp": "2026-04-21T16:25:01.242602Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname_None_default_",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[None-default]",
+      "status": "passed",
+      "duration": 5.5875000001037733e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.284429Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.5875000001037733e-05,
+          "timestamp": "2026-04-21T16:25:01.284436Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_no_E_lines",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_no_E_lines",
+      "status": "passed",
+      "duration": 9.658399999779022e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 15,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.329290Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 9.658399999779022e-05,
+          "timestamp": "2026-04-21T16:25:01.329306Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_empty",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_empty",
+      "status": "passed",
+      "duration": 4.4833000004018686e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 21,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.370026Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.4833000004018686e-05,
+          "timestamp": "2026-04-21T16:25:01.370041Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_none",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_none",
+      "status": "passed",
+      "duration": 0.00012012499999514148,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 25,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.412319Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00012012499999514148,
+          "timestamp": "2026-04-21T16:25:01.412333Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_multiple_passes_not_flaky",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_multiple_passes_not_flaky",
+      "status": "passed",
+      "duration": 8.325000000297678e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 76,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.457572Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 8.325000000297678e-05,
+          "timestamp": "2026-04-21T16:25:01.457580Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_passing_test_logged_even_if_screenshot_not_taken",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_passing_test_logged_even_if_screenshot_not_taken",
+      "status": "skipped",
+      "duration": 7.64170000024933e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "skip"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 7,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.499119Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "skipped",
+          "trace": null,
+          "error": null,
+          "duration": 7.64170000024933e-05,
+          "timestamp": "2026-04-21T16:25:01.499126Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "skipped"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_boolean_values_must_be_boolean",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_boolean_values_must_be_boolean",
+      "status": "passed",
+      "duration": 0.0003709590000013918,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 91,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.541568Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0003709590000013918,
+          "timestamp": "2026-04-21T16:25:01.541577Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_file_not_found",
+      "nodeid": "tests/unit/test_saas.py::test_file_not_found",
+      "status": "failed",
+      "duration": 0.000136166000004323,
+      "trace": "def test_file_not_found():\n>       with open(\"non_existent_file.txt\") as f:",
+      "error": "E       FileNotFoundError: [Errno 2] No such file or directory: 'non_existent_file.txt'",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 26,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.611526Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_file_not_found():\n>       with open(\"non_existent_file.txt\") as f:",
+          "error": "E       FileNotFoundError: [Errno 2] No such file or directory: 'non_existent_file.txt'",
+          "duration": 0.0014632920000039462,
+          "timestamp": "2026-04-21T16:25:01.611541Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_file_not_found():\n>       with open(\"non_existent_file.txt\") as f:",
+          "error": "E       FileNotFoundError: [Errno 2] No such file or directory: 'non_existent_file.txt'",
+          "duration": 0.000136166000004323,
+          "timestamp": "2026-04-21T16:25:01.614759Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_file_not_found():\n>       with open(\"non_existent_file.txt\") as f:",
+        "error": "E       FileNotFoundError: [Errno 2] No such file or directory: 'non_existent_file.txt'",
+        "duration": 0.0014632920000039462,
+        "timestamp": "2026-04-21T16:25:01.611541Z"
+      }
+    },
+    {
+      "test": "test_timeout_like",
+      "nodeid": "tests/unit/test_saas.py::test_timeout_like",
+      "status": "failed",
+      "duration": 0.10147541700000318,
+      "trace": "def test_timeout_like():\n        import time\n        time.sleep(0.1)\n>       assert False, \"Simulated timeout failure\"",
+      "error": "E       AssertionError: Simulated timeout failure\nE       assert False",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 63,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.735120Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_timeout_like():\n        import time\n        time.sleep(0.1)\n>       assert False, \"Simulated timeout failure\"",
+          "error": "E       AssertionError: Simulated timeout failure\nE       assert False",
+          "duration": 0.10409350000000472,
+          "timestamp": "2026-04-21T16:25:01.735132Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_timeout_like():\n        import time\n        time.sleep(0.1)\n>       assert False, \"Simulated timeout failure\"",
+          "error": "E       AssertionError: Simulated timeout failure\nE       assert False",
+          "duration": 0.10147541700000318,
+          "timestamp": "2026-04-21T16:25:01.848921Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_timeout_like():\n        import time\n        time.sleep(0.1)\n>       assert False, \"Simulated timeout failure\"",
+        "error": "E       AssertionError: Simulated timeout failure\nE       assert False",
+        "duration": 0.10409350000000472,
+        "timestamp": "2026-04-21T16:25:01.735132Z"
+      }
+    },
+    {
+      "test": "test_trace_block_basic",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_basic",
+      "status": "passed",
+      "duration": 4.454100000117478e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.850702Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw2",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.454100000117478e-05,
+          "timestamp": "2026-04-21T16:25:01.850708Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname__default_",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[-default]",
+      "status": "passed",
+      "duration": 6.458300000389272e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.242063Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 6.458300000389272e-05,
+          "timestamp": "2026-04-21T16:25:01.242069Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots",
+      "status": "failed",
+      "duration": 0.00022412500000257296,
+      "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots1')\n\n    def test_copy_all_screenshots(tmp_path):\n        screenshots_dir = tmp_path / \"screenshots_src\"\n        output_dir = tmp_path / \"output\"\n        screenshots_dir.mkdir()\n        output_dir.mkdir()\n    \n        file_path = screenshots_dir / \"test_example_fail.png\"\n        file_path.write_text(\"fake image content\")\n    \n        class FakeReporter:\n            def __init__(self, src, out):\n                self.screenshots_dir = str(src)\n                self.output_dir = str(out)\n    \n            def copy_all_screenshots(self):\n                screenshots_output_dir = os.path.join(self.output_dir, \"screenshots\")\n                os.makedirs(screenshots_output_dir, exist_ok=True)\n    \n                for root, _, files in os.walk(self.screenshots_dir):\n                    for file in files:\n                        if file.endswith(\".png\"):\n                            src_path = os.path.join(root, file)\n                            dest_path = os.path.join(screenshots_output_dir, file)\n                            if not os.path.exists(dest_path):\n                                shutil.copyfile(src_path, dest_path)\n    \n        reporter = FakeReporter(screenshots_dir, output_dir)\n        reporter.copy_all_screenshots()\n    \n>       assert (output_dir / \"screenshots\" / \"test_example_faill.png\").exists()",
+      "error": "E       AssertionError: assert False\nE        +  where False = exists()\nE        +    where exists = ((PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots1/output') / 'screenshots') / 'test_example_faill.png').exists",
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 4,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.297133Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots0')\n\n    def test_copy_all_screenshots(tmp_path):\n        screenshots_dir = tmp_path / \"screenshots_src\"\n        output_dir = tmp_path / \"output\"\n        screenshots_dir.mkdir()\n        output_dir.mkdir()\n    \n        file_path = screenshots_dir / \"test_example_fail.png\"\n        file_path.write_text(\"fake image content\")\n    \n        class FakeReporter:\n            def __init__(self, src, out):\n                self.screenshots_dir = str(src)\n                self.output_dir = str(out)\n    \n            def copy_all_screenshots(self):\n                screenshots_output_dir = os.path.join(self.output_dir, \"screenshots\")\n                os.makedirs(screenshots_output_dir, exist_ok=True)\n    \n                for root, _, files in os.walk(self.screenshots_dir):\n                    for file in files:\n                        if file.endswith(\".png\"):\n                            src_path = os.path.join(root, file)\n                            dest_path = os.path.join(screenshots_output_dir, file)\n                            if not os.path.exists(dest_path):\n                                shutil.copyfile(src_path, dest_path)\n    \n        reporter = FakeReporter(screenshots_dir, output_dir)\n        reporter.copy_all_screenshots()\n    \n>       assert (output_dir / \"screenshots\" / \"test_example_faill.png\").exists()",
+          "error": "E       AssertionError: assert False\nE        +  where False = exists()\nE        +    where exists = ((PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots0/output') / 'screenshots') / 'test_example_faill.png').exists",
+          "duration": 0.00031954199999972843,
+          "timestamp": "2026-04-21T16:25:01.297139Z"
+        },
+        {
+          "status": "failed",
+          "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots1')\n\n    def test_copy_all_screenshots(tmp_path):\n        screenshots_dir = tmp_path / \"screenshots_src\"\n        output_dir = tmp_path / \"output\"\n        screenshots_dir.mkdir()\n        output_dir.mkdir()\n    \n        file_path = screenshots_dir / \"test_example_fail.png\"\n        file_path.write_text(\"fake image content\")\n    \n        class FakeReporter:\n            def __init__(self, src, out):\n                self.screenshots_dir = str(src)\n                self.output_dir = str(out)\n    \n            def copy_all_screenshots(self):\n                screenshots_output_dir = os.path.join(self.output_dir, \"screenshots\")\n                os.makedirs(screenshots_output_dir, exist_ok=True)\n    \n                for root, _, files in os.walk(self.screenshots_dir):\n                    for file in files:\n                        if file.endswith(\".png\"):\n                            src_path = os.path.join(root, file)\n                            dest_path = os.path.join(screenshots_output_dir, file)\n                            if not os.path.exists(dest_path):\n                                shutil.copyfile(src_path, dest_path)\n    \n        reporter = FakeReporter(screenshots_dir, output_dir)\n        reporter.copy_all_screenshots()\n    \n>       assert (output_dir / \"screenshots\" / \"test_example_faill.png\").exists()",
+          "error": "E       AssertionError: assert False\nE        +  where False = exists()\nE        +    where exists = ((PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots1/output') / 'screenshots') / 'test_example_faill.png').exists",
+          "duration": 0.00022412500000257296,
+          "timestamp": "2026-04-21T16:25:01.299548Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots0')\n\n    def test_copy_all_screenshots(tmp_path):\n        screenshots_dir = tmp_path / \"screenshots_src\"\n        output_dir = tmp_path / \"output\"\n        screenshots_dir.mkdir()\n        output_dir.mkdir()\n    \n        file_path = screenshots_dir / \"test_example_fail.png\"\n        file_path.write_text(\"fake image content\")\n    \n        class FakeReporter:\n            def __init__(self, src, out):\n                self.screenshots_dir = str(src)\n                self.output_dir = str(out)\n    \n            def copy_all_screenshots(self):\n                screenshots_output_dir = os.path.join(self.output_dir, \"screenshots\")\n                os.makedirs(screenshots_output_dir, exist_ok=True)\n    \n                for root, _, files in os.walk(self.screenshots_dir):\n                    for file in files:\n                        if file.endswith(\".png\"):\n                            src_path = os.path.join(root, file)\n                            dest_path = os.path.join(screenshots_output_dir, file)\n                            if not os.path.exists(dest_path):\n                                shutil.copyfile(src_path, dest_path)\n    \n        reporter = FakeReporter(screenshots_dir, output_dir)\n        reporter.copy_all_screenshots()\n    \n>       assert (output_dir / \"screenshots\" / \"test_example_faill.png\").exists()",
+        "error": "E       AssertionError: assert False\nE        +  where False = exists()\nE        +    where exists = ((PosixPath('/tmp/pytest-of-root/pytest-0/popen-gw3/test_copy_all_screenshots0/output') / 'screenshots') / 'test_example_faill.png').exists",
+        "duration": 0.00031954199999972843,
+        "timestamp": "2026-04-21T16:25:01.297139Z"
+      }
+    },
+    {
+      "test": "test_take_screenshot_with_screenshot_method",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_with_screenshot_method",
+      "status": "passed",
+      "duration": 0.0005397910000013439,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 72,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.326970Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0005397910000013439,
+          "timestamp": "2026-04-21T16:25:01.326976Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_take_screenshot_with_save_screenshot_method",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_with_save_screenshot_method",
+      "status": "passed",
+      "duration": 0.0013938329999945154,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 87,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.368785Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0013938329999945154,
+          "timestamp": "2026-04-21T16:25:01.368792Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_take_screenshot_raises_on_invalid_driver",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_raises_on_invalid_driver",
+      "status": "passed",
+      "duration": 0.0004595830000013734,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 105,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.409305Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0004595830000013734,
+          "timestamp": "2026-04-21T16:25:01.409313Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_mixed_tests_flaky_and_non_flaky",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_mixed_tests_flaky_and_non_flaky",
+      "status": "passed",
+      "duration": 0.00014649999999960528,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 25,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.450364Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00014649999999960528,
+          "timestamp": "2026-04-21T16:25:01.450381Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_preserves_other_fields",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_preserves_other_fields",
+      "status": "passed",
+      "duration": 7.595800000359532e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 47,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.496257Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 7.595800000359532e-05,
+          "timestamp": "2026-04-21T16:25:01.496267Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_invalid_profile_key_raises_usage_error",
+      "nodeid": "tests/unit/test_profile_loading.py::test_invalid_profile_key_raises_usage_error",
+      "status": "passed",
+      "duration": 0.0005165829999995708,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 56,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.542754Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0005165829999995708,
+          "timestamp": "2026-04-21T16:25:01.542762Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_type_error",
+      "nodeid": "tests/unit/test_saas.py::test_type_error",
+      "status": "failed",
+      "duration": 9.691700000047376e-05,
+      "trace": "def test_type_error():\n>       x = \"hello\" + 5",
+      "error": "E       TypeError: can only concatenate str (not \"int\") to str",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 9,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.592404Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_type_error():\n>       x = \"hello\" + 5",
+          "error": "E       TypeError: can only concatenate str (not \"int\") to str",
+          "duration": 8.899999999556485e-05,
+          "timestamp": "2026-04-21T16:25:01.592453Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_type_error():\n>       x = \"hello\" + 5",
+          "error": "E       TypeError: can only concatenate str (not \"int\") to str",
+          "duration": 9.691700000047376e-05,
+          "timestamp": "2026-04-21T16:25:01.597012Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_type_error():\n>       x = \"hello\" + 5",
+        "error": "E       TypeError: can only concatenate str (not \"int\") to str",
+        "duration": 8.899999999556485e-05,
+        "timestamp": "2026-04-21T16:25:01.592453Z"
+      }
+    },
+    {
+      "test": "test_group_2",
+      "nodeid": "tests/unit/test_saas.py::test_group_2",
+      "status": "failed",
+      "duration": 0.00013766700000417131,
+      "trace": "def test_group_2():\n>       assert \"abc\" == \"xyz\"",
+      "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 74,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.626096Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_group_2():\n>       assert \"abc\" == \"xyz\"",
+          "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+          "duration": 0.00019412500000015598,
+          "timestamp": "2026-04-21T16:25:01.626104Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_group_2():\n>       assert \"abc\" == \"xyz\"",
+          "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+          "duration": 0.00013766700000417131,
+          "timestamp": "2026-04-21T16:25:01.630669Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_group_2():\n>       assert \"abc\" == \"xyz\"",
+        "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+        "duration": 0.00019412500000015598,
+        "timestamp": "2026-04-21T16:25:01.626104Z"
+      }
+    },
+    {
+      "test": "test_group_mixed",
+      "nodeid": "tests/unit/test_saas.py::test_group_mixed",
+      "status": "failed",
+      "duration": 0.00015170900000072152,
+      "trace": "def test_group_mixed():\n        try:\n>           raise TypeError(\"bad type\")",
+      "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 79,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.668889Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_group_mixed():\n        try:\n>           raise TypeError(\"bad type\")",
+          "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+          "duration": 0.0001541250000016703,
+          "timestamp": "2026-04-21T16:25:01.668901Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_group_mixed():\n        try:\n>           raise TypeError(\"bad type\")",
+          "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+          "duration": 0.00015170900000072152,
+          "timestamp": "2026-04-21T16:25:01.673655Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_group_mixed():\n        try:\n>           raise TypeError(\"bad type\")",
+        "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+        "duration": 0.0001541250000016703,
+        "timestamp": "2026-04-21T16:25:01.668901Z"
+      }
+    },
+    {
+      "test": "test_trace_block_no_error_line",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_no_error_line",
+      "status": "passed",
+      "duration": 5.9041000000092936e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 16,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.708309Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw3",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.9041000000092936e-05,
+          "timestamp": "2026-04-21T16:25:01.708317Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_prefers_page_over_others",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_prefers_page_over_others",
+      "status": "passed",
+      "duration": 0.00047933300000124746,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 6,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.243351Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00047933300000124746,
+          "timestamp": "2026-04-21T16:25:01.243356Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_to_driver",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_to_driver",
+      "status": "passed",
+      "duration": 0.00022354199999341517,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 16,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.282731Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00022354199999341517,
+          "timestamp": "2026-04-21T16:25:01.282737Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_error_block_with_invalid_input",
+      "nodeid": "tests/unit/test_error_block.py::test_extract_error_block_with_invalid_input",
+      "status": "passed",
+      "duration": 4.658399999613039e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 29,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.324477Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.658399999613039e-05,
+          "timestamp": "2026-04-21T16:25:01.324488Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_and_copy",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_and_copy",
+      "status": "passed",
+      "duration": 0.0003287910000011607,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 4,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.367854Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0003287910000011607,
+          "timestamp": "2026-04-21T16:25:01.367864Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_merge_json_reports_handles_bad_json",
+      "nodeid": "tests/unit/test_json_merger.py::test_merge_json_reports_handles_bad_json",
+      "status": "passed",
+      "duration": 0.000266875000001221,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 62,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.407787Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.000266875000001221,
+          "timestamp": "2026-04-21T16:25:01.407800Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_merge_json_reports_handles_empty_directory",
+      "nodeid": "tests/unit/test_json_merger.py::test_merge_json_reports_handles_empty_directory",
+      "status": "passed",
+      "duration": 0.0006107920000033573,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 70,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.452617Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006107920000033573,
+          "timestamp": "2026-04-21T16:25:01.452630Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_links_with_multiple_marker_names",
+      "nodeid": "tests/unit/test_marker_links.py::test_extract_links_with_multiple_marker_names",
+      "status": "passed",
+      "duration": 0.0017042090000032317,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_marker_links.py",
+      "line": 5,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.496861Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0017042090000032317,
+          "timestamp": "2026-04-21T16:25:01.496870Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_can_be_passed_as_separate_argument",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_can_be_passed_as_separate_argument",
+      "status": "passed",
+      "duration": 0.0003517909999999347,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 39,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.537686Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0003517909999999347,
+          "timestamp": "2026-04-21T16:25:01.537697Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_index_error",
+      "nodeid": "tests/unit/test_saas.py::test_index_error",
+      "status": "failed",
+      "duration": 5.920800000325244e-05,
+      "trace": "def test_index_error():\n        arr = [1, 2]\n>       _ = arr[5]",
+      "error": "E       IndexError: list index out of range",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 14,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.618339Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_index_error():\n        arr = [1, 2]\n>       _ = arr[5]",
+          "error": "E       IndexError: list index out of range",
+          "duration": 9.141600000361905e-05,
+          "timestamp": "2026-04-21T16:25:01.618346Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_index_error():\n        arr = [1, 2]\n>       _ = arr[5]",
+          "error": "E       IndexError: list index out of range",
+          "duration": 5.920800000325244e-05,
+          "timestamp": "2026-04-21T16:25:01.620685Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_index_error():\n        arr = [1, 2]\n>       _ = arr[5]",
+        "error": "E       IndexError: list index out of range",
+        "duration": 9.141600000361905e-05,
+        "timestamp": "2026-04-21T16:25:01.618346Z"
+      }
+    },
+    {
+      "test": "test_chained_exception",
+      "nodeid": "tests/unit/test_saas.py::test_chained_exception",
+      "status": "failed",
+      "duration": 7.670800000170175e-05,
+      "trace": "def test_chained_exception():\n        try:\n>           int(\"abc\")  # ValueError",
+      "error": "E           ValueError: invalid literal for int() with base 10: 'abc'\nE           RuntimeError: Wrapping error",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 37,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.627567Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_chained_exception():\n        try:\n>           int(\"abc\")  # ValueError",
+          "error": "E           ValueError: invalid literal for int() with base 10: 'abc'\nE           RuntimeError: Wrapping error",
+          "duration": 4.62090000041826e-05,
+          "timestamp": "2026-04-21T16:25:01.627582Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_chained_exception():\n        try:\n>           int(\"abc\")  # ValueError",
+          "error": "E           ValueError: invalid literal for int() with base 10: 'abc'\nE           RuntimeError: Wrapping error",
+          "duration": 7.670800000170175e-05,
+          "timestamp": "2026-04-21T16:25:01.633206Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_chained_exception():\n        try:\n>           int(\"abc\")  # ValueError",
+        "error": "E           ValueError: invalid literal for int() with base 10: 'abc'\nE           RuntimeError: Wrapping error",
+        "duration": 4.62090000041826e-05,
+        "timestamp": "2026-04-21T16:25:01.627582Z"
+      }
+    },
+    {
+      "test": "test_trace_block_with_leading_spaces",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_with_leading_spaces",
+      "status": "passed",
+      "duration": 0.00012900000000115597,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 9,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.667170Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00012900000000115597,
+          "timestamp": "2026-04-21T16:25:01.667195Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_only_error_line",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_only_error_line",
+      "status": "passed",
+      "duration": 8.833300000077315e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 30,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.709287Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw4",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 8.833300000077315e-05,
+          "timestamp": "2026-04-21T16:25:01.709297Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_to_browser",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_to_browser",
+      "status": "passed",
+      "duration": 0.00023437499999801048,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 26,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.244162Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00023437499999801048,
+          "timestamp": "2026-04-21T16:25:01.244167Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_uses_page_for_screenshot_attr",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_uses_page_for_screenshot_attr",
+      "status": "passed",
+      "duration": 0.00022916599999689424,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 36,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.283714Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00022916599999689424,
+          "timestamp": "2026-04-21T16:25:01.283721Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_flaky_network_call",
+      "nodeid": "tests/unit/test_flaky_badge.py::test_flaky_network_call",
+      "status": "passed",
+      "duration": 0.00015054200000008677,
+      "trace": "def test_flaky_network_call():\n        attempt_counter[\"count\"] += 1\n        if attempt_counter[\"count\"] == 1:\n>           assert False, \"Simulated network failure\"",
+      "error": "E           AssertionError: Simulated network failure\nE           assert False",
+      "markers": [],
+      "file": "tests/unit/test_flaky_badge.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.340826Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_flaky_network_call():\n        attempt_counter[\"count\"] += 1\n        if attempt_counter[\"count\"] == 1:\n>           assert False, \"Simulated network failure\"",
+          "error": "E           AssertionError: Simulated network failure\nE           assert False",
+          "duration": 0.00010712499999954161,
+          "timestamp": "2026-04-21T16:25:01.340896Z"
+        },
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00015054200000008677,
+          "timestamp": "2026-04-21T16:25:01.343449Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": true,
+      "attempt_statuses": [
+        "failed",
+        "passed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_flaky_network_call():\n        attempt_counter[\"count\"] += 1\n        if attempt_counter[\"count\"] == 1:\n>           assert False, \"Simulated network failure\"",
+        "error": "E           AssertionError: Simulated network failure\nE           assert False",
+        "duration": 0.00010712499999954161,
+        "timestamp": "2026-04-21T16:25:01.340896Z"
+      }
+    },
+    {
+      "test": "test_merge_json_reports_creates_merged_file",
+      "nodeid": "tests/unit/test_json_merger.py::test_merge_json_reports_creates_merged_file",
+      "status": "passed",
+      "duration": 0.00040291599999875416,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 37,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.369533Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00040291599999875416,
+          "timestamp": "2026-04-21T16:25:01.369541Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_compute_filter_count_failed_non_flaky",
+      "nodeid": "tests/unit/test_json_merger.py::test_compute_filter_count_failed_non_flaky",
+      "status": "passed",
+      "duration": 7.195899999601352e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 83,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.410352Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 7.195899999601352e-05,
+          "timestamp": "2026-04-21T16:25:01.410360Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_compute_filter_count_error_non_flaky",
+      "nodeid": "tests/unit/test_json_merger.py::test_compute_filter_count_error_non_flaky",
+      "status": "passed",
+      "duration": 0.00021954199999640878,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 105,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.453929Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00021954199999640878,
+          "timestamp": "2026-04-21T16:25:01.454010Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_links_with_non_string_args",
+      "nodeid": "tests/unit/test_marker_links.py::test_extract_links_with_non_string_args",
+      "status": "passed",
+      "duration": 0.000619666999995161,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_marker_links.py",
+      "line": 33,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.500470Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.000619666999995161,
+          "timestamp": "2026-04-21T16:25:01.500479Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_requires_pyproject_file",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_requires_pyproject_file",
+      "status": "passed",
+      "duration": 0.0003997089999998593,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 83,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.541829Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0003997089999998593,
+          "timestamp": "2026-04-21T16:25:01.541839Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_assertion_with_message",
+      "nodeid": "tests/unit/test_saas.py::test_assertion_with_message",
+      "status": "failed",
+      "duration": 0.00019533300000063036,
+      "trace": "def test_assertion_with_message():\n>       assert False, \"Custom failure message\"",
+      "error": "E       AssertionError: Custom failure message\nE       assert False",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 32,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.596866Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_assertion_with_message():\n>       assert False, \"Custom failure message\"",
+          "error": "E       AssertionError: Custom failure message\nE       assert False",
+          "duration": 0.00014320800000433564,
+          "timestamp": "2026-04-21T16:25:01.596879Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_assertion_with_message():\n>       assert False, \"Custom failure message\"",
+          "error": "E       AssertionError: Custom failure message\nE       assert False",
+          "duration": 0.00019533300000063036,
+          "timestamp": "2026-04-21T16:25:01.605286Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_assertion_with_message():\n>       assert False, \"Custom failure message\"",
+        "error": "E       AssertionError: Custom failure message\nE       assert False",
+        "duration": 0.00014320800000433564,
+        "timestamp": "2026-04-21T16:25:01.596879Z"
+      }
+    },
+    {
+      "test": "test_group_1",
+      "nodeid": "tests/unit/test_saas.py::test_group_1",
+      "status": "failed",
+      "duration": 0.000224750000000995,
+      "trace": "def test_group_1():\n>       assert \"abc\" == \"xyz\"",
+      "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 70,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.628460Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_group_1():\n>       assert \"abc\" == \"xyz\"",
+          "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+          "duration": 0.0001735000000024911,
+          "timestamp": "2026-04-21T16:25:01.628467Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_group_1():\n>       assert \"abc\" == \"xyz\"",
+          "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+          "duration": 0.000224750000000995,
+          "timestamp": "2026-04-21T16:25:01.632143Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_group_1():\n>       assert \"abc\" == \"xyz\"",
+        "error": "E       AssertionError: assert 'abc' == 'xyz'\nE         - xyz\nE         + abc",
+        "duration": 0.0001735000000024911,
+        "timestamp": "2026-04-21T16:25:01.628467Z"
+      }
+    },
+    {
+      "test": "test_group_mixed_2",
+      "nodeid": "tests/unit/test_saas.py::test_group_mixed_2",
+      "status": "failed",
+      "duration": 5.6207999996615854e-05,
+      "trace": "def test_group_mixed_2():\n        try:\n>           raise TypeError(\"bad type\")",
+      "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+      "markers": [],
+      "file": "tests/unit/test_saas.py",
+      "line": 93,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.671646Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_group_mixed_2():\n        try:\n>           raise TypeError(\"bad type\")",
+          "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+          "duration": 0.0002845839999991995,
+          "timestamp": "2026-04-21T16:25:01.671654Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_group_mixed_2():\n        try:\n>           raise TypeError(\"bad type\")",
+          "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+          "duration": 5.6207999996615854e-05,
+          "timestamp": "2026-04-21T16:25:01.674576Z"
+        }
+      ],
+      "attempt_count": 2,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_group_mixed_2():\n        try:\n>           raise TypeError(\"bad type\")",
+        "error": "E           TypeError: bad type\nE           AssertionError: Final assertion",
+        "duration": 0.0002845839999991995,
+        "timestamp": "2026-04-21T16:25:01.671654Z"
+      }
+    },
+    {
+      "test": "test_trace_block_empty",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_empty",
+      "status": "passed",
+      "duration": 5.262500000213777e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 22,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-04-21T16:25:01.710758Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "gw5",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.262500000213777e-05,
+          "timestamp": "2026-04-21T16:25:01.710764Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    }
+  ]
+}

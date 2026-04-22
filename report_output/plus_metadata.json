@@ -1,0 +1,10 @@
+{
+  "run_id": "local_1776788701_14",
+  "report_title": "report_output",
+  "environment": "Pass --rp-env to populate environment",
+  "branch": "Pass --git-branch to populate git metadata",
+  "commit": "Pass --git-commit to populate git metadata",
+  "python_version": "3.10.12",
+  "generated_at": "2026-04-21T16:25:01.130625",
+  "source": "local"
+}
