@@ -3,19 +3,19 @@
 Before submitting, please make sure you've done the following:
 
 **Branch**
-- [ ] PR is targeting the correct upcoming version branch (e.g. `0.4.1`), not `main`
+- [ ] PR is targeting `main`
 
 **Code**
-- [ ] Ran `make lint` with no errors
-- [ ] Ran `make test` and all tests pass
+- [ ] Ran `poetry run ruff check .` with no errors
+- [ ] Ran `poetry run pytest tests/unit` and all tests pass
 - [ ] Added or updated tests for any new or changed behavior
 
 **Docs**
 - [ ] Updated README if user-facing behavior changed
-- [ ] Updated ReadTheDocs documentation if applicable
+- [ ] Updated docs in `docs/` if applicable
 
 **Changelog**
-- [ ] Added a short entry under the upcoming version in `CHANGELOG.md`
+- [ ] Added a short entry under `[Unreleased]` in `CHANGELOG.md`
 
 **General**
 - [ ] PR description explains *what* changed and *why*

@@ -92,7 +92,28 @@ Just start typing, and the dashboard will instantly filter tests by:
 
 ![ezgif-744a5d34a4c46d](https://github.com/user-attachments/assets/209cd2c0-d33b-48ec-b58b-8c8991ce35be)
 
-### AND MANY MANY MORE
+### Complete Feature List
+
+| Feature | Details |
+|---|---|
+| 📊 **Single-file HTML report** | Fully self-contained — no external CSS, JS, or image folders to archive |
+| 🔄 **Flaky test detection** | Detects tests that fail then pass on retry; shows full retry history |
+| 📸 **Automatic screenshots** | Selenium & Playwright screenshots captured and embedded with no conftest hooks |
+| 🧩 **JUnit XML export** | Merged XML output compatible with TestRail, Xray, and Zephyr (`--generate-xml`) |
+| 🔗 **Traceability links** | Attach Jira, Testmo, Notion, or any URL to a test; rendered and searchable in the report |
+| 🏷️ **Dynamic markers** | Tag tests at runtime with `pytest.mark.*` — no marker pre-registration needed |
+| 🔍 **Universal search** | Filter tests by name, issue ID, or any URL keyword in real time |
+| 🐢 **Slow test highlighting** | Slowest tests in the run automatically flagged |
+| 📋 **Copy-to-clipboard** | Copy test path, logs, trace, and errors in one click |
+| 📦 **Run metadata** | Branch, commit SHA, environment, and custom metadata embedded in the report header |
+| 📝 **Comprehensive log capture** | `print()`, logger output, and stdout/stderr automatically captured per test |
+| ⚡ **xdist support** | Parallel runs with `pytest-xdist` produce a single merged report, no extra steps |
+| 🌐 **Auto-open report** | `--should-open-report` opens the report in your browser after a run (always / failed / never) |
+| 📄 **JSON report** | Raw JSON output (`--json-report`) for custom dashboards or post-processing |
+| 🔎 **Unlinked test detection** | Instantly filter tests that have no associated issue or documentation link |
+| ⚙️ **Reusable config profiles** | Define named profiles in `pyproject.toml` (`--profile=ci`) — no more repeated CLI flags |
+| 📱 **Mobile-friendly layout** | Report renders cleanly on any screen size |
+| 📧 **Email reports** | Send reports via SendGrid integration (`--send-email`) |
 
 ## Target Audience
 

@@ -37,6 +37,7 @@ urls.Homepage = "https://github.com/reporterplus/pytest-html-plus"
 urls.Source = "https://github.com/reporterplus/pytest-html-plus"
 urls.Tracker = "https://github.com/reporterplus/pytest-html-plus/issues"
 urls.Documentation = "https://pytest-html-plus.readthedocs.io"
+urls.Changelog = "https://github.com/reporterplus/pytest-html-plus/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
