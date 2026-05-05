@@ -9,6 +9,42 @@
 
 [![Discord](https://img.shields.io/discord/1377581416337903646?labelColor=black&logo=discord&logoColor=c20a71&style=for-the-badge&color=c20a71)](https://discord.gg/nUNZ9crf) 
 
+---
+
+## Already using pytest-html?
+
+No uninstall needed — `pytest-html-plus` works alongside it. Install it, run your suite, and see what you've been missing. Most teams uninstall `pytest-html` within the same day.
+
+```bash
+pip install pytest-html-plus
+```
+
+Your existing `pytest --html=report.html` commands keep working unchanged.
+
+| Feature | pytest-html | pytest-html-plus |
+|---|:---:|:---:|
+| Single-file self-contained HTML report | ✅ | ✅ |
+| Zero config — works out of the box | ✅ | ✅ |
+| xdist parallel run support | ⚠️ requires extra plugin | ✅ built-in |
+| Screenshots (no conftest hooks) | ❌ | ✅ |
+| Automatic log & print() capture | ❌ | ✅ |
+| Flaky test detection + retry history | ❌ | ✅ |
+| Slow test highlighting | ❌ | ✅ |
+| Traceability links (Jira, Testmo, etc.) | ❌ | ✅ |
+| Dynamic markers / tags | ❌ | ✅ |
+| Universal search across tests | ❌ | ✅ |
+| Unlinked test detection | ❌ | ✅ |
+| Copy logs & traces to clipboard | ❌ | ✅ |
+| JUnit XML export (merged, one flag) | ❌ requires extra steps | ✅ |
+| Run metadata (branch, commit, env) | ❌ | ✅ |
+| Reusable config profiles | ❌ | ✅ |
+| Email reports | ❌ | ✅ |
+| Mobile-friendly layout | ❌ | ✅ |
+| GitHub Actions marketplace action | ❌ | ✅ |
+| VSCode extension | ❌ | ✅ |
+
+---
+
 ## 🚀 Installation
 
 ```bash
@@ -19,7 +55,7 @@ poetry add pytest-html-plus
 
 ## Pytest HTML Plus Action
 
-If you don’t want the burden of installing pytest-html-plus manually and your project already manages dependencies with `requirements.txt` or Poetry, use this GitHub Action to generate rich pytest reports automatically.
+If you don't want the burden of installing pytest-html-plus manually and your project already manages dependencies with `requirements.txt` or Poetry, use this GitHub Action to generate rich pytest reports automatically.
 
 [![🚀 Checkout on GitHub Marketplace](https://img.shields.io/badge/Marketplace-Pytest%20HTML%20Plus-blue?logo=github)](https://github.com/marketplace/actions/pytest-html-plus-action)
 [![Documentation](https://img.shields.io/badge/docs-readthedocs.io-brightgreen)](https://pytest-html-plus.readthedocs.io/en/main/marketplace/usage.html)
@@ -41,7 +77,7 @@ Export a fully merged JUnit XML report effortlessly — no external tools or plu
 
 ![ScreenRecording2025-07-06at11 38 21PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/02da5cc9-7ef5-4a3a-a475-88907964a9c6)
 
-#### 🔄 Stop Guessing — See What’s Breaking Your Flaky Tests
+#### 🔄 Stop Guessing — See What's Breaking Your Flaky Tests
 Instantly see how your tests behave across retries — from failure to recovery. Spot patterns like cache issues, race conditions, and random crashes without the guesswork.
 
 ![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/1f7e0cd8-d2f9-47fd-8909-6f12adf8a800)
@@ -82,7 +118,7 @@ Just start typing, and the dashboard will instantly filter tests by:
 
 #### 📧 Email Test Reports: Send your reports via email effortlessly using SendGrid integration.
 
-![Screenshot 2025-05-28 at 4 38 49 PM](https://github.com/user-attachments/assets/3f40e206-5dfd-45e9-a511-4dd206cf3318)
+![Screenshot 2025-05-28 at 4 38 49 PM](https://github.com/user-attachments/assets/3f40e206-5dfd-45e9-a511-4dd206cf3318)
 
 #### 🐢 Spot Slow Tests: Highlights the slowest tests so you know where to optimize your suite.
 
@@ -125,36 +161,32 @@ This plugin is aimed at those who are:
 
 - Are frustrated with archiving folders full of assets, CSS, JS, and dashboards just to share test results.
 
-- Don’t want to refactor existing test suites or tag everything with new decorators just to integrate with a reporting tool.
+- Don't want to refactor existing test suites or tag everything with new decorators just to integrate with a reporting tool.
 
 - Prefer simplicity — a zero-config, zero code, lightweight report that still looks clean, useful, and polished.
 
-- Want “just enough” — not bare-bones plain text, not a full dashboard with database setup — just a portable HTML report that STILL supports features like links, screenshots, and markers.
+- Want "just enough" — not bare-bones plain text, not a full dashboard with database setup — just a portable HTML report that STILL supports features like links, screenshots, and markers.
 
+## vs Allure
 
-## Comparison with Alternatives
-Most existing pytest reporter tools:
+Allure is powerful but comes with significant overhead — a separate report server, external assets, and a complex setup. `pytest-html-plus` is for teams that want rich reporting without the infrastructure cost.
 
-Only generate HTML reports from a single run  (by making you write code for creating xmls like pytest-html) OR they generate all the JS and png files that are not the scope of test results and force you to archive it.
-
-Heavy duty with bloated charts and other test management features(when they arent your only test management system either) increasing your archive size.
-
-This plugin aims to fill those gaps by acting as a companion layer on top of the JSON report, focusing on:
-
-🔄 Merge + flakiness intelligence
-
-🔗 Traceability via metadata
-
-🧼 HTML that’s both readable and minimal
-
-🧼 Quickly copy test paths and run in your local
+| | Allure | pytest-html-plus |
+|---|:---:|:---:|
+| Self-contained single HTML file | ❌ | ✅ |
+| No extra server or CLI tool needed | ❌ | ✅ |
+| Zero-config screenshots | ❌ requires decorators | ✅ |
+| Works in any CI without setup steps | ❌ | ✅ |
+| Flaky test detection | ✅ | ✅ |
+| Traceability links | ✅ | ✅ |
+| JUnit XML export | ✅ | ✅ |
+| Report file size (typical run) | 🔴 large (many files) | 🟢 single file |
 
 ## Contributing
 
 We welcome pull requests, issues, and feature suggestions from the community.
 
-See the [contribution guide](https://pytest-html-plus.readthedocs.io/en/latest/contributing.html) for setup instructions.
-
+See the [contribution guide](CONTRIBUTING.md) for setup instructions.
 
 ## 📜 License
 

@@ -71,7 +71,7 @@ jobs:
           $env:PYTHONWARNINGS = "error"
           poetry run pytest `
             --cov=pytest_html_plus `
-            --cov-fail-under=39 `
+            --cov-fail-under=75 `
             --cov-report=term `
             --reruns 1 `
             --ignore=tests/browser `
