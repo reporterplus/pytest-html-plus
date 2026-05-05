@@ -45,7 +45,9 @@ def make_reporter(tmp_path, results):
 
 def render_html(reporter):
     reporter.generate_html_report()
-    return open(reporter.output_dir + "/report.html").read()
+    from pathlib import Path
+
+    return Path(reporter.output_dir, "report.html").read_text()
 
 
 class TestFlakyBadge:
