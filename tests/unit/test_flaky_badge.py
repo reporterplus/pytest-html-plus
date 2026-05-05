@@ -47,7 +47,7 @@ def render_html(reporter):
     reporter.generate_html_report()
     from pathlib import Path
 
-    return Path(reporter.output_dir, "report.html").read_text()
+    return Path(reporter.output_dir, "report.html").read_text(encoding="utf-8")
 
 
 class TestFlakyBadge:
