@@ -1,37 +1,143 @@
-import os
-import shutil
+from pytest_html_plus.generate_html_report import JSONReporter
 
 
-def test_find_screenshot_and_copy(tmp_path):
-    screenshots_dir = tmp_path / "screenshots_src"
+def test_find_screenshot_returns_relative_path(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
     output_dir = tmp_path / "output"
-    screenshots_dir.mkdir()
+    screenshots_src.mkdir()
     output_dir.mkdir()
 
-    file_name = "test_something_fail.png"
-    file_path = screenshots_dir / file_name
-    file_path.write_text("image")
+    (screenshots_src / "test_something_failure.png").write_bytes(b"fake-png")
 
-    class FakeReporter:
-        def __init__(self, src, out):
-            self.screenshots_dir = str(src)
-            self.output_dir = str(out)
-
-        def find_screenshot_and_copy(self, test_name):
-            screenshots_output_dir = os.path.join(self.output_dir, "screenshots")
-            os.makedirs(screenshots_output_dir, exist_ok=True)
-
-            for root, _, files in os.walk(self.screenshots_dir):
-                for file in files:
-                    if file.endswith(".png") and test_name in file:
-                        src_path = os.path.join(root, file)
-                        dest_path = os.path.join(screenshots_output_dir, file)
-                        shutil.copyfile(src_path, dest_path)
-                        return os.path.join("screenshots", file)
-            return None
-
-    reporter = FakeReporter(screenshots_dir, output_dir)
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
     rel_path = reporter.find_screenshot_and_copy("something")
 
-    assert rel_path.replace("\\", "/") == f"screenshots/{file_name}"
-    assert (output_dir / "screenshots" / file_name).exists()
+    assert rel_path is not None
+    assert rel_path.replace("\\", "/") == "screenshots/test_something_failure.png"
+
+
+def test_find_screenshot_copies_file_to_output(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
+    output_dir = tmp_path / "output"
+    screenshots_src.mkdir()
+    output_dir.mkdir()
+
+    (screenshots_src / "test_login_failure.png").write_bytes(b"fake-png")
+
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
+    reporter.find_screenshot_and_copy("login")
+
+    assert (output_dir / "screenshots" / "test_login_failure.png").exists()
+
+
+def test_find_screenshot_returns_none_when_no_match(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
+    output_dir = tmp_path / "output"
+    screenshots_src.mkdir()
+    output_dir.mkdir()
+
+    (screenshots_src / "test_login_failure.png").write_bytes(b"fake-png")
+
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
+    result = reporter.find_screenshot_and_copy("checkout")
+
+    assert result is None
+
+
+def test_find_screenshot_returns_none_for_empty_dir(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
+    output_dir = tmp_path / "output"
+    screenshots_src.mkdir()
+    output_dir.mkdir()
+
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
+    result = reporter.find_screenshot_and_copy("anything")
+
+    assert result is None
+
+
+def test_find_screenshot_partial_name_match(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
+    output_dir = tmp_path / "output"
+    screenshots_src.mkdir()
+    output_dir.mkdir()
+
+    (screenshots_src / "test_user_profile_update_failure.png").write_bytes(b"fake-png")
+
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
+    result = reporter.find_screenshot_and_copy("profile")
+
+    assert result is not None
+    assert "profile" in result
+
+
+def test_find_screenshot_ignores_non_png_files(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
+    output_dir = tmp_path / "output"
+    screenshots_src.mkdir()
+    output_dir.mkdir()
+
+    (screenshots_src / "test_login_failure.jpg").write_bytes(b"fake-jpg")
+    (screenshots_src / "test_login_failure.png").write_bytes(b"fake-png")
+
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
+    result = reporter.find_screenshot_and_copy("login")
+
+    assert result is not None
+    assert result.endswith(".png")
+
+
+def test_find_screenshot_finds_in_nested_subdir(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
+    nested = screenshots_src / "subdir"
+    output_dir = tmp_path / "output"
+    nested.mkdir(parents=True)
+    output_dir.mkdir()
+
+    (nested / "test_nested_failure.png").write_bytes(b"fake-png")
+
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
+    result = reporter.find_screenshot_and_copy("nested")
+
+    assert result is not None
+    assert (output_dir / "screenshots" / "test_nested_failure.png").exists()
+
+
+def test_find_screenshot_preserves_file_content(tmp_path):
+    screenshots_src = tmp_path / "screenshots"
+    output_dir = tmp_path / "output"
+    screenshots_src.mkdir()
+    output_dir.mkdir()
+
+    original = b"\x89PNG\r\nreal-png-data"
+    (screenshots_src / "test_visual_failure.png").write_bytes(original)
+
+    reporter = JSONReporter(
+        screenshots_dir=str(screenshots_src),
+        output_dir=str(output_dir),
+    )
+    reporter.find_screenshot_and_copy("visual")
+
+    copied = (output_dir / "screenshots" / "test_visual_failure.png").read_bytes()
+    assert copied == original
