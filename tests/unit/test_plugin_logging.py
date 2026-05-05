@@ -19,6 +19,19 @@ def run_pytest(tmp_path, test_source, extra_args=None):
     test_file = tmp_path / "test_sample.py"
     test_file.write_text(textwrap.dedent(test_source))
 
+    # Register any custom marks used in test sources so that PYTHONWARNINGS=error
+    # (set by CI) doesn't turn PytestUnknownMarkWarning into a fatal collection error.
+    conftest = tmp_path / "conftest.py"
+    conftest.write_text(
+        textwrap.dedent(
+            """\
+        def pytest_configure(config):
+            config.addinivalue_line("markers", "smoke: smoke tests")
+            config.addinivalue_line("markers", "regression: regression tests")
+    """
+        )
+    )
+
     # Actual path where the plugin will write the report
     report_file = tmp_path / HTML_OUTPUT / REPORT_FILENAME
 
