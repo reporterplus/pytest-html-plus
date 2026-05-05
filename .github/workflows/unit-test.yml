@@ -57,7 +57,7 @@ jobs:
           export REPORT_COMMIT="$(git rev-parse HEAD)"
           poetry run pytest \
             --cov=pytest_html_plus \
-            --cov-fail-under=39 \
+            --cov-fail-under=75 \
             --cov-report=term \
             --cov-report=xml:coverage.xml \
             --reruns 1 \
