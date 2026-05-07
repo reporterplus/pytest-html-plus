@@ -172,3 +172,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# macOS
+.DS_Store
+
+# pytest-html-plus generated output
+report_output/
+.pytest_worker_jsons/
