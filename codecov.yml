@@ -1,0 +1,45 @@
+# Codecov configuration for pytest-html-plus
+# Docs: https://docs.codecov.com/docs/codecovyml-reference
+
+codecov:
+  require_ci_to_pass: true
+  notify:
+    # Wait for the Python 3.12 coverage upload before posting results
+    after_n_builds: 1
+
+coverage:
+  precision: 2
+  round: down
+  range: "60...90"
+
+  status:
+    project:
+      default:
+        target: auto           # compare against the base commit
+        threshold: 1%          # allow small regressions without failing the check
+        informational: false
+    patch:
+      default:
+        target: 80%            # require new/changed code to be reasonably covered
+        threshold: 5%
+        informational: true    # don't block PRs while the project ramps up
+
+comment:
+  layout: "header, diff, flags, components, files, footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+ignore:
+  - "tests/**"
+  - "docs/**"
+  - "dist/**"
+  - "generateMock.py"
+  - "pytest_html_plus/generate_html_report.py"  # excluded from ruff too
+
+flags:
+  unittests:
+    paths:
+      - pytest_html_plus/
+    carryforward: true

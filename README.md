@@ -7,13 +7,11 @@
 
 [![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/main/) [![PyPI Downloads](https://static.pepy.tech/badge/pytest-html-plus)](https://pepy.tech/projects/pytest-html-plus) ![PyPI](https://img.shields.io/pypi/v/pytest-html-plus) ![Python Versions](https://img.shields.io/pypi/pyversions/pytest-html-plus)  ![License](https://img.shields.io/pypi/l/pytest-html-plus)  [![Unit Tests](https://github.com/reporterplus/pytest-html-plus/actions/workflows/unit-test.yml/badge.svg)](https://github.com/reporterplus/pytest-html-plus/actions/workflows/unit-test.yml) [![codecov](https://codecov.io/gh/reporterplus/pytest-html-plus/branch/main/graph/badge.svg)](https://codecov.io/gh/reporterplus/pytest-html-plus)
 
-[![Discord](https://img.shields.io/discord/1377581416337903646?labelColor=black&logo=discord&logoColor=c20a71&style=for-the-badge&color=c20a71)](https://discord.gg/nUNZ9crf) 
-
 ---
 
-## Already using pytest-html?
+## Already using pytest-html or Allure?
 
-No uninstall needed — `pytest-html-plus` works alongside it. Install it, run your suite, and see what you've been missing. Most teams uninstall `pytest-html` within the same day.
+No uninstall needed — `pytest-html-plus` works alongside `pytest-html`. Install it, run your suite, and see what you've been missing. Most teams uninstall `pytest-html` within the same day.
 
 ```bash
 pip install pytest-html-plus
@@ -21,27 +19,25 @@ pip install pytest-html-plus
 
 Your existing `pytest --html=report.html` commands keep working unchanged.
 
-| Feature | pytest-html | pytest-html-plus |
-|---|:---:|:---:|
-| Single-file self-contained HTML report | ✅ | ✅ |
-| Zero config — works out of the box | ✅ | ✅ |
-| xdist parallel run support | ⚠️ requires extra plugin | ✅ built-in |
-| Screenshots (no conftest hooks) | ❌ | ✅ |
-| Automatic log & print() capture | ❌ | ✅ |
-| Flaky test detection + retry history | ❌ | ✅ |
-| Slow test highlighting | ❌ | ✅ |
-| Traceability links (Jira, Testmo, etc.) | ❌ | ✅ |
-| Dynamic markers / tags | ❌ | ✅ |
-| Universal search across tests | ❌ | ✅ |
-| Unlinked test detection | ❌ | ✅ |
-| Copy logs & traces to clipboard | ❌ | ✅ |
-| JUnit XML export (merged, one flag) | ❌ requires extra steps | ✅ |
-| Run metadata (branch, commit, env) | ❌ | ✅ |
-| Reusable config profiles | ❌ | ✅ |
-| Email reports | ❌ | ✅ |
-| Mobile-friendly layout | ❌ | ✅ |
-| GitHub Actions marketplace action | ❌ | ✅ |
-| VSCode extension | ❌ | ✅ |
+| Feature | pytest-html | Allure | pytest-html-plus |
+|---|:---:|:---:|:---:|
+| Self-contained single HTML file | ✅ | ❌ | ✅ |
+| No server or CLI tool needed | ✅ | ❌ | ✅ |
+| Zero config — works out of the box | ✅ | ❌ | ✅ |
+| xdist parallel run support | ⚠️ extra plugin | ✅ | ✅ built-in |
+| Screenshots (no hooks or decorators) | ❌ | ❌ requires decorators | ✅ |
+| Automatic log & print() capture | ❌ | ✅ | ✅ |
+| Flaky test detection + retry history | ❌ | ✅ | ✅ |
+| Slow test highlighting | ❌ | ❌ | ✅ |
+| Traceability links (Jira, Testmo, etc.) | ❌ | ✅ | ✅ |
+| JUnit XML export (merged, one flag) | ❌ extra steps | ✅ | ✅ |
+| Run metadata (branch, commit, env) | ❌ | ✅ | ✅ |
+| Reusable config profiles | ❌ | ❌ | ✅ |
+| Unlinked test detection | ❌ | ❌ | ✅ |
+| Copy logs & traces to clipboard | ❌ | ❌ | ✅ |
+| Email reports | ❌ | ❌ | ✅ |
+| Mobile-friendly layout | ❌ | ✅ | ✅ |
+| Report size | 🟢 single file | 🔴 many files | 🟢 single file |
 
 ---
 
@@ -166,21 +162,6 @@ This plugin is aimed at those who are:
 - Prefer simplicity — a zero-config, zero code, lightweight report that still looks clean, useful, and polished.
 
 - Want "just enough" — not bare-bones plain text, not a full dashboard with database setup — just a portable HTML report that STILL supports features like links, screenshots, and markers.
-
-## vs Allure
-
-Allure is powerful but comes with significant overhead — a separate report server, external assets, and a complex setup. `pytest-html-plus` is for teams that want rich reporting without the infrastructure cost.
-
-| | Allure | pytest-html-plus |
-|---|:---:|:---:|
-| Self-contained single HTML file | ❌ | ✅ |
-| No extra server or CLI tool needed | ❌ | ✅ |
-| Zero-config screenshots | ❌ requires decorators | ✅ |
-| Works in any CI without setup steps | ❌ | ✅ |
-| Flaky test detection | ✅ | ✅ |
-| Traceability links | ✅ | ✅ |
-| JUnit XML export | ✅ | ✅ |
-| Report file size (typical run) | 🔴 large (many files) | 🟢 single file |
 
 ## Contributing
 
