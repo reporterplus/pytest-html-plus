@@ -1,15 +1,10 @@
-.PHONY: build shell test lint clean
+.PHONY: build build-with-dev-dependencies shell test test-with-xdist lint fix install-formatter dist clean
 
 IMAGE_NAME = pytest-html-plus
 SRC_DIR    = $(shell pwd)
 
 # Mount local source into container — no rebuild needed on code changes
 DOCKER_RUN = docker run --rm \
-    -v $(SRC_DIR):/app \
-    -w /app \
-    $(IMAGE_NAME)
-
-DOCKER_RUN_REPORTS = docker run --rm \
     -v $(SRC_DIR):/app \
     -w /app \
     $(IMAGE_NAME)
@@ -30,7 +25,7 @@ test:
 	poetry run pytest tests/unit --reruns 1
 
 test-with-xdist:
-	$(DOCKER_RUN_REPORTS) poetry run poetry run pytest tests/unit --reruns 1 -n auto
+	poetry run pytest tests/unit --reruns 1 -n auto
 
 lint:
 	$(DOCKER_RUN) poetry run ruff check .
@@ -40,9 +35,10 @@ fix:
 	$(DOCKER_RUN) poetry run ruff format .
 
 install-formatter:
-	pip install pre-commit
-	pre-commit install
+	poetry run pre-commit install
+
+dist:
+	poetry build
 
 clean:
 	docker rmi $(IMAGE_NAME)
-	rm -rf $(REPORTS_DIR)

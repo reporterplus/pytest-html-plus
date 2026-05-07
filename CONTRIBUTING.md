@@ -31,14 +31,13 @@ cd pytest-html-plus
 poetry install --with dev
 
 # Verify the install worked
-poetry run pytest tests/unit -q --tb=short
+make test
 ```
 
 Expected output on a clean install:
 
 ```
-.....................
-X passed in Y.Zs
+========================= X passed in Y.Zs ==========================
 ```
 
 ### Option B — Docker (if you prefer an isolated environment)
@@ -50,13 +49,13 @@ git clone https://github.com/reporterplus/pytest-html-plus.git
 cd pytest-html-plus
 
 # Build the dev image (only needed once, or after pyproject.toml changes)
-docker build -t pytest-html-plus .
+make build
 
 # Drop into a shell inside the container
 make shell
 ```
 
-From inside the container shell, all the same `poetry run ...` commands work.
+From inside the container shell, all the same `make` commands work.
 
 ---
 
@@ -65,36 +64,30 @@ From inside the container shell, all the same `poetry run ...` commands work.
 ### Unit tests (fast, no browser needed)
 
 ```bash
-poetry run pytest tests/unit
+make test
 ```
 
 ### Run a single test file
 
 ```bash
-poetry run pytest tests/unit/test_json_merger.py
+poetry run pytest tests/unit/{{your-test-file}}.py
 ```
 
 ### Run a single test by name
 
 ```bash
-poetry run pytest tests/unit -k "test_merge_flaky"
+poetry run pytest tests/unit -k "{{your-test-name}}"
 ```
 
 ### Run with xdist (parallel)
 
 ```bash
-poetry run pytest tests/unit -n auto
-```
-
-### Run with retry on flaky tests
-
-```bash
-poetry run pytest tests/unit --reruns 1
+make test-with-xdist
 ```
 
 ### What the test output should look like
 
-A clean run prints a line per test file and a summary:
+A clean run prints a summary at the end:
 
 ```
 ========================= X passed in Y.Zs ==========================
@@ -109,28 +102,14 @@ If you see import errors on first run, make sure you ran `poetry install --with 
 We use [ruff](https://docs.astral.sh/ruff/) for linting and formatting.
 
 ```bash
-# Check for issues
-poetry run ruff check .
-
-# Auto-fix what ruff can fix
-poetry run ruff check . --fix
-
-# Format code
-poetry run ruff format .
-```
-
-Or via the Makefile shortcuts (these run inside Docker):
-
-```bash
-make lint    # check only
-make fix     # fix + format
+make lint    # check for issues
+make fix     # auto-fix and format
 ```
 
 ### Pre-commit hooks (optional but recommended)
 
 ```bash
-pip install pre-commit
-pre-commit install
+make install-formatter
 ```
 
 After this, lint runs automatically on every `git commit`.
@@ -152,13 +131,13 @@ After this, lint runs automatically on every `git commit`.
 4. **Run the test suite** and confirm everything passes:
 
    ```bash
-   poetry run pytest tests/unit --reruns 1
+   make test
    ```
 
 5. **Run lint** and fix any issues:
 
    ```bash
-   poetry run ruff check . --fix && poetry run ruff format .
+   make fix
    ```
 
 6. **Update the docs** in `docs/` or `README.md` if your change affects user-facing behaviour.
@@ -184,8 +163,8 @@ After this, lint runs automatically on every `git commit`.
 
 Before marking as Ready for Review:
 
-- [ ] `poetry run pytest tests/unit` passes
-- [ ] `poetry run ruff check .` passes
+- [ ] `make test` passes
+- [ ] `make lint` passes
 - [ ] Tests added or updated for changed behaviour
 - [ ] README / docs updated if user-facing behaviour changed
 - [ ] Changelog entry added under `[Unreleased]` in `CHANGELOG.md`
@@ -239,4 +218,3 @@ Maintainers handle version bumps and releases — you don't need to change the v
 
 - Open an [Issue](https://github.com/reporterplus/pytest-html-plus/issues) for bugs or feature ideas
 - Start a [Discussion](https://github.com/reporterplus/pytest-html-plus/discussions) for questions or design ideas
-- Join the [Discord](https://discord.gg/nUNZ9crf) for real-time chat
