@@ -37,7 +37,6 @@ PROFILE_OPTION_MAP = {
     "html-output": {"flag": "--html-output", "kind": "value"},
     "screenshots": {"flag": "--screenshots", "kind": "value"},
     "plus-email": {"flag": "--plus-email", "kind": "bool"},
-    "detect-flake": {"flag": "--detect-flake", "kind": "value"},
     "should-open-report": {"flag": "--should-open-report", "kind": "value"},
     "generate-xml": {"flag": "--generate-xml", "kind": "bool"},
     "xml-report": {"flag": "--xml-report", "kind": "value"},
@@ -448,12 +447,6 @@ def pytest_addoption(parser):
         action="store_true",
         default=False,
         help="Send HTML test report via email after test run",
-    )
-    group.addoption(
-        "--detect-flake",
-        action="store",
-        default=False,
-        help="Helps capture flaky tests in the last n number of builds",
     )
     group.addoption(
         "--should-open-report",
