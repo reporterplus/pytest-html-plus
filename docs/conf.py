@@ -17,6 +17,10 @@ extensions = [
     "myst_parser",
 ]
 
+# MyST is enabled for basic Markdown parsing only.
+# Keep advanced syntax extensions disabled unless explicitly needed.
+myst_enable_extensions = []
+
 templates_path = ["_templates"]
 exclude_patterns = []
 
