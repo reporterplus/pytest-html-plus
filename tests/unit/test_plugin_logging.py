@@ -54,6 +54,15 @@ def run_pytest(tmp_path, test_source, extra_args=None):
 
 
 def load_results(report_file):
+    """Load test results from a JSON report file.
+
+    Args:
+        report_file: Path object pointing to the JSON report file.
+
+    Returns:
+        A list of test result dictionaries from the report's "results" field.
+        Returns an empty list if the field is missing.
+    """
     data = json.loads(report_file.read_text())
     return data.get("results", [])
 
