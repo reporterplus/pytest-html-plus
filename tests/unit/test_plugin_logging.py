@@ -15,6 +15,12 @@ def run_pytest(tmp_path, test_source, extra_args=None):
     --json-report only accepts a plain filename (not a path). The plugin
     writes the final JSON to <html-output>/<filename>, so the report lives at
     tmp_path / HTML_OUTPUT / REPORT_FILENAME.
+
+    Args:
+        tmp_path: Temporary directory where test files and outputs are created.
+        test_source: Python source code for the test module to execute.
+        extra_args: Optional list of additional command-line arguments to pass
+            to pytest.
     """
     test_file = tmp_path / "test_sample.py"
     test_file.write_text(textwrap.dedent(test_source))
@@ -54,6 +60,15 @@ def run_pytest(tmp_path, test_source, extra_args=None):
 
 
 def load_results(report_file):
+    """Load test results from a JSON report file.
+
+    Args:
+        report_file: Path object pointing to the JSON report file.
+
+    Returns:
+        A list of test result dictionaries from the report's "results" field.
+        Returns an empty list if the field is missing.
+    """
     data = json.loads(report_file.read_text())
     return data.get("results", [])
 
