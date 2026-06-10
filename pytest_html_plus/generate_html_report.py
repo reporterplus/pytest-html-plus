@@ -4,7 +4,7 @@ import json
 import os
 import shutil
 from datetime import datetime, timezone
-
+from html import escape
 from pytest_html_plus.compute_filter_counts import compute_filter_count
 from pytest_html_plus.utils import extract_error_block, extract_trace_block
 
@@ -614,7 +614,8 @@ class JSONReporter:
               document.querySelectorAll('.test-card').forEach(card => {{
                   const name = card.getAttribute('data-name') || '';
                   const link = card.getAttribute('data-link') || '';
-                  const isVisible = name.toLowerCase().includes(filter) || link.toLowerCase().includes(filter);
+                  const error = card.getAttribute('data-error') || '';
+                  const isVisible = name.toLowerCase().includes(filter) || link.toLowerCase().includes(filter) || error.toLowerCase().includes(filter);
                   card.style.display = isVisible ? '' : 'none';
               }});
           }});
@@ -750,7 +751,7 @@ class JSONReporter:
           <input
   type="text"
   id="universal-search"
-  placeholder="🔍 Search by anything, testname? link ids?..."
+  placeholder="🔍 Search by test names, link IDs, or error logs..."
   style="width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;"
 />
     </div>
@@ -873,6 +874,8 @@ class JSONReporter:
                     """
 
                 attempts_html += "</div>"
+            
+            search_error = ""
 
             if test.get("error"):
                 full_error = test["error"]
@@ -891,6 +894,11 @@ class JSONReporter:
                     <div class="error-content"><strong>Error:</strong> {self.generate_copy_button(error_content, "error")}
                     <pre>{error_content}</pre></div>
                     """
+                    search_error = (
+                        error_content.replace("\n", " ")
+                        .replace("\r", " ")
+                    )[:1000]
+                   
 
             flaky_badge = ""
             if test.get("flaky"):
@@ -928,7 +936,7 @@ class JSONReporter:
                 )
 
             html += f"""    
-<div class="test test-card" data-name="{test["test"]}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}">
+<div class="test test-card" data-name="{test["test"]}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}" data-error="{escape(search_error)}">
   <div class="header {status_class}" onclick="toggleDetails(this)">
     <div class="header-section test-info">
       <span class="toggle"></span>
