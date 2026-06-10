@@ -84,7 +84,7 @@ ignore = [
     "W293",  # blank line whitespace — let black handle
 ]
 exclude = [
-    "pytest_html_plus/generate_html_report.py"
+    "pytest_html_plus/generate_html_report.py",
     ".git"
 ]
 
