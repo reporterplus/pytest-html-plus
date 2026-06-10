@@ -22,10 +22,10 @@ shell:
         $(IMAGE_NAME) /bin/bash
 
 test:
-	poetry run pytest tests/unit --reruns 1
+	$(DOCKER_RUN) poetry run pytest tests/unit --reruns 1
 
 test-with-xdist:
-	poetry run pytest tests/unit --reruns 1 -n auto
+	$(DOCKER_RUN) poetry run pytest tests/unit --reruns 1 -n auto
 
 lint:
 	$(DOCKER_RUN) poetry run ruff check .

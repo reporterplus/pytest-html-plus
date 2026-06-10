@@ -96,19 +96,22 @@ No need for custom marker definitions. Perfect for smarter filtering, reporting,
 
 ![ScreenRecording2025-06-29at1 06 02AM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
 
-#### 🔍 Universal Test Search + Smart Link Navigation
+#### 🔍 Universal Test Search + Smart Traceability
 
-Whether you're trying to trace coverage or track unlinked test cases — this search has your back!
+Whether you're tracing coverage, investigating failures, or tracking unlinked test cases — this search has your back!
 
 Just start typing, and the dashboard will instantly filter tests by:
 
-✅ Test name
+✅ Test names
 
-✅ Linked issue/documentation IDs (like JIRA, Testmo, Notion, etc.)
+✅ Linked issue or documentation IDs (JIRA, Testmo, Notion, etc.)
 
-✅ Custom URLs or keywords present in the links
+✅ Custom URLs or keywords present in linked references
 
-![ScreenRecording2025-06-21at3 10 06PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f81c9a81-f98d-4151-ad7a-c1184cd199eb)
+✅ Error messages and trace snippets to quickly group related failures
+
+<img width="800" height="421" alt="new_search" src="https://github.com/user-attachments/assets/54858747-ab16-4d4f-baa9-0d651a1d8bac" />
+
 
 #### 📸 Screenshot Support: View screenshots directly in the report to understand failures faster.
 

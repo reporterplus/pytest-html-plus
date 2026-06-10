@@ -1,3 +1,5 @@
+import pytest
+
 from pytest_html_plus.utils import extract_error_block
 
 
@@ -7,12 +9,14 @@ def test_error_block_basic():
     assert extract_error_block(error) == expected
 
 
+@pytest.mark.jira("https://acme.atlassian.net/browse/QA-123")
 def test_error_block_spaces_and_blank_lines():
     error = "\n\n   E TypeError\n\n   \nE IndexError\n"
     expected = "E TypeError\nE IndexError"
     assert extract_error_block(error) == expected
 
 
+@pytest.mark.link("https://acme.atlassian.net/browse/PAY-456")
 def test_error_block_no_E_lines():
     error = "line 1\nline 2"
     expected = "line 1\nline 2"
