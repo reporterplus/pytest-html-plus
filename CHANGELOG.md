@@ -13,6 +13,27 @@ _Changes merged to `main` but not yet released._
 
 ---
 
+## [1.1.0] — 2026-06-10
+
+### Added
+
+* Universal search now indexes error messages and trace snippets in addition to test names and linked references.
+* Users can quickly locate related failures by searching for exception names, assertion text, or custom error messages.
+
+### Changed
+
+* Updated README and documentation examples for universal search and traceability.
+
+### Fixed
+
+* Addressed security and reliability issues identified by CodeQL analysis.
+* Improved report generation robustness and resolved minor quality issues highlighted during static analysis.
+
+### Maintenance
+
+* Bumped version to `1.1.0` in `pyproject.toml` and `docs/conf.py`.
+
+
 ## [1.0.1] — 2026-05-07
 
 ### Changed
