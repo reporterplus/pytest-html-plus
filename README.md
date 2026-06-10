@@ -110,6 +110,7 @@ Just start typing, and the dashboard will instantly filter tests by:
 
 ✅ Error messages and trace snippets to quickly group related failures
 
+<img width="800" height="421" alt="new_search" src="https://github.com/user-attachments/assets/54858747-ab16-4d4f-baa9-0d651a1d8bac" />
 
 
 #### 📸 Screenshot Support: View screenshots directly in the report to understand failures faster.
