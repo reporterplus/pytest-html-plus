@@ -35,7 +35,7 @@ jobs:
           poetry run playwright install --with-deps
       
       - name: 🧪 Run playwright test and generate report using marketplace plugin
-        uses: reporterplus/pytest-html-plus-action@v2
+        uses: reporterplus/pytest-html-plus-action@v4
         with:
           htmloutput: "report_output_playwright"
           capturescreenshots: "all"
@@ -43,12 +43,14 @@ jobs:
           usepoetry: "true"
           xmlreport: "report.xml"
           gitbranch: "$(git rev-parse --abbrev-ref HEAD)"
+          publish_github_summary: ${{ secrets.GITHUB_TOKEN }}
+                        
 
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
-          path: |
-            report_output_playwright/
+      # - name: Upload reports
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
+      #     path: |
+      #       report_output_playwright/
 
