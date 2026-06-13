@@ -6,6 +6,11 @@ on:
       - main
       - "[0-9]+\\.[0-9]+\\.[0-9]+"
 
+permissions:
+  contents: read
+  pull-requests: write
+  
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -35,20 +40,24 @@ jobs:
           poetry run playwright install --with-deps
       
       - name: 🧪 Run playwright test and generate report using marketplace plugin
-        uses: reporterplus/pytest-html-plus-action@v2
+        uses: reporterplus/pytest-html-plus-action@v3
         with:
-          htmloutput: "report_output_playwright"
-          capturescreenshots: "all"
-          testpath: "tests/browser/test_playwright.py"
-          usepoetry: "true"
-          xmlreport: "report.xml"
-          gitbranch: "$(git rev-parse --abbrev-ref HEAD)"
+          html_output: "report_output_playwright"
+          capture_screenshots: "all"
+          test_path: "tests/browser/test_playwright.py"
+          use_poetry: "true"
+          xml_report: "report.xml"
+          git_branch: "$(git rev-parse --abbrev-ref HEAD)"
+          post_pr_comment: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
-          path: |
-            report_output_playwright/
+                        
+
+      # - name: Upload reports
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: reports-${{ github.job }}-${{ github.run_number }}-${{ matrix.python-version }}
+      #     path: |
+      #       report_output_playwright/
 
