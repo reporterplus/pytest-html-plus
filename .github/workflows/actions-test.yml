@@ -40,11 +40,11 @@ jobs:
           poetry run playwright install --with-deps
       
       - name: 🧪 Run playwright test and generate report using marketplace plugin
-        uses: reporterplus/pytest-html-plus-action@v4
+        uses: reporterplus/pytest-html-plus-action@v3
         with:
           htmloutput: "report_output_playwright"
           capturescreenshots: "all"
-          testpath: "tests/"
+          testpath: "tests/browser/test_playwright.py"
           usepoetry: "true"
           xmlreport: "report.xml"
           gitbranch: "$(git rev-parse --abbrev-ref HEAD)"
