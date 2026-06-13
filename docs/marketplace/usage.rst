@@ -97,6 +97,13 @@ Inputs
 |                       | Poetry                |                       |
 |                       | (``                   |                       |
 |                       | poetry run pytest``). |                       |
+|                       | Cannot be combined    |                       |
+|                       | with ``use_uv``.      |                       |
++-----------------------+-----------------------+-----------------------+
+| ``use_uv``            | Run pytest through uv | ``false``             |
+|                       | (``uv run pytest``).  |                       |
+|                       | Cannot be combined    |                       |
+|                       | with ``use_poetry``.  |                       |
 +-----------------------+-----------------------+-----------------------+
 | ``git_branch``        | Git branch name to    | ``""``                |
 |                       | embed in the report.  |                       |
@@ -211,7 +218,30 @@ Make sure ``poetry install`` has already run in a previous step.
 
 --------------
 
-5. Post a summary comment on pull requests
+5. uv project
+~~~~~~~~~~~~~
+
+``uv`` is not pre-installed on GitHub-hosted runners, so install it
+first with the official setup action.
+
+.. code:: yaml
+
+   - uses: astral-sh/setup-uv@v5
+
+   - name: Install dependencies
+     run: uv sync
+
+   - uses: reporterplus/pytest-html-plus-action@v1
+     with:
+       use_uv: "true"
+       test_path: tests/
+
+``use_uv`` and ``use_poetry`` are mutually exclusive — setting both to
+``true`` will fail the step with a clear error before pytest runs.
+
+--------------
+
+6. Post a summary comment on pull requests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: yaml
@@ -226,7 +256,7 @@ list of up to 5 failed test cases.
 
 --------------
 
-6. Embed git context in the report
+7. Embed git context in the report
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Useful when sharing reports outside of GitHub — the report itself shows
@@ -241,7 +271,7 @@ which branch and commit it was generated from.
 
 --------------
 
-7. Generate a JUnit XML report alongside HTML
+8. Generate a JUnit XML report alongside HTML
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Useful for integrating with tools that consume JUnit XML (e.g. test
@@ -256,7 +286,7 @@ analytics platforms, SonarQube).
 
 --------------
 
-8. Use step outputs to conditionally fail or notify
+9. Use step outputs to conditionally fail or notify
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: yaml
@@ -278,8 +308,8 @@ analytics platforms, SonarQube).
 
 --------------
 
-9. Pin the plugin version for reproducible CI
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+10. Pin the plugin version for reproducible CI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: yaml
 
@@ -293,7 +323,7 @@ the latest release.
 
 --------------
 
-10. Custom artifact name per matrix leg
+11. Custom artifact name per matrix leg
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When running a test matrix (e.g. multiple OS or Python versions), give
@@ -320,7 +350,7 @@ each artifact a unique name so they don’t overwrite each other.
 
 --------------
 
-11. Screenshot capture on failure (browser/UI tests)
+12. Screenshot capture on failure (browser/UI tests)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For projects using Playwright or Selenium, screenshots of failed tests
@@ -339,7 +369,7 @@ outcome.
 
 --------------
 
-12. PYTHONWARNINGS — treat warnings as errors
+13. PYTHONWARNINGS — treat warnings as errors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The action has no dedicated input for environment variables, but any
@@ -359,7 +389,7 @@ action’s environment.
 
 --------------
 
-13. Full production setup
+14. Full production setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A complete example combining git context, PR comments, XML output,
@@ -425,6 +455,11 @@ step attempting to upgrade.
 **PR comments accumulate:** Each push to a PR branch posts a new comment
 rather than updating the previous one. If comment volume is a concern,
 delete previous bot comments in a prior step using the GitHub API.
+
+**uv runners:** ``uv`` is not pre-installed on GitHub-hosted runners.
+Add ``astral-sh/setup-uv@v5`` and ``uv sync`` as steps before the
+action. ``use_uv`` and ``use_poetry`` cannot both be ``true`` — the
+action will exit with an error before pytest runs if both are set.
 
 **Rerun compatibility:** ``pytest-rerunfailures`` works transparently —
 the JSON report and step outputs reflect the final state after all
