@@ -42,13 +42,14 @@ jobs:
       - name: 🧪 Run playwright test and generate report using marketplace plugin
         uses: reporterplus/pytest-html-plus-action@v3
         with:
-          htmloutput: "report_output_playwright"
-          capturescreenshots: "all"
-          testpath: "tests/browser/test_playwright.py"
-          usepoetry: "true"
-          xmlreport: "report.xml"
-          gitbranch: "$(git rev-parse --abbrev-ref HEAD)"
-          publish_github_summary: ${{ secrets.GITHUB_TOKEN }}
+          html_output: "report_output_playwright"
+          capture_screenshots: "all"
+          test_path: "tests/browser/test_playwright.py"
+          use_poetry: "true"
+          xml_report: "report.xml"
+          git_branch: "$(git rev-parse --abbrev-ref HEAD)"
+          post_pr_comment: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
                         
 
