@@ -5,6 +5,7 @@ pytest-html-plus-action
    get rich HTML reports, JSON outputs, step summaries, and PR comments
    — without adding the plugin to your project dependencies.
 
+
 --------------
 
 Overview
