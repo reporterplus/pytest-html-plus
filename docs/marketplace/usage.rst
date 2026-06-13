@@ -5,7 +5,6 @@ pytest-html-plus-action
    get rich HTML reports, JSON outputs, step summaries, and PR comments
    — without adding the plugin to your project dependencies.
 
-
 --------------
 
 Overview
@@ -254,6 +253,14 @@ first with the official setup action.
 
 The comment includes total, passed, failed, skipped, duration, and a
 list of up to 5 failed test cases.
+
+   **Security note:** Always use ``secrets.GITHUB_TOKEN`` rather than a
+   personal access token — it is automatically scoped to the current
+   repository and expires after the run. The token only needs
+   ``issues: write`` permission. If your repo accepts PRs from forks,
+   review your workflow’s trigger settings before enabling
+   ``post_pr_comment``, as fork workflows may have access to the token
+   depending on your repository configuration.
 
 --------------
 
