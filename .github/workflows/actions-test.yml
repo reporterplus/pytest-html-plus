@@ -44,7 +44,7 @@ jobs:
           xmlreport: "report.xml"
           gitbranch: "$(git rev-parse --abbrev-ref HEAD)"
           publish_github_summary: ${{ secrets.GITHUB_TOKEN }}
-          
+
                         
 
       # - name: Upload reports
