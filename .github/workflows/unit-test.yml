@@ -96,6 +96,12 @@ jobs:
             --git-commit "$REPORT_COMMIT" \
             tests/
 
+      
+      - name: Run pytest-html-plus-action
+        uses: reporterplus/pytest-html-plus-action@v4
+        with:
+          publish_github_summary: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 📤 Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
