@@ -82,7 +82,7 @@ _Changes merged to `main` but not yet released._
 - Tech debt: resolved all outstanding lint issues flagged by ruff.
 
 ### Maintenance
-- OSS best practices: standardised GitHub Actions workflow structure.
+- OSS best practices: standardized GitHub Actions workflow structure.
 - Updated ReadTheDocs documentation.
 
 ---
