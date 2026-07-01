@@ -34,7 +34,8 @@ Usage Example
    pytest --generate-xml --html-output report_output --xml-report final_report.xml
 
 This will aggregate the test results from the run and write a single JUnit-compatible
-XML report to ``report_output/final_report.xml`` or the folder chosen in ``--html-output``
+XML report to ``report_output/final_report.xml`` (inside the directory specified by
+``--html-output``).
 
 If ``--xml-report`` is omitted, the file defaults to ``final_xml.xml`` inside the
 ``--html-output`` directory:
