@@ -91,47 +91,72 @@ The report has a structure like:
 .. code-block:: json
 
    {
-  "filters": {
-    "skipped": 3,
-    "untracked": 43,
-    "flaky": 1,
-    "total": 45,
-    "passed": 42,
-    "marker_counts": {
-      "xfail": 1,
-      "link": 2,
-      "flaky": 2,
-      "skip": 2,
-      "parametrize": 5
-    }
-  },
-  "results": [
-    {
-      "test": "test_fail",
-      "nodeid": "tests/dummy_tests/test_cases.py::test_fail",
-      "status": "skipped",
-      "duration": 0.00022258399999997014,
-      "error": null,
-      "markers": [
-        "xfail",
-        "link",
-        "flaky"
-      ],
-      "file": "tests/dummy_tests/test_cases.py",
-      "line": 5,
-      "stdout": "stdout from fail\n",
-      "stderr": "stderr from fail\n",
-      "timestamp": "2025-07-25T16:31:27.507785Z",
-      "screenshot": "screenshots",
-      "logs": [],
-      "worker": "main",
-      "links": [
-        "https://example.com/fail-trace"
-      ],
-      "flaky": false
-    }]
+     "filters": {
+       "skipped": 1,
+       "untracked": 75,
+       "failed": 5,
+       "total": 77,
+       "passed": 71,
+       "marker_counts": {
+         "skip": 1,
+         "parametrize": 5,
+         "jira": 1,
+         "link": 1
+       }
+     },
+     "results": [
+       {
+         "test": "test_skipped_example",
+         "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_skipped_example",
+         "status": "skipped",
+         "duration": 0.0001316650000262598,
+         "trace": null,
+         "error": null,
+         "markers": [
+           "skip"
+         ],
+         "file": "tests/unit/test_convert_json_to_junit_xml.py",
+         "line": 13,
+         "stdout": "",
+         "stderr": "",
+         "timestamp": "2026-07-07T06:16:43.404084Z",
+         "screenshot": "screenshots",
+         "logs": [],
+         "worker": "gw0",
+         "links": [],
+         "attempts": [
+           {
+             "status": "skipped",
+             "trace": null,
+             "error": null,
+             "duration": 0.0001316650000262598,
+             "timestamp": "2026-07-07T06:16:43.404107Z"
+           }
+         ],
+         "attempt_count": 1,
+         "flaky": false,
+         "attempt_statuses": [
+           "skipped"
+         ],
+         "first_failure_index": null,
+         "first_failure": null
+       }
+     ]
+   }
 
 You can easily parse this using Python, JavaScript, or any JSON-compatible tool.
+
+Retry / flaky metadata
+~~~~~~~~~~~~~~~~~~~~~~
+
+Each test result includes retry-aware metadata:
+
+* ``attempts``: List of recorded attempts for the test.
+* ``attempt_count``: Total number of attempts made for the test.
+* ``attempt_statuses``: Status of each attempt in order.
+* ``flaky``: ``true`` when the test failed in an earlier attempt but eventually passed.
+* ``first_failure_index``: Index of the first failed attempt, or ``null`` if the test never failed.
+* ``first_failure``: Failure details from the first failed attempt, or ``null`` if unavailable.
 
 Metadata Schema
 ^^^^^^^^^^^^^^^
