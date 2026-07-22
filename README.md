@@ -166,6 +166,14 @@ This plugin is aimed at those who are:
 
 - Want "just enough" — not bare-bones plain text, not a full dashboard with database setup — just a portable HTML report that STILL supports features like links, screenshots, and markers.
 
+## Project Status
+
+pytest-html-plus is stable and actively maintained, with its core reporting experience now well established. Future development will prioritize compatibility, reliability, bug fixes, and thoughtfully selected enhancements.
+
+We're also looking for co-maintainers to help review pull requests, triage issues, and keep the project healthy across future Python and pytest releases.
+
+If you're interested in becoming a long-term contributor, we'd love to hear from you. Please open an issue or start a discussion.
+
 ## Contributing
 
 We welcome pull requests, issues, and feature suggestions from the community.
