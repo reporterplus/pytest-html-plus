@@ -12,7 +12,7 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ### Added
 
 * Added `--plus-output` with `all`, `failed-only`, and `none` modes to control whether captured stdout/stderr are included in JSON, HTML, and generated XML reports.
-* Added `[tool.pytest-html-plus].output` and profile-level `output` configuration. Explicit CLI values override profiles, and profiles override the top-level setting.
+* Added profile-level `output` configuration. Explicit CLI values override profiles.
 
 ---
 

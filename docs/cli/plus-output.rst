@@ -28,16 +28,6 @@ Command-line usage
 
    pytest --plus-output=failed-only
 
-Top-level configuration
------------------------
-
-Configure the default policy for the project in ``pyproject.toml``:
-
-.. code-block:: toml
-
-   [tool.pytest-html-plus]
-   output = "failed-only"
-
 Profile configuration
 ---------------------
 
@@ -54,9 +44,8 @@ Then activate it with:
 
    pytest --plus-profile=ci
 
-An explicit ``--plus-output`` value overrides the selected profile. A profile
-overrides the top-level project setting, and ``all`` is used when no value is
-configured.
+An explicit ``--plus-output`` value overrides the selected profile. The
+default value is ``all`` when neither a CLI option nor a profile is supplied.
 
 Retry information
 -----------------

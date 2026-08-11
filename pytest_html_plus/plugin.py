@@ -98,42 +98,6 @@ def _read_profiles_from_pyproject(start_path=None):
     return profiles
 
 
-def _read_output_from_pyproject(start_path=None):
-    pyproject_file = _find_pyproject_toml(start_path=start_path)
-    if pyproject_file is None:
-        return None
-
-    try:
-        with pyproject_file.open("rb") as fh:
-            pyproject_data = tomllib.load(fh)
-    except tomllib.TOMLDecodeError as exc:
-        raise pytest.UsageError(f"Invalid TOML in {pyproject_file}: {exc}") from exc
-
-    plus_config = pyproject_data.get("tool", {}).get("pytest-html-plus", {})
-    if not isinstance(plus_config, dict):
-        raise pytest.UsageError(
-            "Expected [tool.pytest-html-plus] to be a TOML table"
-        )
-
-    output = plus_config.get("output")
-    if output is None:
-        return None
-    if not isinstance(output, str) or output not in OUTPUT_CHOICES:
-        choices = ", ".join(OUTPUT_CHOICES)
-        raise pytest.UsageError(
-            f"[tool.pytest-html-plus] output must be one of: {choices}"
-        )
-
-    return output
-
-
-def apply_plus_output_arg(args, start_path=None):
-    output = _read_output_from_pyproject(start_path=start_path)
-    if output is None:
-        return list(args)
-    return [f"{OUTPUT_OPTION}={output}", *args]
-
-
 def _build_profile_args(profile_name, start_path=None):
     profiles = _read_profiles_from_pyproject(start_path=start_path)
     profile = profiles.get(profile_name)
@@ -460,7 +424,6 @@ def pytest_sessionstart(session):
 
 def pytest_load_initial_conftests(args):
     args[:] = apply_plus_profile_args(args, start_path=Path.cwd())
-    args[:] = apply_plus_output_arg(args, start_path=Path.cwd())
     if not any(arg.startswith("--capture") for arg in args):
         args.append("--capture=tee-sys")
 

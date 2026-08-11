@@ -28,13 +28,8 @@ Output Capture Policy
 ---------------------
 
 By default, captured stdout and stderr are included for every reported test.
-To reduce JSON and HTML report size for verbose suites, configure an output
-policy in ``pyproject.toml``:
-
-.. code-block:: toml
-
-   [tool.pytest-html-plus]
-   output = "failed-only"
+To reduce JSON and HTML report size for verbose suites, select an output policy
+with ``--plus-output``.
 
 The supported values are:
 
@@ -47,7 +42,7 @@ The supported values are:
 The policy controls the top-level ``stdout`` and ``stderr`` report fields. It
 does not change retry attempt errors or traces.
 
-You can override the configured value for a particular run:
+For example:
 
 .. code-block:: bash
 
@@ -82,9 +77,8 @@ for a specific run:
 
    pytest --plus-profile=ci --json-report=override.json
 
-Configuration precedence, from highest to lowest, is an explicit CLI option,
-the selected profile, the top-level ``[tool.pytest-html-plus]`` configuration,
-and finally the default value.
+An explicit CLI option overrides the selected profile. If neither is supplied,
+the default value is ``all``.
 
 The JSON report (`final_report.json`)
 --------------------------------------
