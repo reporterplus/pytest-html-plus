@@ -31,6 +31,8 @@ python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
 PROFILE_OPTION = "--plus-profile"
 PROFILE_SECTION = ("tool", "pytest-html-plus", "profiles")
+OUTPUT_OPTION = "--plus-output"
+OUTPUT_CHOICES = ("all", "failed-only", "none")
 PROFILE_OPTION_MAP = {
     "json-report": {"flag": "--json-report", "kind": "value"},
     "capture-screenshots": {"flag": "--capture-screenshots", "kind": "value"},
@@ -43,6 +45,7 @@ PROFILE_OPTION_MAP = {
     "git-branch": {"flag": "--git-branch", "kind": "value"},
     "git-commit": {"flag": "--git-commit", "kind": "value"},
     "rp-env": {"flag": "--rp-env", "kind": "value"},
+    "output": {"flag": OUTPUT_OPTION, "kind": "value"},
 }
 
 
@@ -250,6 +253,15 @@ def pytest_runtest_makereport(item, call):
         if report.when in ("setup", "teardown") and report.failed:
             status = "error"
 
+        output_policy = config.getoption(OUTPUT_OPTION)
+        is_expected_failure = report.skipped and hasattr(report, "wasxfail")
+        include_output = output_policy == "all" or (
+            output_policy == "failed-only"
+            and (report.failed or is_expected_failure)
+        )
+        stdout = getattr(report, "capstdout", "") if include_output else ""
+        stderr = getattr(report, "capstderr", "") if include_output else ""
+
         reporter.log_result(
             test_name=test_name,
             nodeid=item.nodeid,
@@ -261,8 +273,8 @@ def pytest_runtest_makereport(item, call):
             markers=[m.name for m in item.iter_markers()],
             filepath=item.location[0],
             lineno=item.location[1],
-            stdout=getattr(report, "capstdout", ""),
-            stderr=getattr(report, "capstderr", ""),
+            stdout=stdout,
+            stderr=stderr,
             screenshot=screenshot_path,
             logs=caplog_text,
             worker=worker_id,
@@ -439,6 +451,16 @@ def pytest_addoption(parser):
         default="failed",
         choices=["failed", "all", "none"],
         help="Capture screenshots: failed (default), all, or none",
+    )
+    group.addoption(
+        OUTPUT_OPTION,
+        action="store",
+        default="all",
+        choices=OUTPUT_CHOICES,
+        help=(
+            "Include captured stdout/stderr in reports: all (default), "
+            "failed-only, or none"
+        ),
     )
     group.addoption("--html-output", default="report_output")
     group.addoption("--screenshots", default="screenshots")

@@ -54,6 +54,23 @@ screenshots = "artifacts"
     assert args == ["--screenshots=artifacts", "-q"]
 
 
+def test_profile_supports_output_policy(tmp_path):
+    write_pyproject(
+        tmp_path,
+        """
+[tool.pytest-html-plus.profiles.ci]
+output = "failed-only"
+""".strip(),
+    )
+
+    args = apply_plus_profile_args(
+        ["--plus-profile=ci"],
+        start_path=tmp_path,
+    )
+
+    assert args == ["--plus-output=failed-only"]
+
+
 def test_invalid_profile_key_raises_usage_error(tmp_path):
     write_pyproject(
         tmp_path,

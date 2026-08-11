@@ -24,6 +24,31 @@ This will:
 - Generate a combined JSON test report called final_report.json
 - Create a visual HTML report inside the `report_output/` folder
 
+Output Capture Policy
+---------------------
+
+By default, captured stdout and stderr are included for every reported test.
+To reduce JSON and HTML report size for verbose suites, select an output policy
+with ``--plus-output``.
+
+The supported values are:
+
+* ``all``: Include stdout and stderr for every test. This is the default and
+  preserves the existing behavior.
+* ``failed-only``: Include stdout and stderr only for failed tests,
+  setup/teardown errors, and expected failures (XFAIL). Ordinary skips and
+  passing tests do not include captured output.
+* ``none``: Do not include captured stdout or stderr in the generated reports.
+
+The policy controls the top-level ``stdout`` and ``stderr`` report fields. It
+does not change retry attempt errors or traces.
+
+For example:
+
+.. code-block:: bash
+
+   pytest --plus-output=failed-only
+
 Reusable Profiles
 -----------------
 
@@ -37,6 +62,7 @@ define a named profile in ``pyproject.toml`` and activate it with
    html-output = "ci-report"
    json-report = "ci.json"
    capture-screenshots = "failed"
+   output = "failed-only"
    generate-xml = true
    xml-report = "ci.xml"
 
@@ -51,6 +77,9 @@ for a specific run:
 .. code-block:: bash
 
    pytest --plus-profile=ci --json-report=override.json
+
+An explicit CLI option overrides the selected profile. If neither is supplied,
+the default value is ``all``.
 
 The JSON report (`final_report.json`)
 --------------------------------------

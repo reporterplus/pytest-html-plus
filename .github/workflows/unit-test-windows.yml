@@ -60,6 +60,7 @@ jobs:
             --reruns 1 `
             --ignore=tests/browser `
             --plus-profile=ci `
+            --plus-output=failed-only `
             --git-branch "$BRANCH" `
             --git-commit "$COMMIT" `
             tests/
@@ -76,6 +77,7 @@ jobs:
             --reruns 1 `
             --ignore=tests/browser `
             --plus-profile=ci-warnings `
+            --plus-output=failed-only `
             --git-branch "$BRANCH" `
             --git-commit "$COMMIT" `
             tests/

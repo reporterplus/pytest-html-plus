@@ -123,7 +123,7 @@ Just start typing, and the dashboard will instantly filter tests by:
 
 ![ScreenRecording2025-06-21at2 52 49PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/b9760927-7c67-4bbf-b03d-e13964c727ee)
 
-#### 📝 Comprehensive output capture: All your test logs with loggers, print() statements, and screenshots are automatically captured and embedded in the report...
+#### 📝 Configurable output capture: Test logs, print() statements, stdout/stderr, and screenshots are automatically captured and embedded in the report. Use `--plus-output=failed-only` to omit captured stdout/stderr from passing tests and reduce report size; logger and screenshot behavior is unchanged.
 
 ![ezgif-744a5d34a4c46d](https://github.com/user-attachments/assets/209cd2c0-d33b-48ec-b58b-8c8991ce35be)
 
@@ -141,7 +141,7 @@ Just start typing, and the dashboard will instantly filter tests by:
 | 🐢 **Slow test highlighting** | Slowest tests in the run automatically flagged |
 | 📋 **Copy-to-clipboard** | Copy test path, logs, trace, and errors in one click |
 | 📦 **Run metadata** | Branch, commit SHA, environment, and custom metadata embedded in the report header |
-| 📝 **Comprehensive log capture** | `print()`, logger output, and stdout/stderr automatically captured per test |
+| 📝 **Configurable stream capture** | Control captured stdout/stderr with `--plus-output`; logger and screenshot behavior remains unchanged |
 | ⚡ **xdist support** | Parallel runs with `pytest-xdist` produce a single merged report, no extra steps |
 | 🌐 **Auto-open report** | `--should-open-report` opens the report in your browser after a run (always / failed / never) |
 | 📄 **JSON report** | Raw JSON output (`--json-report`) for custom dashboards or post-processing |

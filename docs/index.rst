@@ -17,6 +17,7 @@ Welcome to pytest-html-plus
    cli/cli
    cli/html-output
    cli/json-report
+   cli/plus-output
    cli/generate-xml
    cli/screenshots
    cli/send-email
