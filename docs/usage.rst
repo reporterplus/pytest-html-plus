@@ -35,8 +35,9 @@ The supported values are:
 
 * ``all``: Include stdout and stderr for every test. This is the default and
   preserves the existing behavior.
-* ``failed-only``: Include stdout and stderr only for failed tests and
-  setup/teardown errors.
+* ``failed-only``: Include stdout and stderr only for failed tests,
+  setup/teardown errors, and expected failures (XFAIL). Ordinary skips and
+  passing tests do not include captured output.
 * ``none``: Do not include captured stdout or stderr in the generated reports.
 
 The policy controls the top-level ``stdout`` and ``stderr`` report fields. It

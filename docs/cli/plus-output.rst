@@ -17,7 +17,8 @@ Modes
    * - ``all``
      - Include stdout and stderr for every reported test. This is the default.
    * - ``failed-only``
-     - Include stdout and stderr only for failed tests and setup/teardown errors.
+     - Include stdout and stderr only for failed tests, setup/teardown errors,
+       and expected failures (XFAIL). Ordinary skips and passing tests are omitted.
    * - ``none``
      - Do not include captured stdout or stderr in generated reports.
 

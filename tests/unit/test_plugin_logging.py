@@ -284,3 +284,32 @@ def test_failed_only_keeps_setup_failure_output(tmp_path):
     assert test["status"] == "error"
     assert "setup stdout" in test["stdout"]
     assert "setup stderr" in test["stderr"]
+
+
+def test_failed_only_keeps_xfail_output(tmp_path):
+    result, report_file = run_pytest(
+        tmp_path,
+        """
+        import sys
+
+        import pytest
+
+        @pytest.mark.xfail(reason="known issue")
+        def test_expected_failure():
+            print("xfail stdout")
+            print("xfail stderr", file=sys.stderr)
+            assert False
+        """,
+        extra_args=["--plus-output=failed-only"],
+    )
+
+    assert result.returncode == 0
+    test = next(
+        test
+        for test in load_results(report_file)
+        if test["nodeid"].endswith("test_expected_failure")
+    )
+
+    assert test["status"] == "skipped"
+    assert "xfail stdout" in test["stdout"]
+    assert "xfail stderr" in test["stderr"]
