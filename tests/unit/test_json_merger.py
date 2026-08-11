@@ -45,7 +45,7 @@ def test_merge_json_reports_creates_merged_file(mock_json_files):
     with open(output_file) as f:
         data = json.load(f)
 
-    assert "results" in data
+    assert "resultss" in data
     assert "filters" in data
 
     results = data["results"]
