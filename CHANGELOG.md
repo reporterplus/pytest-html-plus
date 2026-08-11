@@ -9,6 +9,12 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+_Changes merged to `main` but not yet released._
+
+---
+
+## [1.2.0] — 2026-08-11
+
 ### Added
 
 * Added `--plus-output` with `all`, `failed-only`, and `none` modes to control whether captured stdout/stderr are included in JSON, HTML, and generated XML reports. The `failed-only` mode retains output for failures, setup/teardown errors, and XFAIL results.
