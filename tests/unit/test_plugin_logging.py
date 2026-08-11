@@ -3,6 +3,8 @@ import subprocess
 import sys
 import textwrap
 
+import pytest
+
 # The plugin saves the JSON report inside the html-output folder
 # (default: "report_output"), not at the cwd root.
 REPORT_FILENAME = "report.json"
@@ -169,3 +171,116 @@ def test_report_file_contains_filters(tmp_path):
     assert "filters" in data
     assert "total" in data["filters"]
     assert data["filters"]["total"] == 2
+
+
+@pytest.mark.parametrize(
+    ("policy", "should_include"),
+    [
+        (None, True),
+        ("all", True),
+        ("failed-only", False),
+        ("none", False),
+    ],
+)
+def test_plus_output_policy_for_passing_test(tmp_path, policy, should_include):
+    extra_args = [f"--plus-output={policy}"] if policy else []
+    result, report_file = run_pytest(
+        tmp_path,
+        """
+        import sys
+
+        def test_passes():
+            print("stdout from pass")
+            print("stderr from pass", file=sys.stderr)
+            assert True
+        """,
+        extra_args=extra_args,
+    )
+
+    assert result.returncode == 0, f"Pytest failed:\n{result.stderr}\n{result.stdout}"
+    test = next(
+        test
+        for test in load_results(report_file)
+        if test["nodeid"].endswith("test_passes")
+    )
+
+    if should_include:
+        assert "stdout from pass" in test["stdout"]
+        assert "stderr from pass" in test["stderr"]
+    else:
+        assert test["stdout"] == ""
+        assert test["stderr"] == ""
+
+
+@pytest.mark.parametrize(
+    ("policy", "should_include"),
+    [
+        ("all", True),
+        ("failed-only", True),
+        ("none", False),
+    ],
+)
+def test_plus_output_policy_for_failing_test(tmp_path, policy, should_include):
+    result, report_file = run_pytest(
+        tmp_path,
+        """
+        import sys
+
+        def test_fails():
+            print("stdout from failure")
+            print("stderr from failure", file=sys.stderr)
+            assert False, "intentional failure"
+        """,
+        extra_args=[f"--plus-output={policy}"],
+    )
+
+    assert result.returncode != 0
+    test = next(
+        test
+        for test in load_results(report_file)
+        if test["nodeid"].endswith("test_fails")
+    )
+
+    if should_include:
+        assert "stdout from failure" in test["stdout"]
+        assert "stderr from failure" in test["stderr"]
+    else:
+        assert test["stdout"] == ""
+        assert test["stderr"] == ""
+
+    assert test["error"]
+    assert test["trace"]
+    assert test["attempts"][0]["error"]
+    assert test["attempts"][0]["trace"]
+
+
+def test_failed_only_keeps_setup_failure_output(tmp_path):
+    result, report_file = run_pytest(
+        tmp_path,
+        """
+        import sys
+
+        import pytest
+
+        @pytest.fixture
+        def broken_fixture():
+            print("setup stdout")
+            print("setup stderr", file=sys.stderr)
+            raise RuntimeError("setup failed")
+
+        def test_setup_failure(broken_fixture):
+            pass
+        """,
+        extra_args=["--plus-output=failed-only"],
+    )
+
+    assert result.returncode != 0
+    test = next(
+        test
+        for test in load_results(report_file)
+        if test["nodeid"].endswith("test_setup_failure")
+    )
+
+    assert test["status"] == "error"
+    assert "setup stdout" in test["stdout"]
+    assert "setup stderr" in test["stderr"]
