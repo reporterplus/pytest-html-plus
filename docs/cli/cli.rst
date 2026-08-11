@@ -21,6 +21,10 @@ Overview
      - When to capture screenshots
      - ``failed``
      - Useful in flaky UI tests to get screenshots on failure
+   * - ``--plus-output``
+     - Control which captured stdout/stderr streams are included in reports
+     - ``all``
+     - Reduce report size by omitting output from passing tests or all tests
    * - ``--html-output``
      - Directory for HTML output
      - ``report_output``
@@ -72,6 +76,7 @@ For detailed information, examples, and best practices for each parameter, see:
 
    cli/json-report
    cli/capture-screenshots
+   cli/plus-output
    cli/html-output
    cli/send-email
    cli/should-open-report

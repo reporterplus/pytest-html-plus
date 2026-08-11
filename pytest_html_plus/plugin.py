@@ -31,6 +31,8 @@ python_executable = shutil.which("python3") or shutil.which("python")
 test_screenshot_paths = {}
 PROFILE_OPTION = "--plus-profile"
 PROFILE_SECTION = ("tool", "pytest-html-plus", "profiles")
+OUTPUT_OPTION = "--plus-output"
+OUTPUT_CHOICES = ("all", "failed-only", "none")
 PROFILE_OPTION_MAP = {
     "json-report": {"flag": "--json-report", "kind": "value"},
     "capture-screenshots": {"flag": "--capture-screenshots", "kind": "value"},
@@ -43,6 +45,7 @@ PROFILE_OPTION_MAP = {
     "git-branch": {"flag": "--git-branch", "kind": "value"},
     "git-commit": {"flag": "--git-commit", "kind": "value"},
     "rp-env": {"flag": "--rp-env", "kind": "value"},
+    "output": {"flag": OUTPUT_OPTION, "kind": "value"},
 }
 
 
@@ -93,6 +96,42 @@ def _read_profiles_from_pyproject(start_path=None):
         )
 
     return profiles
+
+
+def _read_output_from_pyproject(start_path=None):
+    pyproject_file = _find_pyproject_toml(start_path=start_path)
+    if pyproject_file is None:
+        return None
+
+    try:
+        with pyproject_file.open("rb") as fh:
+            pyproject_data = tomllib.load(fh)
+    except tomllib.TOMLDecodeError as exc:
+        raise pytest.UsageError(f"Invalid TOML in {pyproject_file}: {exc}") from exc
+
+    plus_config = pyproject_data.get("tool", {}).get("pytest-html-plus", {})
+    if not isinstance(plus_config, dict):
+        raise pytest.UsageError(
+            "Expected [tool.pytest-html-plus] to be a TOML table"
+        )
+
+    output = plus_config.get("output")
+    if output is None:
+        return None
+    if not isinstance(output, str) or output not in OUTPUT_CHOICES:
+        choices = ", ".join(OUTPUT_CHOICES)
+        raise pytest.UsageError(
+            f"[tool.pytest-html-plus] output must be one of: {choices}"
+        )
+
+    return output
+
+
+def apply_plus_output_arg(args, start_path=None):
+    output = _read_output_from_pyproject(start_path=start_path)
+    if output is None:
+        return list(args)
+    return [f"{OUTPUT_OPTION}={output}", *args]
 
 
 def _build_profile_args(profile_name, start_path=None):
@@ -250,6 +289,13 @@ def pytest_runtest_makereport(item, call):
         if report.when in ("setup", "teardown") and report.failed:
             status = "error"
 
+        output_policy = config.getoption(OUTPUT_OPTION)
+        include_output = output_policy == "all" or (
+            output_policy == "failed-only" and report.failed
+        )
+        stdout = getattr(report, "capstdout", "") if include_output else ""
+        stderr = getattr(report, "capstderr", "") if include_output else ""
+
         reporter.log_result(
             test_name=test_name,
             nodeid=item.nodeid,
@@ -261,8 +307,8 @@ def pytest_runtest_makereport(item, call):
             markers=[m.name for m in item.iter_markers()],
             filepath=item.location[0],
             lineno=item.location[1],
-            stdout=getattr(report, "capstdout", ""),
-            stderr=getattr(report, "capstderr", ""),
+            stdout=stdout,
+            stderr=stderr,
             screenshot=screenshot_path,
             logs=caplog_text,
             worker=worker_id,
@@ -414,6 +460,7 @@ def pytest_sessionstart(session):
 
 def pytest_load_initial_conftests(args):
     args[:] = apply_plus_profile_args(args, start_path=Path.cwd())
+    args[:] = apply_plus_output_arg(args, start_path=Path.cwd())
     if not any(arg.startswith("--capture") for arg in args):
         args.append("--capture=tee-sys")
 
@@ -439,6 +486,16 @@ def pytest_addoption(parser):
         default="failed",
         choices=["failed", "all", "none"],
         help="Capture screenshots: failed (default), all, or none",
+    )
+    group.addoption(
+        OUTPUT_OPTION,
+        action="store",
+        default="all",
+        choices=OUTPUT_CHOICES,
+        help=(
+            "Include captured stdout/stderr in reports: all (default), "
+            "failed-only, or none"
+        ),
     )
     group.addoption("--html-output", default="report_output")
     group.addoption("--screenshots", default="screenshots")
