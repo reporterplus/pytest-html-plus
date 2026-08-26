@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from html import escape
 from pytest_html_plus.compute_filter_counts import compute_filter_count
 from pytest_html_plus.utils import extract_error_block, extract_trace_block
-
+from pytest_html_plus.resolver_driver import sanitize_filename
 
 def main():
     parser = argparse.ArgumentParser(
@@ -792,7 +792,12 @@ class JSONReporter:
                     else "error" if test["status"] == "error" else "skipped"
                 )
             )
-            screenshot_path = self.find_screenshot_and_copy(test["test"])
+            # NOTE: Parammetrized test name may contains unsupport filesystem-safe chars
+            # Use test_name will not match the screenshot.
+            # 1. use test["screenshot"] which is the the screenshot path will lost the wild pattern
+            # *2. use sanitize_filename which replace non-alphanumeric will match the screenshot filename pattern
+            # 3. try to split parametrized will be hard
+            screenshot_path = self.find_screenshot_and_copy( sanitize_filename(test["test"]))
             screenshot_html = (
                 f'<div class="details-screenshot"><img src="{screenshot_path}" alt="Screenshot" onclick="toggleFullscreen(this)"></div>'
                 if screenshot_path

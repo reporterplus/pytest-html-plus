@@ -247,7 +247,6 @@ def pytest_runtest_makereport(item, call):
                 screenshot_path = take_screenshot_generic(screenshot_path, item, driver)
 
         worker_id = os.getenv("PYTEST_XDIST_WORKER") or "main"
-        test_name = "".join(c if c.isalnum() else "_" for c in item.name)
 
         status = report.outcome
         if report.when in ("setup", "teardown") and report.failed:
@@ -263,7 +262,7 @@ def pytest_runtest_makereport(item, call):
         stderr = getattr(report, "capstderr", "") if include_output else ""
 
         reporter.log_result(
-            test_name=test_name,
+            test_name=item.name,
             nodeid=item.nodeid,
             status=status,
             duration=report.duration,
