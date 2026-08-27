@@ -9,6 +9,7 @@ from pytest_html_plus.compute_filter_counts import compute_filter_count
 from pytest_html_plus.utils import extract_error_block, extract_trace_block
 from pytest_html_plus.resolver_driver import sanitize_filename
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate HTML report from Playwright JSON report"
@@ -797,7 +798,9 @@ class JSONReporter:
             # 1. use test["screenshot"] which is the the screenshot path will lost the wild pattern
             # *2. use sanitize_filename which replace non-alphanumeric will match the screenshot filename pattern
             # 3. try to split parametrized will be hard
-            screenshot_path = self.find_screenshot_and_copy( sanitize_filename(test["test"]))
+            screenshot_path = self.find_screenshot_and_copy(
+                sanitize_filename(test["test"])
+            )
             screenshot_html = (
                 f'<div class="details-screenshot"><img src="{screenshot_path}" alt="Screenshot" onclick="toggleFullscreen(this)"></div>'
                 if screenshot_path
@@ -879,7 +882,7 @@ class JSONReporter:
                     """
 
                 attempts_html += "</div>"
-            
+
             search_error = ""
 
             if test.get("error"):
@@ -900,10 +903,8 @@ class JSONReporter:
                     <pre>{error_content}</pre></div>
                     """
                     search_error = (
-                        error_content.replace("\n", " ")
-                        .replace("\r", " ")
+                        error_content.replace("\n", " ").replace("\r", " ")
                     )[:1000]
-                   
 
             flaky_badge = ""
             if test.get("flaky"):
@@ -940,17 +941,18 @@ class JSONReporter:
                     '<span style="display:inline-block; min-width:45px;"></span>'
                 )
 
+            escaped_test_name = escape(test["test"])
             html += f"""    
-<div class="test test-card" data-name="{test["test"]}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}" data-error="{escape(search_error)}">
+<div class="test test-card" data-name="{escaped_test_name}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}" data-error="{escape(search_error)}">
   <div class="header {status_class}" onclick="toggleDetails(this)">
     <div class="header-section test-info">
       <span class="toggle"></span>
-      <strong>{test["test"]}</strong>
+      <strong>{escaped_test_name}</strong>
       <span>— {test["status"].upper()}</span>
     </div>
     <div class="header-section meta">
       <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">{test["nodeid"]}</code>
+        <code style="font-size: 0.6em; color: #555;">{escape(test["nodeid"], True)}</code>
           {self.generate_copy_button(test["nodeid"], "nodeid")}
       </span>
       <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">{test["worker"]}</span>
@@ -1007,7 +1009,7 @@ class JSONReporter:
                   f"Failures: {failed_tests}, "
                   f"Errors: {error_tests}.")
         }
-              The slowest test was <strong>{slowest_test_name}</strong> at {
+              The slowest test was <strong>{escape(slowest_test_name, True)}</strong> at {
             slowest_test_duration:.2f}s.
             </div>
             """

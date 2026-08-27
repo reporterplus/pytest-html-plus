@@ -255,8 +255,7 @@ def pytest_runtest_makereport(item, call):
         output_policy = config.getoption(OUTPUT_OPTION)
         is_expected_failure = report.skipped and hasattr(report, "wasxfail")
         include_output = output_policy == "all" or (
-            output_policy == "failed-only"
-            and (report.failed or is_expected_failure)
+            output_policy == "failed-only" and (report.failed or is_expected_failure)
         )
         stdout = getattr(report, "capstdout", "") if include_output else ""
         stderr = getattr(report, "capstderr", "") if include_output else ""
