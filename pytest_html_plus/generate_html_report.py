@@ -1,3 +1,4 @@
+from email.quoprimime import quote
 import argparse
 import base64
 import json
@@ -952,7 +953,7 @@ class JSONReporter:
     </div>
     <div class="header-section meta">
       <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">{escape(test["nodeid"], True)}</code>
+        <code style="font-size: 0.6em; color: #555;">{escape(test["nodeid"], quote=True)}</code>
           {self.generate_copy_button(test["nodeid"], "nodeid")}
       </span>
       <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">{test["worker"]}</span>
@@ -1009,7 +1010,7 @@ class JSONReporter:
                   f"Failures: {failed_tests}, "
                   f"Errors: {error_tests}.")
         }
-              The slowest test was <strong>{escape(slowest_test_name, True)}</strong> at {
+              The slowest test was <strong>{escape(slowest_test_name, quote=True)}</strong> at {
             slowest_test_duration:.2f}s.
             </div>
             """
