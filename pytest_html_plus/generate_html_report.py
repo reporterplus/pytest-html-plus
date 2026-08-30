@@ -5,6 +5,7 @@ import os
 import shutil
 from datetime import datetime, timezone
 from html import escape
+
 from pytest_html_plus.compute_filter_counts import compute_filter_count
 from pytest_html_plus.utils import extract_error_block, extract_trace_block
 
@@ -874,7 +875,7 @@ class JSONReporter:
                     """
 
                 attempts_html += "</div>"
-            
+
             search_error = ""
 
             if test.get("error"):
@@ -895,10 +896,8 @@ class JSONReporter:
                     <pre>{error_content}</pre></div>
                     """
                     search_error = (
-                        error_content.replace("\n", " ")
-                        .replace("\r", " ")
+                        error_content.replace("\n", " ").replace("\r", " ")
                     )[:1000]
-                   
 
             flaky_badge = ""
             if test.get("flaky"):

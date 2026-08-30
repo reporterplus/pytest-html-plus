@@ -78,13 +78,7 @@ html-output = "report_output_warnings"
 [tool.ruff]
 line-length = 88
 target-version = "py39"
-ignore = [
-    "E501",  # line too long — let black handle
-    "W291",  # trailing whitespace — let black handle
-    "W293",  # blank line whitespace — let black handle
-]
 exclude = [
-    "pytest_html_plus/generate_html_report.py",
     ".git"
 ]
 
@@ -96,4 +90,8 @@ select = [
     "I",   # isort
     "UP",  # pyupgrade
 ]
-ignore = []
+ignore = [
+    "E501",  # line too long — let black handle
+    "W291",  # trailing whitespace — let black handle
+    "W293",  # blank line whitespace — let black handle
+]
