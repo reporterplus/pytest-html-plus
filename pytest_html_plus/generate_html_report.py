@@ -6,6 +6,7 @@ import os
 import shutil
 from datetime import datetime, timezone
 from html import escape
+
 from pytest_html_plus.compute_filter_counts import compute_filter_count
 from pytest_html_plus.utils import extract_error_block, extract_trace_block
 from pytest_html_plus.resolver_driver import sanitize_filename
