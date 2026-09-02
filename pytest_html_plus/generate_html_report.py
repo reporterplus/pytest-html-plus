@@ -1,4 +1,3 @@
-from email.quoprimime import quote
 import argparse
 import base64
 import json
@@ -8,8 +7,8 @@ from datetime import datetime, timezone
 from html import escape
 
 from pytest_html_plus.compute_filter_counts import compute_filter_count
-from pytest_html_plus.utils import extract_error_block, extract_trace_block
 from pytest_html_plus.resolver_driver import sanitize_filename
+from pytest_html_plus.utils import extract_error_block, extract_trace_block
 
 
 def main():
@@ -857,7 +856,7 @@ class JSONReporter:
 
                     error_block = (
                         f'<div class="error-content"><strong>Error:</strong> '
-                        f'{self.generate_copy_button(error, "error")}'
+                        f"{self.generate_copy_button(error, 'error')}"
                         f"<pre>{error}</pre></div>"
                         if error
                         else ""
@@ -865,7 +864,7 @@ class JSONReporter:
 
                     trace_block = (
                         f'<div class="trace-content"><strong>Trace:</strong> '
-                        f'{self.generate_copy_button(trace, "trace")}'
+                        f"{self.generate_copy_button(trace, 'trace')}"
                         f"<pre>{trace}</pre></div>"
                         if trace
                         else ""
@@ -999,20 +998,21 @@ class JSONReporter:
             "#e6f4ea" if failed_tests == 0 and error_tests == 0 else "#fdecea"
         }; 
             border: 1px solid {
-            "#2f7a33" if failed_tests == 0 and
-                         error_tests == 0
-            else "#a83232"
+            "#2f7a33" if failed_tests == 0 and error_tests == 0 else "#a83232"
         }; 
             border-radius: 5px; margin-bottom: 1rem;">
               {
             "<strong>Bingo!</strong> All your tests passed!"
             if failed_tests == 0 and error_tests == 0
-            else (f"Total tests: {total_tests}, "
-                  f"Failures: {failed_tests}, "
-                  f"Errors: {error_tests}.")
+            else (
+                f"Total tests: {total_tests}, "
+                f"Failures: {failed_tests}, "
+                f"Errors: {error_tests}."
+            )
         }
-              The slowest test was <strong>{escape(slowest_test_name, quote=True)}</strong> at {
-            slowest_test_duration:.2f}s.
+              The slowest test was <strong>{
+            escape(slowest_test_name, quote=True)
+        }</strong> at {slowest_test_duration:.2f}s.
             </div>
             """
 
