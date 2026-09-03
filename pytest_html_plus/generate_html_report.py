@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from html import escape
 
 from pytest_html_plus.compute_filter_counts import compute_filter_count
+from pytest_html_plus.resolver_driver import sanitize_filename
 from pytest_html_plus.utils import extract_error_block, extract_trace_block
 
 
@@ -793,7 +794,14 @@ class JSONReporter:
                     else "error" if test["status"] == "error" else "skipped"
                 )
             )
-            screenshot_path = self.find_screenshot_and_copy(test["test"])
+            # NOTE: Parammetrized test name may contains unsupport filesystem-safe chars
+            # Use test_name will not match the screenshot.
+            # 1. use test["screenshot"] which is the the screenshot path will lost the wild pattern
+            # *2. use sanitize_filename which replace non-alphanumeric will match the screenshot filename pattern
+            # 3. try to split parametrized will be hard
+            screenshot_path = self.find_screenshot_and_copy(
+                sanitize_filename(test["test"])
+            )
             screenshot_html = (
                 f'<div class="details-screenshot"><img src="{screenshot_path}" alt="Screenshot" onclick="toggleFullscreen(this)"></div>'
                 if screenshot_path
@@ -848,7 +856,7 @@ class JSONReporter:
 
                     error_block = (
                         f'<div class="error-content"><strong>Error:</strong> '
-                        f'{self.generate_copy_button(error, "error")}'
+                        f"{self.generate_copy_button(error, 'error')}"
                         f"<pre>{error}</pre></div>"
                         if error
                         else ""
@@ -856,7 +864,7 @@ class JSONReporter:
 
                     trace_block = (
                         f'<div class="trace-content"><strong>Trace:</strong> '
-                        f'{self.generate_copy_button(trace, "trace")}'
+                        f"{self.generate_copy_button(trace, 'trace')}"
                         f"<pre>{trace}</pre></div>"
                         if trace
                         else ""
@@ -934,17 +942,18 @@ class JSONReporter:
                     '<span style="display:inline-block; min-width:45px;"></span>'
                 )
 
+            escaped_test_name = escape(test["test"])
             html += f"""    
-<div class="test test-card" data-name="{test["test"]}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}" data-error="{escape(search_error)}">
+<div class="test test-card" data-name="{escaped_test_name}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}" data-error="{escape(search_error)}">
   <div class="header {status_class}" onclick="toggleDetails(this)">
     <div class="header-section test-info">
       <span class="toggle"></span>
-      <strong>{test["test"]}</strong>
+      <strong>{escaped_test_name}</strong>
       <span>— {test["status"].upper()}</span>
     </div>
     <div class="header-section meta">
       <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">{test["nodeid"]}</code>
+        <code style="font-size: 0.6em; color: #555;">{escape(test["nodeid"], quote=True)}</code>
           {self.generate_copy_button(test["nodeid"], "nodeid")}
       </span>
       <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">{test["worker"]}</span>
@@ -989,20 +998,21 @@ class JSONReporter:
             "#e6f4ea" if failed_tests == 0 and error_tests == 0 else "#fdecea"
         }; 
             border: 1px solid {
-            "#2f7a33" if failed_tests == 0 and
-                         error_tests == 0
-            else "#a83232"
+            "#2f7a33" if failed_tests == 0 and error_tests == 0 else "#a83232"
         }; 
             border-radius: 5px; margin-bottom: 1rem;">
               {
             "<strong>Bingo!</strong> All your tests passed!"
             if failed_tests == 0 and error_tests == 0
-            else (f"Total tests: {total_tests}, "
-                  f"Failures: {failed_tests}, "
-                  f"Errors: {error_tests}.")
+            else (
+                f"Total tests: {total_tests}, "
+                f"Failures: {failed_tests}, "
+                f"Errors: {error_tests}."
+            )
         }
-              The slowest test was <strong>{slowest_test_name}</strong> at {
-            slowest_test_duration:.2f}s.
+              The slowest test was <strong>{
+            escape(slowest_test_name, quote=True)
+        }</strong> at {slowest_test_duration:.2f}s.
             </div>
             """
 
