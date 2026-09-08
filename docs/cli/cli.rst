@@ -31,8 +31,8 @@ Overview
      - Useful in flaky UI tests to get screenshots on failure
    * - ``--plus-no-html``
      - Disable HTML report generation
-     - False
-     - Useful when integrating
+     - ``False``
+     - Useful when integrating. ``--plus-email`` will force HTML generation even if this flag is set
    * - ``--html-output``
      - Directory for HTML output
      - ``report_output``
@@ -53,7 +53,7 @@ Overview
      - Path for XML report
      - ``None``
      - Useful when generating multiple output types
-   * - ``--env`` or ``--environment`` or ``--rp-env`
+   * - ``--env`` or ``--environment`` or ``--rp-env``
      - Include environment variables in the execution metadata.
      - Default: None
      - Useful for adding CI or custom environment metadata (safe values only).
