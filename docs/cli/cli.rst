@@ -29,7 +29,7 @@ Overview
      - When to capture screenshots
      - ``failed``
      - Useful in flaky UI tests to get screenshots on failure
-   * - ``--puls-no-html``
+   * - ``--plus-no-html``
      - Disable HTML report generation
      - False
      - Useful when integrating

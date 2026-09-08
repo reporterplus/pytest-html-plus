@@ -13,7 +13,7 @@ _Changes merged to `main` but not yet released._
 
 ### Added
 
-* Add --puls-no-html to skip generate HTML report.
+* Add --plus-no-html to skip generate HTML report.
 
 ---
 
