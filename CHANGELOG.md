@@ -11,6 +11,10 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 _Changes merged to `main` but not yet released._
 
+### Added
+
+* Add --plus-no-html to skip generate HTML report.
+
 ---
 
 ## [1.2.0] — 2026-08-11

@@ -13,6 +13,14 @@ Overview
      - **Description**
      - **Default**
      - **Use Case**
+   * - ``--plus-profile``
+     - Load a named profile from ``pyproject.toml``
+     - ``None``
+     - Reuse a standard reporting configuration across local runs and CI
+   * - ``--plus-output``
+     - Control which captured stdout/stderr streams are included in reports
+     - ``all``
+     - Reduce report size by omitting output from passing tests or all tests
    * - ``--json-report``
      - Name of the JSON report file generated alongside the HTML report
      - ``final_report.json``
@@ -21,26 +29,22 @@ Overview
      - When to capture screenshots
      - ``failed``
      - Useful in flaky UI tests to get screenshots on failure
-   * - ``--plus-output``
-     - Control which captured stdout/stderr streams are included in reports
-     - ``all``
-     - Reduce report size by omitting output from passing tests or all tests
+   * - ``--plus-no-html``
+     - Disable HTML report generation
+     - ``False``
+     - Useful when integrating. ``--plus-email`` will force HTML generation even if this flag is set
    * - ``--html-output``
      - Directory for HTML output
      - ``report_output``
      - Customize output directory per CI job
-   * - ``--plus-profile``
-     - Load a named profile from ``pyproject.toml``
-     - ``None``
-     - Reuse a standard reporting configuration across local runs and CI
-   * - ``--plus-email``
-     - Send HTML report via email
-     - ``False``
-     - Enable in scheduled test runs (nightly builds)
    * - ``--should-open-report``
      - Auto-open report after run
      - ``failed``
      - Open only when failures occur locally
+   * - ``--plus-email``
+     - Send HTML report via email
+     - ``False``
+     - Enable in scheduled test runs (nightly builds)
    * - ``--generate-xml``
      - Generate a combined XML for CI/coverage
      - ``False``
@@ -49,7 +53,7 @@ Overview
      - Path for XML report
      - ``None``
      - Useful when generating multiple output types
-   * - ``--env`` or ``--environment`` or ``--rp-env`
+   * - ``--env`` or ``--environment`` or ``--rp-env``
      - Include environment variables in the execution metadata.
      - Default: None
      - Useful for adding CI or custom environment metadata (safe values only).
