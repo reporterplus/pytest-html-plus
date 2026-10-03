@@ -58,13 +58,14 @@ Browse test results, inspect failures, and jump directly to source code from the
 
 Capture Selenium and Playwright screenshots automatically and view them alongside the relevant failure context—no custom hooks or decorators required.
 
+![Configurable output capture](https://github.com/user-attachments/assets/209cd2c0-d33b-48ec-b58b-8c8991ce35be)
+
 #### 📋 Everything You Need to Investigate a Failure
 
 Review errors, traces, logs, stdout, stderr, and screenshots together. Copy the context you need in one click and use `--plus-output=failed-only` to keep passing-test output compact.
 
 ![Copy failure context](https://github.com/user-attachments/assets/396e8cf6-862b-4619-82bf-81a8eae8e7b6)
 
-![Configurable output capture](https://github.com/user-attachments/assets/209cd2c0-d33b-48ec-b58b-8c8991ce35be)
 
 #### 🔄 Understand Flaky Tests Across Every Retry
 
