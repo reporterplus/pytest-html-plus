@@ -27,6 +27,7 @@ Welcome to pytest-html-plus
    :maxdepth: 2
    :caption: ✨ Features
 
+   Features/direct-test-links
    Features/search
 
 .. toctree::
