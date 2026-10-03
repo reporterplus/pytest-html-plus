@@ -1,8 +1,8 @@
 {
   "report_title": "report_output",
   "environment": "Pass --rp-env to populate environment",
-  "branch": "Pass --git-branch to populate git metadata",
-  "commit": "Pass --git-commit to populate git metadata",
-  "python_version": "3.10.12",
-  "generated_at": "2026-10-02T04:57:13.286230"
+  "branch": "HEAD",
+  "commit": "af34db1c9720e12ca43f2c1c8d248e4443a375b0",
+  "python_version": "3.10.21",
+  "generated_at": "2026-10-03T06:42:30.902947"
 }
