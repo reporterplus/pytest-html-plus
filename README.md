@@ -77,6 +77,9 @@ See how a test behaves across retries—from initial failure to recovery. Spot p
 
 Copy a direct link to any test result and share it with your team. The report opens at the linked test, reveals it, expands its details, and highlights it—so teammates can jump straight to the relevant context without searching through the report.
 
+<img width="3024" height="1778" alt="ScreenRecording2026-10-03at8 55 26AM-ezgif com-cut" src="https://github.com/user-attachments/assets/0c44a38f-7898-4a4d-8241-4f1d1c57ccfb" />
+
+
 #### 🔍 Find Any Test or Failure Instantly
 
 Search in real time by:
