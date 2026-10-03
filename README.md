@@ -1,154 +1,177 @@
-⚡ **Test your code, not your reporting setup.**  
-> _Get started with rich pytest reports in under 3 seconds. Just install — no setup required. The simplest, fastest reporter for pytest._
+⚡ **Test your code, not your reporting setup.**
 
-## Get a self-contained, actionable, easy-to-read single page HTML unified reports summarizing all your test results — no hassle, just clarity. Detect **flaky tests**, **attach screenshots** automatically without hooks and optionally send reports via email**. Works beautifully with or without `xdist`.
+> Get a rich, actionable pytest report in under three seconds. Install, run your tests, and start investigating—no reporting setup required.
+
+`pytest-html-plus` generates a portable, easy-to-read HTML report with automatic screenshots, captured failure context, flaky-test history, direct test links, and built-in `xdist` support.
 
 ➡️ [View Demo Report](https://reporterplus.github.io/pytest-html-plus/)
 
-[![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/main/) [![PyPI Downloads](https://static.pepy.tech/badge/pytest-html-plus)](https://pepy.tech/projects/pytest-html-plus) ![PyPI](https://img.shields.io/pypi/v/pytest-html-plus) ![Python Versions](https://img.shields.io/pypi/pyversions/pytest-html-plus)  ![License](https://img.shields.io/pypi/l/pytest-html-plus)  [![Unit Tests](https://github.com/reporterplus/pytest-html-plus/actions/workflows/unit-test.yml/badge.svg)](https://github.com/reporterplus/pytest-html-plus/actions/workflows/unit-test.yml) [![codecov](https://codecov.io/gh/reporterplus/pytest-html-plus/branch/main/graph/badge.svg)](https://codecov.io/gh/reporterplus/pytest-html-plus)
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/main/) [![PyPI Downloads](https://static.pepy.tech/badge/pytest-html-plus)](https://pepy.tech/projects/pytest-html-plus) ![PyPI](https://img.shields.io/pypi/v/pytest-html-plus) ![Python Versions](https://img.shields.io/pypi/pyversions/pytest-html-plus) ![License](https://img.shields.io/pypi/l/pytest-html-plus) [![Unit Tests](https://github.com/reporterplus/pytest-html-plus/actions/workflows/unit-test.yml/badge.svg)](https://github.com/reporterplus/pytest-html-plus/actions/workflows/unit-test.yml) [![codecov](https://codecov.io/gh/reporterplus/pytest-html-plus/branch/main/graph/badge.svg)](https://codecov.io/gh/reporterplus/pytest-html-plus)
+
+---
+
+## 🚀 Quick Start
+
+```bash
+pip install pytest-html-plus
+# or
+poetry add pytest-html-plus
+
+pytest
+```
+
+That is enough to generate an HTML report and structured JSON output. No hooks, decorators, or reporting server are required.
+
+## Why pytest-html-plus?
+
+- 📸 Capture failure screenshots automatically for Selenium and Playwright tests.
+- 📋 Keep errors, traces, logs, stdout, and stderr together in one report.
+- 🔄 Understand flaky tests with complete retry history.
+- 🔗 Share a direct link to an individual test result.
+- 🔍 Search across test names, failures, traces, and linked references.
+- ⚡ Produce one unified report with or without `pytest-xdist`.
+- 🏷️ Connect tests to Jira, Testmo, documentation, and custom references.
+- 🧩 Export merged JUnit XML for test-management tools with one flag.
+
+---
+
+## Use pytest-html-plus Wherever You Work
+
+### GitHub Actions
+
+Generate reports in CI, upload report artifacts, and publish test summaries without maintaining custom reporting scripts.
+
+[![🚀 View on GitHub Marketplace](https://img.shields.io/badge/Marketplace-Pytest%20HTML%20Plus-blue?logo=github)](https://github.com/marketplace/actions/pytest-html-plus-action)
+[![Documentation](https://img.shields.io/badge/docs-readthedocs.io-brightgreen)](https://pytest-html-plus.readthedocs.io/en/main/marketplace/usage.html)
+
+### VS Code
+
+Browse test results, inspect failures, and jump directly to source code from the VS Code sidebar.
+
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/reporterplus.pytest-html-plus-vscode?label=VS%20Code%20Marketplace&logo=visualstudiocode&logoColor=white&color=0078d7)](https://marketplace.visualstudio.com/items?itemName=reporterplus.pytest-html-plus-vscode)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/reporterplus.pytest-html-plus-vscode)](https://marketplace.visualstudio.com/items?itemName=reporterplus.pytest-html-plus-vscode)
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/main/extensions/vscode/usage.html)
+
+## ✨ Features
+
+#### 📸 See What Failed—Automatically
+
+Capture Selenium and Playwright screenshots automatically and view them alongside the relevant failure context—no custom hooks or decorators required.
+
+#### 📋 Everything You Need to Investigate a Failure
+
+Review errors, traces, logs, stdout, stderr, and screenshots together. Copy the context you need in one click and use `--plus-output=failed-only` to keep passing-test output compact.
+
+![Copy failure context](https://github.com/user-attachments/assets/396e8cf6-862b-4619-82bf-81a8eae8e7b6)
+
+![Configurable output capture](https://github.com/user-attachments/assets/209cd2c0-d33b-48ec-b58b-8c8991ce35be)
+
+#### 🔄 Understand Flaky Tests Across Every Retry
+
+See how a test behaves across retries—from initial failure to recovery. Spot patterns such as cache issues, race conditions, and intermittent crashes without guesswork.
+
+![Flaky test retry history](https://github.com/user-attachments/assets/1f7e0cd8-d2f9-47fd-8909-6f12adf8a800)
+
+#### 🔗 Share Any Test with a Direct Link
+
+Copy a direct link to any test result and share it with your team. The report opens at the linked test, reveals it, expands its details, and highlights it—so teammates can jump straight to the relevant context without searching through the report.
+
+#### 🔍 Find Any Test or Failure Instantly
+
+Search in real time by:
+
+- Test name
+- Linked issue or documentation ID
+- Custom URL or reference keyword
+- Error message or trace snippet
+
+<img width="800" height="421" alt="Universal test search" src="https://github.com/user-attachments/assets/54858747-ab16-4d4f-baa9-0d651a1d8bac" />
+
+#### 🏷️ Connect Tests to Requirements, Issues, and Releases
+
+Add dynamic markers such as `api`, `critical`, or `slow`, link tests to Jira, Testmo, Notion, or documentation, and quickly find tests that are still untracked.
+
+![Dynamic test markers](https://github.com/user-attachments/assets/f000388f-cdbc-418d-829b-a54309b8ffc4)
+
+![Find untracked tests](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
+
+#### ⚡ One Unified Report—even with xdist
+
+Run tests in parallel and receive one merged HTML and JSON report without an additional merge plugin or post-processing step.
+
+#### 🧩 Export Merged JUnit XML with One Flag
+
+Export links, logs, stdout, stderr, and flaky-test history to JUnit XML for tools such as TestRail, Xray, and Zephyr—without an additional XML merge step.
+
+![Merged JUnit XML export](https://github.com/user-attachments/assets/02da5cc9-7ef5-4a3a-a475-88907964a9c6)
+
+#### 📦 Know Exactly Where Every Report Came From
+
+Include branch, commit, environment, generation time, and runtime metadata directly in the report.
+
+![Report provenance metadata](https://github.com/user-attachments/assets/fa397d22-e40b-4e4a-9321-a2e88aea1c08)
+
+#### 🐢 Spot Your Slowest Tests
+
+Sort by duration and identify slow tests directly from the report.
+
+![Slow test sorting](https://github.com/user-attachments/assets/b9760927-7c67-4bbf-b03d-e13964c727ee)
+
+#### 📧 Share Reports by Email
+
+Send the generated report through the optional email integration when a downloadable CI artifact is not the right delivery method.
+
+![Email report](https://github.com/user-attachments/assets/3f40e206-5dfd-45e9-a511-4dd206cf3318)
 
 ---
 
 ## Already using pytest-html or Allure?
 
-No uninstall needed — `pytest-html-plus` works alongside `pytest-html`. Install it, run your suite, and see what you've been missing. Most teams uninstall `pytest-html` within the same day.
-
-```bash
-pip install pytest-html-plus
-```
-
-Your existing `pytest --html=report.html` commands keep working unchanged.
+`pytest-html-plus` can run alongside `pytest-html`, so you can evaluate it without removing your existing reporter.
 
 | Feature | pytest-html | Allure | pytest-html-plus |
 |---|:---:|:---:|:---:|
-| Self-contained single HTML file | ✅ | ❌ | ✅ |
-| No server or CLI tool needed | ✅ | ❌ | ✅ |
-| Zero config — works out of the box | ✅ | ❌ | ✅ |
+| Portable HTML report | ✅ | ❌ | ✅ |
+| No report server required | ✅ | ❌ | ✅ |
+| Zero-config defaults | ✅ | ❌ | ✅ |
 | xdist parallel run support | ⚠️ extra plugin | ✅ | ✅ built-in |
-| Screenshots (no hooks or decorators) | ❌ | ❌ requires decorators | ✅ |
-| Automatic log & print() capture | ❌ | ✅ | ✅ |
-| Flaky test detection + retry history | ❌ | ✅ | ✅ |
-| Slow test highlighting | ❌ | ❌ | ✅ |
+| Screenshots without custom hooks or decorators | ❌ | ❌ requires integration code | ✅ |
+| Automatic log and `print()` capture | ❌ | ✅ | ✅ |
+| Flaky-test detection and retry history | ❌ | ✅ | ✅ |
+| Direct links to individual test results | ❌ | ✅ | ✅ |
+| Slow-test highlighting | ❌ | ❌ | ✅ |
 | Traceability links (Jira, Testmo, etc.) | ❌ | ✅ | ✅ |
-| JUnit XML export (merged, one flag) | ❌ extra steps | ✅ | ✅ |
-| Run metadata (branch, commit, env) | ❌ | ✅ | ✅ |
-| Reusable config profiles | ❌ | ❌ | ✅ |
-| Unlinked test detection | ❌ | ❌ | ✅ |
-| Copy logs & traces to clipboard | ❌ | ❌ | ✅ |
+| JUnit XML export | ❌ extra steps | ✅ | ✅ merged, one flag |
+| Run metadata (branch, commit, environment) | ❌ | ✅ | ✅ |
+| Reusable configuration profiles | ❌ | ❌ | ✅ |
+| Untracked-test detection | ❌ | ❌ | ✅ |
+| Copy logs and traces to clipboard | ❌ | ❌ | ✅ |
 | Email reports | ❌ | ❌ | ✅ |
 | Mobile-friendly layout | ❌ | ✅ | ✅ |
-| Report size | 🟢 single file | 🔴 many files | 🟢 single file |
-
----
-
-## 🚀 Installation
-
-```bash
-pip install pytest-html-plus
-# or with Poetry
-poetry add pytest-html-plus
-```
-
-## Pytest HTML Plus Action
-
-If you don't want the burden of installing pytest-html-plus manually and your project already manages dependencies with `requirements.txt` or Poetry, use this GitHub Action to generate rich pytest reports automatically.
-
-[![🚀 Checkout on GitHub Marketplace](https://img.shields.io/badge/Marketplace-Pytest%20HTML%20Plus-blue?logo=github)](https://github.com/marketplace/actions/pytest-html-plus-action)
-[![Documentation](https://img.shields.io/badge/docs-readthedocs.io-brightgreen)](https://pytest-html-plus.readthedocs.io/en/main/marketplace/usage.html)
-
-## Pytest HTML Plus VSCode
-
-[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/reporterplus.pytest-html-plus-vscode?label=VS%20Code%20Marketplace&logo=visualstudiocode&logoColor=white&color=0078d7)](https://marketplace.visualstudio.com/items?itemName=reporterplus.pytest-html-plus-vscode)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/reporterplus.pytest-html-plus-vscode)]
-[![Docs](https://img.shields.io/badge/docs-online-blue)](https://pytest-html-plus.readthedocs.io/en/main/extensions/vscode/usage.html)
-
-## ✨ Features
-
-#### 🧩 Seamless Combined XML Export to your favourite test management tools — No Plugins Needed
-Export a fully merged JUnit XML report effortlessly — no external tools or plugins required. (No More merge html additional plugins or steps in your YAML to feed xml reports)
-
-✔ Links, logs, stdout/stderr, and even flaky history — all included
-✔ Works out-of-the-box with your test management tools (like TestRail, XRay, Zephyr)
-✔ Just one flag. No extra lines of code. Total traceability.
-
-![ScreenRecording2025-07-06at11 38 21PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/02da5cc9-7ef5-4a3a-a475-88907964a9c6)
-
-#### 🔄 Stop Guessing — See What's Breaking Your Flaky Tests
-Instantly see how your tests behave across retries — from failure to recovery. Spot patterns like cache issues, race conditions, and random crashes without the guesswork.
-
-![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/1f7e0cd8-d2f9-47fd-8909-6f12adf8a800)
-
-#### 🏷️ Tag your tests on the fly!
-With dynamic markers, you can assign tags like `api`, `critical`, or `slow` — or any custom label — at runtime using standard `pytest.mark.*`.
-No need for custom marker definitions. Perfect for smarter filtering, reporting, and analysis.
-
-![ScreenRecording2025-07-12at10 15 33PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f000388f-cdbc-418d-829b-a54309b8ffc4)
-
-#### 📦 Ship reports with provenance 📜 — full run metadata included 📋 and copy-ready.
-
-![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/fa397d22-e40b-4e4a-9321-a2e88aea1c08)
-
-#### 📋⚡ Turn failure context into a single click — copy logs, traces, and errors instantly for your team.
-
-![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/396e8cf6-862b-4619-82bf-81a8eae8e7b6)
-
-#### Easily track Untracked test scenarios
-
-![ScreenRecording2025-06-29at1 06 02AM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/af40622f-f548-44a5-982b-344c74a65e13)
-
-#### 🔍 Universal Test Search + Smart Traceability
-
-Whether you're tracing coverage, investigating failures, or tracking unlinked test cases — this search has your back!
-
-Just start typing, and the dashboard will instantly filter tests by:
-
-✅ Test names
-
-✅ Linked issue or documentation IDs (JIRA, Testmo, Notion, etc.)
-
-✅ Custom URLs or keywords present in linked references
-
-✅ Error messages and trace snippets to quickly group related failures
-
-<img width="800" height="421" alt="new_search" src="https://github.com/user-attachments/assets/54858747-ab16-4d4f-baa9-0d651a1d8bac" />
-
-
-#### 📸 Screenshot Support: View screenshots directly in the report to understand failures faster.
-
-#### 📧 Email Test Reports: Send your reports via email effortlessly using SendGrid integration.
-
-![Screenshot 2025-05-28 at 4 38 49 PM](https://github.com/user-attachments/assets/3f40e206-5dfd-45e9-a511-4dd206cf3318)
-
-#### 🐢 Spot Slow Tests: Highlights the slowest tests so you know where to optimize your suite.
-
-![ScreenRecording2025-06-21at2 52 49PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/b9760927-7c67-4bbf-b03d-e13964c727ee)
-
-#### 📝 Configurable output capture: Test logs, print() statements, stdout/stderr, and screenshots are automatically captured and embedded in the report. Use `--plus-output=failed-only` to omit captured stdout/stderr from passing tests and reduce report size; logger and screenshot behavior is unchanged.
-
-![ezgif-744a5d34a4c46d](https://github.com/user-attachments/assets/209cd2c0-d33b-48ec-b58b-8c8991ce35be)
 
 ### Complete Feature List
 
 | Feature | Details |
 |---|---|
-| 📊 **Single-file HTML report** | Fully self-contained — no external CSS, JS, or image folders to archive |
-| 🔄 **Flaky test detection** | Detects tests that fail then pass on retry; shows full retry history |
-| 📸 **Automatic screenshots** | Selenium & Playwright screenshots captured and embedded with no conftest hooks |
-| 🧩 **JUnit XML export** | Merged XML output compatible with TestRail, Xray, and Zephyr (`--generate-xml`) |
-| 🔗 **Traceability links** | Attach Jira, Testmo, Notion, or any URL to a test; rendered and searchable in the report |
-| 🏷️ **Dynamic markers** | Tag tests at runtime with `pytest.mark.*` — no marker pre-registration needed |
-| 🔍 **Universal search** | Filter tests by name, issue ID, or any URL keyword in real time |
-| 🐢 **Slow test highlighting** | Slowest tests in the run automatically flagged |
-| 📋 **Copy-to-clipboard** | Copy test path, logs, trace, and errors in one click |
-| 📦 **Run metadata** | Branch, commit SHA, environment, and custom metadata embedded in the report header |
-| 📝 **Configurable stream capture** | Control captured stdout/stderr with `--plus-output`; logger and screenshot behavior remains unchanged |
-| ⚡ **xdist support** | Parallel runs with `pytest-xdist` produce a single merged report, no extra steps |
-| 🌐 **Auto-open report** | `--should-open-report` opens the report in your browser after a run (always / failed / never) |
-| 📄 **JSON report** | Raw JSON output (`--json-report`) for custom dashboards or post-processing |
-| 🔎 **Unlinked test detection** | Instantly filter tests that have no associated issue or documentation link |
-| ⚙️ **Reusable config profiles** | Define named profiles in `pyproject.toml` (`--profile=ci`) — no more repeated CLI flags |
-| 📱 **Mobile-friendly layout** | Report renders cleanly on any screen size |
-| 📧 **Email reports** | Send reports via SendGrid integration (`--send-email`) |
+| 📸 **Automatic screenshots** | Selenium and Playwright screenshots captured without custom hooks or decorators |
+| 📋 **Failure context** | Errors, traces, logs, stdout, and stderr collected with each result |
+| 🔄 **Flaky-test detection** | Detects tests that fail and later pass; shows complete retry history |
+| 🔗 **Direct test links** | Copy a link that opens the report at a specific expanded and highlighted test |
+| 🔍 **Universal search** | Search by test name, issue ID, URL, error message, or trace snippet |
+| ⚡ **xdist support** | Parallel runs produce a single merged report without extra merge steps |
+| 🔗 **Traceability links** | Attach Jira, Testmo, Notion, or custom references to tests |
+| 🏷️ **Dynamic markers** | Tag tests at runtime using standard `pytest.mark.*` markers |
+| 🔎 **Untracked-test detection** | Find tests that have no associated issue or documentation link |
+| 🧩 **JUnit XML export** | Generate merged XML compatible with TestRail, Xray, and Zephyr |
+| 📦 **Run metadata** | Include branch, commit SHA, environment, and generation metadata |
+| 🐢 **Slow-test visibility** | Sort results by duration to identify slow tests |
+| 📋 **Copy to clipboard** | Copy nodeids, logs, traces, errors, and test links |
+| 📝 **Configurable stream capture** | Control captured stdout and stderr with `--plus-output` |
+| 📄 **Structured JSON report** | Use raw result data for integrations and post-processing |
+| ⚙️ **Reusable configuration profiles** | Store commonly used report options in `pyproject.toml` |
+| 🌐 **Auto-open report** | Open reports locally according to an always, failed, or never policy |
+| 📱 **Mobile-friendly layout** | Investigate reports from desktop, tablet, or mobile screens |
+| 📧 **Email reports** | Send reports through the optional email integration |
 
 ## Target Audience
 
@@ -158,13 +181,13 @@ This plugin is aimed at those who are:
 
 - Manually attaching logs or outputs to test results
 
-- Are frustrated with archiving folders full of assets, CSS, JS, and dashboards just to share test results.
+- Frustrated with archiving folders full of assets, CSS, JavaScript, and dashboards just to share test results
 
-- Don't want to refactor existing test suites or tag everything with new decorators just to integrate with a reporting tool.
+- Unwilling to refactor existing test suites or add decorators just to integrate with a reporting tool
 
-- Prefer simplicity — a zero-config, zero code, lightweight report that still looks clean, useful, and polished.
+- Looking for a zero-config, lightweight report that remains clean, useful, and portable
 
-- Want "just enough" — not bare-bones plain text, not a full dashboard with database setup — just a portable HTML report that STILL supports features like links, screenshots, and markers.
+- Wanting more than a bare report without adopting a full dashboard, database, or external service
 
 ## Project Status
 
