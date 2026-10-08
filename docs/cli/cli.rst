@@ -29,6 +29,10 @@ Overview
      - Directory for HTML output
      - ``report_output``
      - Customize output directory per CI job
+   * - ``--worker-json-dir``
+     - Directory for partial JSON reports of pytest-xdist workers
+     - ``.pytest_worker_jsons``
+     - Write to a writable volume in read-only containers
    * - ``--plus-profile``
      - Load a named profile from ``pyproject.toml``
      - ``None``
@@ -78,6 +82,7 @@ For detailed information, examples, and best practices for each parameter, see:
    cli/capture-screenshots
    cli/plus-output
    cli/html-output
+   cli/worker-json-dir
    cli/send-email
    cli/should-open-report
    cli/generate-xml
