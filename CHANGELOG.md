@@ -11,9 +11,13 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 _Changes merged to `main` but not yet released._
 
-### Added
+---
 
-* Added `--worker-json-dir` to configure where pytest-xdist workers write their partial JSON reports (default: `.pytest_worker_jsons`). This allows parallel runs in read-only containers, e.g. Kubernetes pods with `readOnlyRootFilesystem`. The option is also available as `worker-json-dir` in profiles.
+## [1.3.1] — 2026-10-08
+
+### Fixed
+
+* Fixed pytest-xdist report generation in read-only environments by adding `--worker-json-dir`, which configures where workers write partial JSON reports. The option defaults to `.pytest_worker_jsons` and is also available as `worker-json-dir` in profiles.
 
 ---
 
