@@ -240,12 +240,11 @@ def pytest_runtest_makereport(item, call):
             or (capture_option == "failed" and report.outcome == "failed")
         )
 
-        screenshot_path = None
+        screenshot_path = config.getoption("--screenshots") or "screenshots"
         if should_capture_screenshot:
             driver = resolve_driver(item)
             if driver:
-                screenshots_dir = config.getoption("--screenshots") or "screenshots"
-                saved = take_screenshot_generic(screenshots_dir, item, driver)
+                saved = take_screenshot_generic(screenshot_path, item, driver)
                 screenshot_path = os.path.normpath(os.path.abspath(saved))
 
         worker_id = os.getenv("PYTEST_XDIST_WORKER") or "main"
