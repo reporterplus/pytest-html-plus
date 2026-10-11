@@ -1,5 +1,6 @@
 import argparse
 import base64
+import hashlib
 import json
 import os
 import shutil
@@ -9,6 +10,12 @@ from html import escape
 from pytest_html_plus.compute_filter_counts import compute_filter_count
 from pytest_html_plus.resolver_driver import sanitize_filename
 from pytest_html_plus.utils import extract_error_block, extract_trace_block
+
+
+def stable_test_anchor(nodeid):
+    """Return a deterministic, URL-safe HTML anchor for a pytest nodeid."""
+    digest = hashlib.sha256(str(nodeid).encode("utf-8")).hexdigest()[:32]
+    return f"test-{digest}"
 
 
 def main():
@@ -344,6 +351,13 @@ class JSONReporter:
       
       .inline-copy-btn {{ cursor: pointer; background: none; border: 1px solid #ddd; border-radius: 3px; padding: 2px 4px; font-size: 0.8em; margin-left: 8px; color: #666; transition: all 0.2s ease; line-height: 1; }} 
       .inline-copy-btn:hover {{ border-color: #999; background: #f5f5f5; color: #333; }}
+      .test:target, .test.deep-link-target {{
+        outline: 2px solid rgba(160, 130, 90, 0.4);
+        outline-offset: 1px;
+        box-shadow: 0 2px 8px rgba(80, 65, 45, 0.1);
+      }}
+      .test:focus-visible {{ outline: 2px solid #2563eb; outline-offset: 2px; }}
+      .test {{ scroll-margin-top: 1rem; }}
       .error-content pre {{ background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px; border-radius: 4px; color: #7f1d1d; margin: 8px 0; }}
       .trace-content pre {{ background: #fef7ed; border-left: 4px solid #ea580c; padding: 12px; border-radius: 4px; color: #9a3412; margin: 8px 0; }}
       .details-text div pre {{ background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px; margin: 8px 0; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.85em; line-height: 1.4; }}
@@ -416,6 +430,68 @@ class JSONReporter:
         }} catch (error) {{
           console.error("Copy button error:", error);
         }}
+      }}
+
+      function copyTestLink(anchorId, button) {{
+        try {{
+          const url = new URL(window.location.href);
+          url.hash = anchorId;
+          const originalContent = button.innerHTML;
+          navigator.clipboard.writeText(url.href).then(() => {{
+            button.innerHTML = '<span style="color: #2f7a33;">✓</span>';
+            setTimeout(() => {{ button.innerHTML = originalContent; }}, 1000);
+          }}).catch(err => {{
+            console.error("Copy link failed:", err);
+            button.innerHTML = '<span style="color: #d32f2f;">✗</span>';
+            setTimeout(() => {{ button.innerHTML = originalContent; }}, 1000);
+          }});
+        }} catch (error) {{
+          console.error("Copy link error:", error);
+        }}
+      }}
+
+      function clearFiltersForDeepLink() {{
+        const filterIds = [
+          'failedOnlyCheckbox', 'errorOnlyCheckbox', 'skippedOnlyCheckbox',
+          'longestOnlyCheckbox', 'untrackedOnlyCheckbox', 'flakyOnlyCheckbox'
+        ];
+        filterIds.forEach(id => {{
+          const checkbox = document.getElementById(id);
+          if (checkbox) checkbox.checked = false;
+        }});
+        document.querySelectorAll('.marker-filter input[type="checkbox"]')
+          .forEach(checkbox => checkbox.checked = false);
+        const searchInput = document.getElementById('universal-search');
+        if (searchInput) searchInput.value = '';
+        document.querySelectorAll('.test').forEach(test => test.style.display = 'block');
+      }}
+
+      function revealTestFromFragment() {{
+        if (!window.location.hash) return;
+        let anchorId;
+        try {{
+          anchorId = decodeURIComponent(window.location.hash.slice(1));
+        }} catch (error) {{
+          return;
+        }}
+        if (!anchorId.startsWith('test-')) return;
+        const testCard = document.getElementById(anchorId);
+        if (!testCard || !testCard.classList.contains('test')) return;
+
+        clearFiltersForDeepLink();
+        document.querySelectorAll('.test.deep-link-target')
+          .forEach(test => test.classList.remove('deep-link-target'));
+        testCard.classList.add('deep-link-target');
+
+        const header = testCard.querySelector('.header');
+        const details = testCard.querySelector('.details');
+        if (header && details) {{
+          header.classList.add('expanded');
+          details.style.display = 'block';
+        }}
+
+        testCard.scrollIntoView({{ behavior: 'smooth', block: 'center' }});
+        testCard.focus({{ preventScroll: true }});
       }}
 
       function toggleFullscreen(img) {{
@@ -666,6 +742,8 @@ class JSONReporter:
         flakyCheckbox.addEventListener('change', () => toggleFlakyOnly(flakyCheckbox));
         const markerCheckboxes = document.querySelectorAll('.marker-filter input[type="checkbox"]');
         markerCheckboxes.forEach(cb => cb.addEventListener('change', filterByMarkers));
+        revealTestFromFragment();
+        window.addEventListener('hashchange', revealTestFromFragment);
       }};
     </script>
     </head>
@@ -943,8 +1021,9 @@ class JSONReporter:
                 )
 
             escaped_test_name = escape(test["test"])
+            test_anchor = stable_test_anchor(test["nodeid"])
             html += f"""    
-<div class="test test-card" data-name="{escaped_test_name}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}" data-error="{escape(search_error)}">
+<div id="{test_anchor}" class="test test-card" data-nodeid="{escape(test["nodeid"], quote=True)}" tabindex="-1" data-name="{escaped_test_name}" data-link="{",".join(test.get("links") or [])}" data-markers="{marker_str}" data-error="{escape(search_error)}">
   <div class="header {status_class}" onclick="toggleDetails(this)">
     <div class="header-section test-info">
       <span class="toggle"></span>
@@ -955,6 +1034,12 @@ class JSONReporter:
       <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
         <code style="font-size: 0.6em; color: #555;">{escape(test["nodeid"], quote=True)}</code>
           {self.generate_copy_button(test["nodeid"], "nodeid")}
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('{test_anchor}', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
       </span>
       <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">{test["worker"]}</span>
     </div>

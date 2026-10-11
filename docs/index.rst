@@ -16,6 +16,7 @@ Welcome to pytest-html-plus
 
    cli/cli
    cli/html-output
+   cli/worker-json-dir
    cli/json-report
    cli/plus-output
    cli/generate-xml
@@ -27,6 +28,7 @@ Welcome to pytest-html-plus
    :maxdepth: 2
    :caption: ✨ Features
 
+   Features/direct-test-links
    Features/search
 
 .. toctree::

@@ -1,0 +1,3580 @@
+{
+  "filters": {
+    "error": 1,
+    "untracked": 97,
+    "failed": 1,
+    "skipped": 4,
+    "flaky": 1,
+    "total": 101,
+    "passed": 95,
+    "marker_counts": {
+      "xfail": 1,
+      "link": 3,
+      "flaky": 2,
+      "skip": 3,
+      "parametrize": 17,
+      "jira": 1
+    }
+  },
+  "results": [
+    {
+      "test": "test_example_com[chromium]",
+      "nodeid": "tests/browser/test_playwright.py::test_example_com[chromium]",
+      "status": "error",
+      "duration": 0.0020279169999994906,
+      "trace": "launch_browser = <function launch_browser.<locals>.launch at 0xffff929b5c60>\n\n    @pytest.fixture(scope=\"session\")\n    def browser(launch_browser: Callable[[], Browser]) -> Generator[Browser, None, None]:\n>       browser = launch_browser()\n\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:282: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:274: in launch\n    browser = browser_type.launch(**launch_options)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/sync_api/_generated.py:14566: in launch\n    self._sync(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_browser_type.py:97: in launch\n    await self._channel.send(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <playwright._impl._connection.Connection object at 0xffff92b97f70>\ncb = <function Channel.send.<locals>.<lambda> at 0xffff91134af0>\nis_internal = False, title = None\n\n    async def wrap_api_call(\n        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None\n    ) -> Any:\n        if self._api_zone.get():\n            return await cb()\n        task = asyncio.current_task(self._loop)\n        st: List[inspect.FrameInfo] = getattr(\n            task, \"__pw_stack__\", None\n        ) or inspect.stack(0)\n    \n        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal, title)\n        self._api_zone.set(parsed_st)\n        try:\n            return await cb()\n        except Exception as error:\n>           raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None",
+      "error": "E           playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell\nE           \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\nE           \u2551 Looks like Playwright was just updated to 1.58.0.             \u2551\nE           \u2551 Please update docker image as well.                           \u2551\nE           \u2551 -  current: mcr.microsoft.com/playwright/python:v1.46.0-jammy \u2551\nE           \u2551 - required: mcr.microsoft.com/playwright/python:v1.58.0-jammy \u2551\nE           \u2551                                                               \u2551\nE           \u2551 <3 Playwright Team                                            \u2551\nE           \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d",
+      "markers": [],
+      "file": "tests/browser/test_playwright.py",
+      "line": 0,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.704750Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "error",
+          "trace": "launch_browser = <function launch_browser.<locals>.launch at 0xffff929b5c60>\n\n    @pytest.fixture(scope=\"session\")\n    def browser(launch_browser: Callable[[], Browser]) -> Generator[Browser, None, None]:\n>       browser = launch_browser()\n\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:282: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:274: in launch\n    browser = browser_type.launch(**launch_options)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/sync_api/_generated.py:14566: in launch\n    self._sync(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_browser_type.py:97: in launch\n    await self._channel.send(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <playwright._impl._connection.Connection object at 0xffff92b97f70>\ncb = <function Channel.send.<locals>.<lambda> at 0xffff92963520>\nis_internal = False, title = None\n\n    async def wrap_api_call(\n        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None\n    ) -> Any:\n        if self._api_zone.get():\n            return await cb()\n        task = asyncio.current_task(self._loop)\n        st: List[inspect.FrameInfo] = getattr(\n            task, \"__pw_stack__\", None\n        ) or inspect.stack(0)\n    \n        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal, title)\n        self._api_zone.set(parsed_st)\n        try:\n            return await cb()\n        except Exception as error:\n>           raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None",
+          "error": "E           playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell\nE           \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\nE           \u2551 Looks like Playwright was just updated to 1.58.0.             \u2551\nE           \u2551 Please update docker image as well.                           \u2551\nE           \u2551 -  current: mcr.microsoft.com/playwright/python:v1.46.0-jammy \u2551\nE           \u2551 - required: mcr.microsoft.com/playwright/python:v1.58.0-jammy \u2551\nE           \u2551                                                               \u2551\nE           \u2551 <3 Playwright Team                                            \u2551\nE           \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d",
+          "duration": 0.2306651249999998,
+          "timestamp": "2026-10-02T04:57:13.704758Z"
+        },
+        {
+          "status": "error",
+          "trace": "launch_browser = <function launch_browser.<locals>.launch at 0xffff929b5c60>\n\n    @pytest.fixture(scope=\"session\")\n    def browser(launch_browser: Callable[[], Browser]) -> Generator[Browser, None, None]:\n>       browser = launch_browser()\n\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:282: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:274: in launch\n    browser = browser_type.launch(**launch_options)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/sync_api/_generated.py:14566: in launch\n    self._sync(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_browser_type.py:97: in launch\n    await self._channel.send(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <playwright._impl._connection.Connection object at 0xffff92b97f70>\ncb = <function Channel.send.<locals>.<lambda> at 0xffff91e444c0>\nis_internal = False, title = None\n\n    async def wrap_api_call(\n        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None\n    ) -> Any:\n        if self._api_zone.get():\n            return await cb()\n        task = asyncio.current_task(self._loop)\n        st: List[inspect.FrameInfo] = getattr(\n            task, \"__pw_stack__\", None\n        ) or inspect.stack(0)\n    \n        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal, title)\n        self._api_zone.set(parsed_st)\n        try:\n            return await cb()\n        except Exception as error:\n>           raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None",
+          "error": "E           playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell\nE           \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\nE           \u2551 Looks like Playwright was just updated to 1.58.0.             \u2551\nE           \u2551 Please update docker image as well.                           \u2551\nE           \u2551 -  current: mcr.microsoft.com/playwright/python:v1.46.0-jammy \u2551\nE           \u2551 - required: mcr.microsoft.com/playwright/python:v1.58.0-jammy \u2551\nE           \u2551                                                               \u2551\nE           \u2551 <3 Playwright Team                                            \u2551\nE           \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d",
+          "duration": 0.002293707999999839,
+          "timestamp": "2026-10-02T04:57:13.763185Z"
+        },
+        {
+          "status": "error",
+          "trace": "launch_browser = <function launch_browser.<locals>.launch at 0xffff929b5c60>\n\n    @pytest.fixture(scope=\"session\")\n    def browser(launch_browser: Callable[[], Browser]) -> Generator[Browser, None, None]:\n>       browser = launch_browser()\n\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:282: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:274: in launch\n    browser = browser_type.launch(**launch_options)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/sync_api/_generated.py:14566: in launch\n    self._sync(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_browser_type.py:97: in launch\n    await self._channel.send(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <playwright._impl._connection.Connection object at 0xffff92b97f70>\ncb = <function Channel.send.<locals>.<lambda> at 0xffff91134af0>\nis_internal = False, title = None\n\n    async def wrap_api_call(\n        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None\n    ) -> Any:\n        if self._api_zone.get():\n            return await cb()\n        task = asyncio.current_task(self._loop)\n        st: List[inspect.FrameInfo] = getattr(\n            task, \"__pw_stack__\", None\n        ) or inspect.stack(0)\n    \n        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal, title)\n        self._api_zone.set(parsed_st)\n        try:\n            return await cb()\n        except Exception as error:\n>           raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None",
+          "error": "E           playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell\nE           \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\nE           \u2551 Looks like Playwright was just updated to 1.58.0.             \u2551\nE           \u2551 Please update docker image as well.                           \u2551\nE           \u2551 -  current: mcr.microsoft.com/playwright/python:v1.46.0-jammy \u2551\nE           \u2551 - required: mcr.microsoft.com/playwright/python:v1.58.0-jammy \u2551\nE           \u2551                                                               \u2551\nE           \u2551 <3 Playwright Team                                            \u2551\nE           \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d",
+          "duration": 0.0020279169999994906,
+          "timestamp": "2026-10-02T04:57:13.808586Z"
+        }
+      ],
+      "attempt_count": 3,
+      "flaky": false,
+      "attempt_statuses": [
+        "error",
+        "error",
+        "error"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "error",
+        "trace": "launch_browser = <function launch_browser.<locals>.launch at 0xffff929b5c60>\n\n    @pytest.fixture(scope=\"session\")\n    def browser(launch_browser: Callable[[], Browser]) -> Generator[Browser, None, None]:\n>       browser = launch_browser()\n\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:282: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/pytest_playwright/pytest_playwright.py:274: in launch\n    browser = browser_type.launch(**launch_options)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/sync_api/_generated.py:14566: in launch\n    self._sync(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_browser_type.py:97: in launch\n    await self._channel.send(\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <playwright._impl._connection.Connection object at 0xffff92b97f70>\ncb = <function Channel.send.<locals>.<lambda> at 0xffff92963520>\nis_internal = False, title = None\n\n    async def wrap_api_call(\n        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None\n    ) -> Any:\n        if self._api_zone.get():\n            return await cb()\n        task = asyncio.current_task(self._loop)\n        st: List[inspect.FrameInfo] = getattr(\n            task, \"__pw_stack__\", None\n        ) or inspect.stack(0)\n    \n        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal, title)\n        self._api_zone.set(parsed_st)\n        try:\n            return await cb()\n        except Exception as error:\n>           raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None",
+        "error": "E           playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /ms-playwright/chromium_headless_shell-1208/chrome-linux/headless_shell\nE           \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\nE           \u2551 Looks like Playwright was just updated to 1.58.0.             \u2551\nE           \u2551 Please update docker image as well.                           \u2551\nE           \u2551 -  current: mcr.microsoft.com/playwright/python:v1.46.0-jammy \u2551\nE           \u2551 - required: mcr.microsoft.com/playwright/python:v1.58.0-jammy \u2551\nE           \u2551                                                               \u2551\nE           \u2551 <3 Playwright Team                                            \u2551\nE           \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d",
+        "duration": 0.2306651249999998,
+        "timestamp": "2026-10-02T04:57:13.704758Z"
+      }
+    },
+    {
+      "test": "test_example_dot_com_screenshot",
+      "nodeid": "tests/browser/test_selenium.py::test_example_dot_com_screenshot",
+      "status": "failed",
+      "duration": 0.004945458999999985,
+      "trace": "request = <FixtureRequest for <Function test_example_dot_com_screenshot>>\n\n    def test_example_dot_com_screenshot(request):\n>       driver = make_driver(request)\n\ntests/browser/test_selenium.py:29: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/browser/test_selenium.py:18: in make_driver\n    svc = Service(ChromeDriverManager().install())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/chrome.py:39: in install\n    driver_path = self._get_driver_binary_path(self.driver)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/manager.py:33: in _get_driver_binary_path\n    file = self._download_manager.download_file(driver.get_driver_download_url())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:45: in get_driver_download_url\n    driver_version_to_download = self.get_driver_version_to_download()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/driver.py:51: in get_driver_version_to_download\n    else self.get_latest_release_version()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:71: in get_latest_release_version\n    if version.parse(determined_browser_version) >= version.parse(\"113\"):\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/packaging/version.py:103: in parse\n    return Version(version)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <[AttributeError(\"'Version' object has no attribute '_release'\") raised in repr()] Version object at 0xffff91e7dae0>\nversion = None\n\n    def __init__(self, version: str) -> None:\n        \"\"\"Initialize a Version object.\n    \n        :param version:\n            The string representation of a version which will be parsed and normalized\n            before use.\n        :raises InvalidVersion:\n            If the ``version`` does not conform to PEP 440 in any way then this\n            exception will be raised.\n        \"\"\"\n        # Validate the version and parse it into pieces\n>       match = self._regex.fullmatch(version)",
+      "error": "E       TypeError: expected string or bytes-like object",
+      "markers": [],
+      "file": "tests/browser/test_selenium.py",
+      "line": 27,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.823098Z",
+      "screenshot": "screenshots",
+      "logs": "====== WebDriver manager ======\nThere is no [linux64] chromedriver \"latest\" for browser google-chrome \"None\" in cache\nGet LATEST chromedriver version for google-chrome",
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "request = <FixtureRequest for <Function test_example_dot_com_screenshot>>\n\n    def test_example_dot_com_screenshot(request):\n>       driver = make_driver(request)\n\ntests/browser/test_selenium.py:29: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/browser/test_selenium.py:18: in make_driver\n    svc = Service(ChromeDriverManager().install())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/chrome.py:39: in install\n    driver_path = self._get_driver_binary_path(self.driver)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/manager.py:33: in _get_driver_binary_path\n    file = self._download_manager.download_file(driver.get_driver_download_url())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:45: in get_driver_download_url\n    driver_version_to_download = self.get_driver_version_to_download()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/driver.py:51: in get_driver_version_to_download\n    else self.get_latest_release_version()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:71: in get_latest_release_version\n    if version.parse(determined_browser_version) >= version.parse(\"113\"):\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/packaging/version.py:103: in parse\n    return Version(version)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <[AttributeError(\"'Version' object has no attribute '_release'\") raised in repr()] Version object at 0xffff91fde020>\nversion = None\n\n    def __init__(self, version: str) -> None:\n        \"\"\"Initialize a Version object.\n    \n        :param version:\n            The string representation of a version which will be parsed and normalized\n            before use.\n        :raises InvalidVersion:\n            If the ``version`` does not conform to PEP 440 in any way then this\n            exception will be raised.\n        \"\"\"\n        # Validate the version and parse it into pieces\n>       match = self._regex.fullmatch(version)",
+          "error": "E       TypeError: expected string or bytes-like object",
+          "duration": 0.007228250000000713,
+          "timestamp": "2026-10-02T04:57:13.823106Z"
+        },
+        {
+          "status": "failed",
+          "trace": "request = <FixtureRequest for <Function test_example_dot_com_screenshot>>\n\n    def test_example_dot_com_screenshot(request):\n>       driver = make_driver(request)\n\ntests/browser/test_selenium.py:29: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/browser/test_selenium.py:18: in make_driver\n    svc = Service(ChromeDriverManager().install())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/chrome.py:39: in install\n    driver_path = self._get_driver_binary_path(self.driver)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/manager.py:33: in _get_driver_binary_path\n    file = self._download_manager.download_file(driver.get_driver_download_url())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:45: in get_driver_download_url\n    driver_version_to_download = self.get_driver_version_to_download()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/driver.py:51: in get_driver_version_to_download\n    else self.get_latest_release_version()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:71: in get_latest_release_version\n    if version.parse(determined_browser_version) >= version.parse(\"113\"):\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/packaging/version.py:103: in parse\n    return Version(version)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <[AttributeError(\"'Version' object has no attribute '_release'\") raised in repr()] Version object at 0xffff91fde5c0>\nversion = None\n\n    def __init__(self, version: str) -> None:\n        \"\"\"Initialize a Version object.\n    \n        :param version:\n            The string representation of a version which will be parsed and normalized\n            before use.\n        :raises InvalidVersion:\n            If the ``version`` does not conform to PEP 440 in any way then this\n            exception will be raised.\n        \"\"\"\n        # Validate the version and parse it into pieces\n>       match = self._regex.fullmatch(version)",
+          "error": "E       TypeError: expected string or bytes-like object",
+          "duration": 0.016274334000000223,
+          "timestamp": "2026-10-02T04:57:13.863384Z"
+        },
+        {
+          "status": "failed",
+          "trace": "request = <FixtureRequest for <Function test_example_dot_com_screenshot>>\n\n    def test_example_dot_com_screenshot(request):\n>       driver = make_driver(request)\n\ntests/browser/test_selenium.py:29: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/browser/test_selenium.py:18: in make_driver\n    svc = Service(ChromeDriverManager().install())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/chrome.py:39: in install\n    driver_path = self._get_driver_binary_path(self.driver)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/manager.py:33: in _get_driver_binary_path\n    file = self._download_manager.download_file(driver.get_driver_download_url())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:45: in get_driver_download_url\n    driver_version_to_download = self.get_driver_version_to_download()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/driver.py:51: in get_driver_version_to_download\n    else self.get_latest_release_version()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:71: in get_latest_release_version\n    if version.parse(determined_browser_version) >= version.parse(\"113\"):\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/packaging/version.py:103: in parse\n    return Version(version)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <[AttributeError(\"'Version' object has no attribute '_release'\") raised in repr()] Version object at 0xffff91e7dae0>\nversion = None\n\n    def __init__(self, version: str) -> None:\n        \"\"\"Initialize a Version object.\n    \n        :param version:\n            The string representation of a version which will be parsed and normalized\n            before use.\n        :raises InvalidVersion:\n            If the ``version`` does not conform to PEP 440 in any way then this\n            exception will be raised.\n        \"\"\"\n        # Validate the version and parse it into pieces\n>       match = self._regex.fullmatch(version)",
+          "error": "E       TypeError: expected string or bytes-like object",
+          "duration": 0.004945458999999985,
+          "timestamp": "2026-10-02T04:57:13.875710Z"
+        }
+      ],
+      "attempt_count": 3,
+      "flaky": false,
+      "attempt_statuses": [
+        "failed",
+        "failed",
+        "failed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "request = <FixtureRequest for <Function test_example_dot_com_screenshot>>\n\n    def test_example_dot_com_screenshot(request):\n>       driver = make_driver(request)\n\ntests/browser/test_selenium.py:29: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/browser/test_selenium.py:18: in make_driver\n    svc = Service(ChromeDriverManager().install())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/chrome.py:39: in install\n    driver_path = self._get_driver_binary_path(self.driver)\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/manager.py:33: in _get_driver_binary_path\n    file = self._download_manager.download_file(driver.get_driver_download_url())\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:45: in get_driver_download_url\n    driver_version_to_download = self.get_driver_version_to_download()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/core/driver.py:51: in get_driver_version_to_download\n    else self.get_latest_release_version()\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/webdriver_manager/drivers/chrome.py:71: in get_latest_release_version\n    if version.parse(determined_browser_version) >= version.parse(\"113\"):\n/root/.cache/pypoetry/virtualenvs/pytest-html-plus-9TtSrW0h-py3.10/lib/python3.10/site-packages/packaging/version.py:103: in parse\n    return Version(version)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <[AttributeError(\"'Version' object has no attribute '_release'\") raised in repr()] Version object at 0xffff91fde020>\nversion = None\n\n    def __init__(self, version: str) -> None:\n        \"\"\"Initialize a Version object.\n    \n        :param version:\n            The string representation of a version which will be parsed and normalized\n            before use.\n        :raises InvalidVersion:\n            If the ``version`` does not conform to PEP 440 in any way then this\n            exception will be raised.\n        \"\"\"\n        # Validate the version and parse it into pieces\n>       match = self._regex.fullmatch(version)",
+        "error": "E       TypeError: expected string or bytes-like object",
+        "duration": 0.007228250000000713,
+        "timestamp": "2026-10-02T04:57:13.823106Z"
+      }
+    },
+    {
+      "test": "test_fail",
+      "nodeid": "tests/dummy_tests/test_cases.py::test_fail",
+      "status": "skipped",
+      "duration": 7.345799999924907e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "xfail",
+        "link",
+        "flaky"
+      ],
+      "file": "tests/dummy_tests/test_cases.py",
+      "line": 5,
+      "stdout": "stdout from fail\n",
+      "stderr": "stderr from fail\n",
+      "timestamp": "2026-10-02T04:57:13.877255Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [
+        "https://example.com/fail-trace"
+      ],
+      "attempts": [
+        {
+          "status": "skipped",
+          "trace": null,
+          "error": null,
+          "duration": 7.345799999924907e-05,
+          "timestamp": "2026-10-02T04:57:13.877260Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "skipped"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_pass",
+      "nodeid": "tests/dummy_tests/test_cases.py::test_pass",
+      "status": "passed",
+      "duration": 0.0002732499999993365,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "flaky",
+        "link"
+      ],
+      "file": "tests/dummy_tests/test_cases.py",
+      "line": 15,
+      "stdout": "stdout from pass\n",
+      "stderr": "stderr from pass\n",
+      "timestamp": "2026-10-02T04:57:13.878149Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [
+        "https://example.com/pass-trace"
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0002732499999993365,
+          "timestamp": "2026-10-02T04:57:13.878154Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_skip",
+      "nodeid": "tests/dummy_tests/test_cases.py::test_skip",
+      "status": "skipped",
+      "duration": 5.5917000000960115e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "skip"
+      ],
+      "file": "tests/dummy_tests/test_cases.py",
+      "line": 24,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.878918Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "skipped",
+          "trace": null,
+          "error": null,
+          "duration": 5.5917000000960115e-05,
+          "timestamp": "2026-10-02T04:57:13.878923Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "skipped"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_send_with_smtp",
+      "nodeid": "tests/e2e/test_email.py::test_send_with_smtp",
+      "status": "passed",
+      "duration": 0.024746125000000063,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/e2e/test_email.py",
+      "line": 22,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.904496Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.024746125000000063,
+          "timestamp": "2026-10-02T04:57:13.904510Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_send_with_ssl",
+      "nodeid": "tests/e2e/test_email.py::test_send_with_ssl",
+      "status": "passed",
+      "duration": 0.002189540999999906,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/e2e/test_email.py",
+      "line": 39,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.910170Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.002189540999999906,
+          "timestamp": "2026-10-02T04:57:13.910178Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_flaky_network_call",
+      "nodeid": "tests/e2e/test_flaky_simulation.py::test_flaky_network_call",
+      "status": "passed",
+      "duration": 9.779099999995822e-05,
+      "trace": "def test_flaky_network_call():\n        with attempt_lock:\n            attempt_counter[\"count\"] += 1\n            is_first_attempt = attempt_counter[\"count\"] == 1\n            is_second_attempt = attempt_counter[\"count\"] == 2\n    \n        if is_first_attempt:\n            assert False, f\"Simulated network failure in first attempt with value {is_first_attempt}\"\n        if is_second_attempt:\n>           assert False, f\"Simulated network failure in second attempt {is_second_attempt}\"",
+      "error": "E           AssertionError: Simulated network failure in second attempt True\nE           assert False",
+      "markers": [],
+      "file": "tests/e2e/test_flaky_simulation.py",
+      "line": 12,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.912317Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "failed",
+          "trace": "def test_flaky_network_call():\n        with attempt_lock:\n            attempt_counter[\"count\"] += 1\n            is_first_attempt = attempt_counter[\"count\"] == 1\n            is_second_attempt = attempt_counter[\"count\"] == 2\n    \n        if is_first_attempt:\n>           assert False, f\"Simulated network failure in first attempt with value {is_first_attempt}\"",
+          "error": "E           AssertionError: Simulated network failure in first attempt with value True\nE           assert False",
+          "duration": 8.287500000037085e-05,
+          "timestamp": "2026-10-02T04:57:13.912323Z"
+        },
+        {
+          "status": "failed",
+          "trace": "def test_flaky_network_call():\n        with attempt_lock:\n            attempt_counter[\"count\"] += 1\n            is_first_attempt = attempt_counter[\"count\"] == 1\n            is_second_attempt = attempt_counter[\"count\"] == 2\n    \n        if is_first_attempt:\n            assert False, f\"Simulated network failure in first attempt with value {is_first_attempt}\"\n        if is_second_attempt:\n>           assert False, f\"Simulated network failure in second attempt {is_second_attempt}\"",
+          "error": "E           AssertionError: Simulated network failure in second attempt True\nE           assert False",
+          "duration": 6.699999999959516e-05,
+          "timestamp": "2026-10-02T04:57:13.913917Z"
+        },
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 9.779099999995822e-05,
+          "timestamp": "2026-10-02T04:57:13.915544Z"
+        }
+      ],
+      "attempt_count": 3,
+      "flaky": true,
+      "attempt_statuses": [
+        "failed",
+        "failed",
+        "passed"
+      ],
+      "first_failure_index": 0,
+      "first_failure": {
+        "status": "failed",
+        "trace": "def test_flaky_network_call():\n        with attempt_lock:\n            attempt_counter[\"count\"] += 1\n            is_first_attempt = attempt_counter[\"count\"] == 1\n            is_second_attempt = attempt_counter[\"count\"] == 2\n    \n        if is_first_attempt:\n>           assert False, f\"Simulated network failure in first attempt with value {is_first_attempt}\"",
+        "error": "E           AssertionError: Simulated network failure in first attempt with value True\nE           assert False",
+        "duration": 8.287500000037085e-05,
+        "timestamp": "2026-10-02T04:57:13.912323Z"
+      }
+    },
+    {
+      "test": "test_parameter_name_contains_html[<strong>admin</strong>]",
+      "nodeid": "tests/e2e/test_parameter.py::test_parameter_name_contains_html[<strong>admin</strong>]",
+      "status": "passed",
+      "duration": 0.0003323749999992742,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/e2e/test_parameter.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.918041Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0003323749999992742,
+          "timestamp": "2026-10-02T04:57:13.918049Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_parameter_name_contains_html[<button>Click me</button>]",
+      "nodeid": "tests/e2e/test_parameter.py::test_parameter_name_contains_html[<button>Click me</button>]",
+      "status": "passed",
+      "duration": 3.4124999999107786e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/e2e/test_parameter.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.918749Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.4124999999107786e-05,
+          "timestamp": "2026-10-02T04:57:13.918754Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_parameter_name_contains_html[<img src=x>]",
+      "nodeid": "tests/e2e/test_parameter.py::test_parameter_name_contains_html[<img src=x>]",
+      "status": "passed",
+      "duration": 3.2334000000133756e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/e2e/test_parameter.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.919291Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.2334000000133756e-05,
+          "timestamp": "2026-10-02T04:57:13.919294Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_parameter_name_contains_html[Tom & Jerry]",
+      "nodeid": "tests/e2e/test_parameter.py::test_parameter_name_contains_html[Tom & Jerry]",
+      "status": "passed",
+      "duration": 3.854200000041885e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/e2e/test_parameter.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.919739Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.854200000041885e-05,
+          "timestamp": "2026-10-02T04:57:13.919745Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_parameter_name_contains_html[\" onclick=\"doSomething()]",
+      "nodeid": "tests/e2e/test_parameter.py::test_parameter_name_contains_html[\" onclick=\"doSomething()]",
+      "status": "passed",
+      "duration": 2.6749999999964302e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/e2e/test_parameter.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.920171Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.6749999999964302e-05,
+          "timestamp": "2026-10-02T04:57:13.920173Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plugin_logs_expected_results",
+      "nodeid": "tests/e2e/test_plugin.py::test_plugin_logs_expected_results",
+      "status": "skipped",
+      "duration": 7.687499999953218e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "skip"
+      ],
+      "file": "tests/e2e/test_plugin.py",
+      "line": 8,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.920560Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "skipped",
+          "trace": null,
+          "error": null,
+          "duration": 7.687499999953218e-05,
+          "timestamp": "2026-10-02T04:57:13.920565Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "skipped"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_skipped_example",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_skipped_example",
+      "status": "skipped",
+      "duration": 3.91249999989185e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "skip"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 13,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.921018Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "skipped",
+          "trace": null,
+          "error": null,
+          "duration": 3.91249999989185e-05,
+          "timestamp": "2026-10-02T04:57:13.921021Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "skipped"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_convert_json_to_xml",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_convert_json_to_xml",
+      "status": "passed",
+      "duration": 0.00042333400000060806,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 66,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.922253Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00042333400000060806,
+          "timestamp": "2026-10-02T04:57:13.922255Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname[tests/test_login.py-tests.test_login]",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests/test_login.py-tests.test_login]",
+      "status": "passed",
+      "duration": 2.933300000051986e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.922801Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.933300000051986e-05,
+          "timestamp": "2026-10-02T04:57:13.922803Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname[tests\\\\test_user.py-tests.test_user]",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests\\\\test_user.py-tests.test_user]",
+      "status": "passed",
+      "duration": 5.645899999962012e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.923332Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.645899999962012e-05,
+          "timestamp": "2026-10-02T04:57:13.923336Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname[tests/utils/helpers.py-tests.utils.helpers]",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests/utils/helpers.py-tests.utils.helpers]",
+      "status": "passed",
+      "duration": 2.637499999913473e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.923921Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.637499999913473e-05,
+          "timestamp": "2026-10-02T04:57:13.923923Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname[None-default]",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[None-default]",
+      "status": "passed",
+      "duration": 2.6749999999964302e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.924365Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.6749999999964302e-05,
+          "timestamp": "2026-10-02T04:57:13.924367Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_sanitize_classname[-default]",
+      "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[-default]",
+      "status": "passed",
+      "duration": 0.00021183399999991082,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_convert_json_to_junit_xml.py",
+      "line": 117,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.924944Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00021183399999991082,
+          "timestamp": "2026-10-02T04:57:13.924948Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots_copies_png_files",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots_copies_png_files",
+      "status": "passed",
+      "duration": 0.0006937499999999375,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.927567Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006937499999999375,
+          "timestamp": "2026-10-02T04:57:13.927572Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots_ignores_non_png_files",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots_ignores_non_png_files",
+      "status": "passed",
+      "duration": 0.0008045420000009074,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 23,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.929330Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0008045420000009074,
+          "timestamp": "2026-10-02T04:57:13.929334Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots_does_not_overwrite_existing",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots_does_not_overwrite_existing",
+      "status": "passed",
+      "duration": 0.0006253330000003388,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 43,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.930838Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006253330000003388,
+          "timestamp": "2026-10-02T04:57:13.930841Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots_empty_source_dir",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots_empty_source_dir",
+      "status": "passed",
+      "duration": 0.00060095899999979,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 63,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.932268Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00060095899999979,
+          "timestamp": "2026-10-02T04:57:13.932271Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots_creates_output_dir_if_missing",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots_creates_output_dir_if_missing",
+      "status": "passed",
+      "duration": 0.0006428750000004868,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 80,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.933884Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006428750000004868,
+          "timestamp": "2026-10-02T04:57:13.933888Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots_handles_nested_subdirectories",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots_handles_nested_subdirectories",
+      "status": "passed",
+      "duration": 0.0008327919999988609,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 96,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.935614Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0008327919999988609,
+          "timestamp": "2026-10-02T04:57:13.935617Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_copy_all_screenshots_preserves_file_content",
+      "nodeid": "tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots_preserves_file_content",
+      "status": "passed",
+      "duration": 0.0007496659999990385,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_copy_all_screenshots.py",
+      "line": 114,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.937264Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0007496659999990385,
+          "timestamp": "2026-10-02T04:57:13.937268Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_prefers_page_over_others",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_prefers_page_over_others",
+      "status": "passed",
+      "duration": 0.0004838749999986902,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 6,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.938166Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0004838749999986902,
+          "timestamp": "2026-10-02T04:57:13.938170Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_to_driver",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_to_driver",
+      "status": "passed",
+      "duration": 0.00013987500000034458,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 16,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.938691Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00013987500000034458,
+          "timestamp": "2026-10-02T04:57:13.938694Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_to_browser",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_to_browser",
+      "status": "passed",
+      "duration": 0.00011083299999903318,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 26,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.939196Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00011083299999903318,
+          "timestamp": "2026-10-02T04:57:13.939198Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_uses_page_for_screenshot_attr",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_uses_page_for_screenshot_attr",
+      "status": "passed",
+      "duration": 0.0002107090000009748,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 36,
+      "stdout": "[resolve_driver] Using manually attached screenshot object\n",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.939794Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0002107090000009748,
+          "timestamp": "2026-10-02T04:57:13.939797Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_on_object_with_screenshot_method",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_on_object_with_screenshot_method",
+      "status": "passed",
+      "duration": 0.00010704099999969685,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 47,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.940332Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00010704099999969685,
+          "timestamp": "2026-10-02T04:57:13.940334Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_fallback_on_object_with_save_screenshot",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_on_object_with_save_screenshot",
+      "status": "passed",
+      "duration": 0.00022283300000047745,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 56,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.940947Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00022283300000047745,
+          "timestamp": "2026-10-02T04:57:13.940950Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_resolve_driver_returns_none_when_no_match",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_resolve_driver_returns_none_when_no_match",
+      "status": "passed",
+      "duration": 9.491599999833511e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 65,
+      "stdout": "[resolve_driver] Using manually attached screenshot object\n",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.941424Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 9.491599999833511e-05,
+          "timestamp": "2026-10-02T04:57:13.941426Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_take_screenshot_with_screenshot_method",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_with_screenshot_method",
+      "status": "passed",
+      "duration": 0.00041575000000015905,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 72,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.942287Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00041575000000015905,
+          "timestamp": "2026-10-02T04:57:13.942291Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_take_screenshot_with_save_screenshot_method",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_with_save_screenshot_method",
+      "status": "passed",
+      "duration": 0.00037729199999958496,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 87,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.943050Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00037729199999958496,
+          "timestamp": "2026-10-02T04:57:13.943052Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_take_screenshot_raises_on_invalid_driver",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_raises_on_invalid_driver",
+      "status": "passed",
+      "duration": 0.00022374999999996703,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 105,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.943616Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00022374999999996703,
+          "timestamp": "2026-10-02T04:57:13.943618Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_take_screenshot_with_custom_path",
+      "nodeid": "tests/unit/test_driver_screenshots.py::test_take_screenshot_with_custom_path",
+      "status": "passed",
+      "duration": 0.00032950000000120383,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_driver_screenshots.py",
+      "line": 119,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.944357Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00032950000000120383,
+          "timestamp": "2026-10-02T04:57:13.944359Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_basic",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_basic",
+      "status": "passed",
+      "duration": 4.0165999999786095e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 5,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.944818Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.0165999999786095e-05,
+          "timestamp": "2026-10-02T04:57:13.944821Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_spaces_and_blank_lines",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_spaces_and_blank_lines",
+      "status": "passed",
+      "duration": 2.7666000001147495e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "jira"
+      ],
+      "file": "tests/unit/test_error_block.py",
+      "line": 11,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.945214Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [
+        "https://acme.atlassian.net/browse/QA-123"
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.7666000001147495e-05,
+          "timestamp": "2026-10-02T04:57:13.945217Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_no_E_lines",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_no_E_lines",
+      "status": "passed",
+      "duration": 5.704199999989612e-05,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "link"
+      ],
+      "file": "tests/unit/test_error_block.py",
+      "line": 18,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.945621Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [
+        "https://acme.atlassian.net/browse/PAY-456"
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 5.704199999989612e-05,
+          "timestamp": "2026-10-02T04:57:13.945640Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_empty",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_empty",
+      "status": "passed",
+      "duration": 2.4292000000869507e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 25,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.946170Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.4292000000869507e-05,
+          "timestamp": "2026-10-02T04:57:13.946172Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_error_block_none",
+      "nodeid": "tests/unit/test_error_block.py::test_error_block_none",
+      "status": "passed",
+      "duration": 2.9665999999650694e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 29,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.946548Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.9665999999650694e-05,
+          "timestamp": "2026-10-02T04:57:13.946551Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_error_block_with_invalid_input",
+      "nodeid": "tests/unit/test_error_block.py::test_extract_error_block_with_invalid_input",
+      "status": "passed",
+      "duration": 2.8083000000123093e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_error_block.py",
+      "line": 33,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.946958Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.8083000000123093e-05,
+          "timestamp": "2026-10-02T04:57:13.946961Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_returns_relative_path",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_returns_relative_path",
+      "status": "passed",
+      "duration": 0.0006491250000006943,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.948684Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006491250000006943,
+          "timestamp": "2026-10-02T04:57:13.948687Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_copies_file_to_output",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_copies_file_to_output",
+      "status": "passed",
+      "duration": 0.0006262919999997507,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 21,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.950185Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006262919999997507,
+          "timestamp": "2026-10-02T04:57:13.950188Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_returns_none_when_no_match",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_returns_none_when_no_match",
+      "status": "passed",
+      "duration": 0.0005837499999987728,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 38,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.951580Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0005837499999987728,
+          "timestamp": "2026-10-02T04:57:13.951583Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_returns_none_for_empty_dir",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_returns_none_for_empty_dir",
+      "status": "passed",
+      "duration": 0.0007317919999998423,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 55,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.953256Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0007317919999998423,
+          "timestamp": "2026-10-02T04:57:13.953260Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_partial_name_match",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_partial_name_match",
+      "status": "passed",
+      "duration": 0.0009617500000000945,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 70,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.955109Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0009617500000000945,
+          "timestamp": "2026-10-02T04:57:13.955113Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_ignores_non_png_files",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_ignores_non_png_files",
+      "status": "passed",
+      "duration": 0.0006260830000002215,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 88,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.956642Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006260830000002215,
+          "timestamp": "2026-10-02T04:57:13.956644Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_finds_in_nested_subdir",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_finds_in_nested_subdir",
+      "status": "passed",
+      "duration": 0.0008892499999983983,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 107,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.958301Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0008892499999983983,
+          "timestamp": "2026-10-02T04:57:13.958303Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_find_screenshot_preserves_file_content",
+      "nodeid": "tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_preserves_file_content",
+      "status": "passed",
+      "duration": 0.0006549169999985338,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_find_screenshot_and_copy.py",
+      "line": 126,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.959901Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0006549169999985338,
+          "timestamp": "2026-10-02T04:57:13.959904Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_flaky_badge_shows_attempt_count",
+      "nodeid": "tests/unit/test_flaky_badge.py::TestFlakyBadge::test_flaky_badge_shows_attempt_count",
+      "status": "passed",
+      "duration": 0.0008633749999997775,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_flaky_badge.py",
+      "line": 53,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.961580Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0008633749999997775,
+          "timestamp": "2026-10-02T04:57:13.961583Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_flaky_badge_single_attempt_has_no_count",
+      "nodeid": "tests/unit/test_flaky_badge.py::TestFlakyBadge::test_flaky_badge_single_attempt_has_no_count",
+      "status": "passed",
+      "duration": 0.0009951249999993195,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_flaky_badge.py",
+      "line": 69,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.963510Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0009951249999993195,
+          "timestamp": "2026-10-02T04:57:13.963514Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_non_flaky_test_has_no_badge",
+      "nodeid": "tests/unit/test_flaky_badge.py::TestFlakyBadge::test_non_flaky_test_has_no_badge",
+      "status": "passed",
+      "duration": 0.0007615420000011142,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_flaky_badge.py",
+      "line": 85,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.965289Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0007615420000011142,
+          "timestamp": "2026-10-02T04:57:13.965292Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_missing_flaky_key_treated_as_non_flaky",
+      "nodeid": "tests/unit/test_flaky_badge.py::TestFlakyBadge::test_missing_flaky_key_treated_as_non_flaky",
+      "status": "passed",
+      "duration": 0.0007277499999993609,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_flaky_badge.py",
+      "line": 100,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.966876Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0007277499999993609,
+          "timestamp": "2026-10-02T04:57:13.966879Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_only_flaky_tests_get_badge",
+      "nodeid": "tests/unit/test_flaky_badge.py::TestFlakyBadge::test_only_flaky_tests_get_badge",
+      "status": "passed",
+      "duration": 0.0007645420000006453,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_flaky_badge.py",
+      "line": 113,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.968402Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0007645420000006453,
+          "timestamp": "2026-10-02T04:57:13.968405Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_merge_json_reports_creates_merged_file",
+      "nodeid": "tests/unit/test_json_merger.py::test_merge_json_reports_creates_merged_file",
+      "status": "passed",
+      "duration": 0.00019499999999972317,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 37,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.969647Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00019499999999972317,
+          "timestamp": "2026-10-02T04:57:13.969650Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_merge_json_reports_handles_bad_json",
+      "nodeid": "tests/unit/test_json_merger.py::test_merge_json_reports_handles_bad_json",
+      "status": "passed",
+      "duration": 0.00014283299999995336,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 62,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.970708Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00014283299999995336,
+          "timestamp": "2026-10-02T04:57:13.970711Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_merge_json_reports_handles_empty_directory",
+      "nodeid": "tests/unit/test_json_merger.py::test_merge_json_reports_handles_empty_directory",
+      "status": "passed",
+      "duration": 0.00011304100000053552,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 70,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.971892Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00011304100000053552,
+          "timestamp": "2026-10-02T04:57:13.971896Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_compute_filter_count_failed_non_flaky",
+      "nodeid": "tests/unit/test_json_merger.py::test_compute_filter_count_failed_non_flaky",
+      "status": "passed",
+      "duration": 4.308299999955523e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 83,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.972295Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.308299999955523e-05,
+          "timestamp": "2026-10-02T04:57:13.972297Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_compute_filter_count_error_non_flaky",
+      "nodeid": "tests/unit/test_json_merger.py::test_compute_filter_count_error_non_flaky",
+      "status": "passed",
+      "duration": 2.8458000000952666e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_json_merger.py",
+      "line": 105,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.972683Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.8458000000952666e-05,
+          "timestamp": "2026-10-02T04:57:13.972685Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_single_non_flaky_test",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_single_non_flaky_test",
+      "status": "passed",
+      "duration": 2.9458000000204265e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 4,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.973109Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.9458000000204265e-05,
+          "timestamp": "2026-10-02T04:57:13.973111Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_flaky_test_with_multiple_attempts",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_flaky_test_with_multiple_attempts",
+      "status": "passed",
+      "duration": 2.8125000000045475e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 12,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.973482Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.8125000000045475e-05,
+          "timestamp": "2026-10-02T04:57:13.973484Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_mixed_tests_flaky_and_non_flaky",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_mixed_tests_flaky_and_non_flaky",
+      "status": "passed",
+      "duration": 3.662499999990132e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 25,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.973957Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.662499999990132e-05,
+          "timestamp": "2026-10-02T04:57:13.973960Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_preserves_other_fields",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_preserves_other_fields",
+      "status": "passed",
+      "duration": 4.533300000097995e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 47,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.974444Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.533300000097995e-05,
+          "timestamp": "2026-10-02T04:57:13.974446Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_multiple_failures_not_flaky",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_multiple_failures_not_flaky",
+      "status": "passed",
+      "duration": 3.5207999999897766e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 66,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.974798Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.5207999999897766e-05,
+          "timestamp": "2026-10-02T04:57:13.974801Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_multiple_passes_not_flaky",
+      "nodeid": "tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_multiple_passes_not_flaky",
+      "status": "passed",
+      "duration": 3.737499999978411e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_mark_flaky_tests.py",
+      "line": 76,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.975244Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.737499999978411e-05,
+          "timestamp": "2026-10-02T04:57:13.975246Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_links_with_multiple_marker_names",
+      "nodeid": "tests/unit/test_marker_links.py::test_extract_links_with_multiple_marker_names",
+      "status": "passed",
+      "duration": 0.00044141699999933337,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_marker_links.py",
+      "line": 5,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.976032Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00044141699999933337,
+          "timestamp": "2026-10-02T04:57:13.976035Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_links_with_no_markers",
+      "nodeid": "tests/unit/test_marker_links.py::test_extract_links_with_no_markers",
+      "status": "passed",
+      "duration": 0.00019320899999897279,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_marker_links.py",
+      "line": 26,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.976546Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00019320899999897279,
+          "timestamp": "2026-10-02T04:57:13.976549Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_links_with_non_string_args",
+      "nodeid": "tests/unit/test_marker_links.py::test_extract_links_with_non_string_args",
+      "status": "passed",
+      "duration": 0.0002430829999990891,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_marker_links.py",
+      "line": 33,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:13.977113Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0002430829999990891,
+          "timestamp": "2026-10-02T04:57:13.977116Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_passing_test_is_logged_in_json_report",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_passing_test_is_logged_in_json_report",
+      "status": "passed",
+      "duration": 0.162542792,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 77,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:14.140534Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.162542792,
+          "timestamp": "2026-10-02T04:57:14.140542Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_failing_test_is_logged_with_error",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_failing_test_is_logged_with_error",
+      "status": "passed",
+      "duration": 0.17796808299999967,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 94,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:14.319700Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.17796808299999967,
+          "timestamp": "2026-10-02T04:57:14.319708Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_skipped_test_is_logged",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_skipped_test_is_logged",
+      "status": "passed",
+      "duration": 0.1623803749999997,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 114,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:14.483221Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.1623803749999997,
+          "timestamp": "2026-10-02T04:57:14.483229Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_markers_are_captured_in_report",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_markers_are_captured_in_report",
+      "status": "passed",
+      "duration": 0.14570404200000198,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 135,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:14.630122Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.14570404200000198,
+          "timestamp": "2026-10-02T04:57:14.630130Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_report_file_contains_filters",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_report_file_contains_filters",
+      "status": "passed",
+      "duration": 0.15185987499999953,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 158,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:14.783050Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.15185987499999953,
+          "timestamp": "2026-10-02T04:57:14.783058Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plus_output_policy_for_passing_test[None-True]",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_plus_output_policy_for_passing_test[None-True]",
+      "status": "passed",
+      "duration": 0.156994791999999,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 175,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:14.941117Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.156994791999999,
+          "timestamp": "2026-10-02T04:57:14.941125Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plus_output_policy_for_passing_test[all-True]",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_plus_output_policy_for_passing_test[all-True]",
+      "status": "passed",
+      "duration": 0.14708716600000216,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 175,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:15.089831Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.14708716600000216,
+          "timestamp": "2026-10-02T04:57:15.089839Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plus_output_policy_for_passing_test[failed-only-False]",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_plus_output_policy_for_passing_test[failed-only-False]",
+      "status": "passed",
+      "duration": 0.14762400000000042,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 175,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:15.238620Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.14762400000000042,
+          "timestamp": "2026-10-02T04:57:15.238627Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plus_output_policy_for_passing_test[none-False]",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_plus_output_policy_for_passing_test[none-False]",
+      "status": "passed",
+      "duration": 0.14312400000000025,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 175,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:15.382800Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.14312400000000025,
+          "timestamp": "2026-10-02T04:57:15.382807Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plus_output_policy_for_failing_test[all-True]",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_plus_output_policy_for_failing_test[all-True]",
+      "status": "passed",
+      "duration": 0.1559135420000004,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 214,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:15.540218Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.1559135420000004,
+          "timestamp": "2026-10-02T04:57:15.540248Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plus_output_policy_for_failing_test[failed-only-True]",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_plus_output_policy_for_failing_test[failed-only-True]",
+      "status": "passed",
+      "duration": 0.15532170899999898,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 214,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:15.697805Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.15532170899999898,
+          "timestamp": "2026-10-02T04:57:15.697816Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_plus_output_policy_for_failing_test[none-False]",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_plus_output_policy_for_failing_test[none-False]",
+      "status": "passed",
+      "duration": 0.1505712079999988,
+      "trace": null,
+      "error": null,
+      "markers": [
+        "parametrize"
+      ],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 214,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:15.849767Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.1505712079999988,
+          "timestamp": "2026-10-02T04:57:15.849775Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_failed_only_keeps_setup_failure_output",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_failed_only_keeps_setup_failure_output",
+      "status": "passed",
+      "duration": 0.152516250999998,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 256,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.003379Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.152516250999998,
+          "timestamp": "2026-10-02T04:57:16.003390Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_failed_only_keeps_xfail_output",
+      "nodeid": "tests/unit/test_plugin_logging.py::test_failed_only_keeps_xfail_output",
+      "status": "passed",
+      "duration": 0.15165291599999975,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_plugin_logging.py",
+      "line": 288,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.156110Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.15165291599999975,
+          "timestamp": "2026-10-02T04:57:16.156122Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_args_are_prepended_so_cli_can_override",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_args_are_prepended_so_cli_can_override",
+      "status": "passed",
+      "duration": 0.00030195799999788164,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 11,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.157673Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00030195799999788164,
+          "timestamp": "2026-10-02T04:57:16.157679Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_can_be_passed_as_separate_argument",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_can_be_passed_as_separate_argument",
+      "status": "passed",
+      "duration": 0.00011008399999923313,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 39,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.158613Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00011008399999923313,
+          "timestamp": "2026-10-02T04:57:16.158616Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_supports_output_policy",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_supports_output_policy",
+      "status": "passed",
+      "duration": 0.00010112499999692659,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 56,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.159472Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00010112499999692659,
+          "timestamp": "2026-10-02T04:57:16.159474Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_invalid_profile_key_raises_usage_error",
+      "nodeid": "tests/unit/test_profile_loading.py::test_invalid_profile_key_raises_usage_error",
+      "status": "passed",
+      "duration": 0.000253750000002384,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 73,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.160515Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.000253750000002384,
+          "timestamp": "2026-10-02T04:57:16.160518Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_duplicate_profile_keys_surface_toml_error",
+      "nodeid": "tests/unit/test_profile_loading.py::test_duplicate_profile_keys_surface_toml_error",
+      "status": "passed",
+      "duration": 0.0001451249999995241,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 86,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.161411Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0001451249999995241,
+          "timestamp": "2026-10-02T04:57:16.161413Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_requires_pyproject_file",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_requires_pyproject_file",
+      "status": "passed",
+      "duration": 0.0003096659999997087,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 100,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.162458Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.0003096659999997087,
+          "timestamp": "2026-10-02T04:57:16.162465Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_profile_boolean_values_must_be_boolean",
+      "nodeid": "tests/unit/test_profile_loading.py::test_profile_boolean_values_must_be_boolean",
+      "status": "passed",
+      "duration": 0.00012416599999909295,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_profile_loading.py",
+      "line": 108,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.163328Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00012416599999909295,
+          "timestamp": "2026-10-02T04:57:16.163333Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_ui_fixture_failure_captures_screenshot",
+      "nodeid": "tests/unit/test_setup_failure.py::test_ui_fixture_failure_captures_screenshot",
+      "status": "passed",
+      "duration": 0.00043937500000268415,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_setup_failure.py",
+      "line": 29,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.164805Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 0.00043937500000268415,
+          "timestamp": "2026-10-02T04:57:16.164807Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_basic",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_basic",
+      "status": "passed",
+      "duration": 3.316699999800221e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 3,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.165333Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.316699999800221e-05,
+          "timestamp": "2026-10-02T04:57:16.165337Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_with_leading_spaces",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_with_leading_spaces",
+      "status": "passed",
+      "duration": 3.095799999996984e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 9,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.165708Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.095799999996984e-05,
+          "timestamp": "2026-10-02T04:57:16.165711Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_no_error_line",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_no_error_line",
+      "status": "passed",
+      "duration": 2.800000000036107e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 16,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.166040Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 2.800000000036107e-05,
+          "timestamp": "2026-10-02T04:57:16.166042Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_empty",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_empty",
+      "status": "passed",
+      "duration": 3.4459000001874074e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 22,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.166366Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.4459000001874074e-05,
+          "timestamp": "2026-10-02T04:57:16.166369Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_none",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_none",
+      "status": "passed",
+      "duration": 4.1416999998489246e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 26,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.166760Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 4.1416999998489246e-05,
+          "timestamp": "2026-10-02T04:57:16.166764Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_trace_block_only_error_line",
+      "nodeid": "tests/unit/test_trace_block.py::test_trace_block_only_error_line",
+      "status": "passed",
+      "duration": 3.0000000002416982e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 30,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.167107Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.0000000002416982e-05,
+          "timestamp": "2026-10-02T04:57:16.167110Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    },
+    {
+      "test": "test_extract_trace_block_with_invalid_input",
+      "nodeid": "tests/unit/test_trace_block.py::test_extract_trace_block_with_invalid_input",
+      "status": "passed",
+      "duration": 3.220800000036661e-05,
+      "trace": null,
+      "error": null,
+      "markers": [],
+      "file": "tests/unit/test_trace_block.py",
+      "line": 35,
+      "stdout": "",
+      "stderr": "",
+      "timestamp": "2026-10-02T04:57:16.167424Z",
+      "screenshot": "screenshots",
+      "logs": [],
+      "worker": "main",
+      "links": [],
+      "attempts": [
+        {
+          "status": "passed",
+          "trace": null,
+          "error": null,
+          "duration": 3.220800000036661e-05,
+          "timestamp": "2026-10-02T04:57:16.167427Z"
+        }
+      ],
+      "attempt_count": 1,
+      "flaky": false,
+      "attempt_statuses": [
+        "passed"
+      ],
+      "first_failure_index": null,
+      "first_failure": null
+    }
+  ]
+}

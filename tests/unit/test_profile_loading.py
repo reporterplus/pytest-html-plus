@@ -71,6 +71,23 @@ output = "failed-only"
     assert args == ["--plus-output=failed-only"]
 
 
+def test_profile_supports_worker_json_dir(tmp_path):
+    write_pyproject(
+        tmp_path,
+        """
+[tool.pytest-html-plus.profiles.k8s]
+worker-json-dir = "/tmp/worker-jsons"
+""".strip(),
+    )
+
+    args = apply_plus_profile_args(
+        ["--plus-profile=k8s"],
+        start_path=tmp_path,
+    )
+
+    assert args == ["--worker-json-dir=/tmp/worker-jsons"]
+
+
 def test_invalid_profile_key_raises_usage_error(tmp_path):
     write_pyproject(
         tmp_path,

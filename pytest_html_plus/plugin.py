@@ -33,6 +33,8 @@ PROFILE_OPTION = "--plus-profile"
 PROFILE_SECTION = ("tool", "pytest-html-plus", "profiles")
 OUTPUT_OPTION = "--plus-output"
 OUTPUT_CHOICES = ("all", "failed-only", "none")
+WORKER_JSON_DIR_OPTION = "--worker-json-dir"
+DEFAULT_WORKER_JSON_DIR = ".pytest_worker_jsons"
 PROFILE_OPTION_MAP = {
     "json-report": {"flag": "--json-report", "kind": "value"},
     "capture-screenshots": {"flag": "--capture-screenshots", "kind": "value"},
@@ -47,6 +49,7 @@ PROFILE_OPTION_MAP = {
     "git-commit": {"flag": "--git-commit", "kind": "value"},
     "rp-env": {"flag": "--rp-env", "kind": "value"},
     "output": {"flag": OUTPUT_OPTION, "kind": "value"},
+    "worker-json-dir": {"flag": WORKER_JSON_DIR_OPTION, "kind": "value"},
 }
 
 
@@ -288,6 +291,9 @@ def pytest_sessionfinish(session, exitstatus):
     html_output = session.config.getoption("--html-output") or "report_output"
     screenshots_path = session.config.getoption("--screenshots") or "screenshots"
     raw_xml_report = session.config.getoption("--xml-report")
+    worker_dir = (
+        session.config.getoption(WORKER_JSON_DIR_OPTION) or DEFAULT_WORKER_JSON_DIR
+    )
 
     # ---- XML filename validation ----
     if raw_xml_report:
@@ -321,7 +327,6 @@ def pytest_sessionfinish(session, exitstatus):
     # ---- Worker behavior ----
     if is_worker:
         worker_id = os.getenv("PYTEST_XDIST_WORKER")
-        worker_dir = ".pytest_worker_jsons"
         os.makedirs(worker_dir, exist_ok=True)
 
         reporter.report_path = os.path.join(worker_dir, f"{worker_id}.json")
@@ -335,7 +340,7 @@ def pytest_sessionfinish(session, exitstatus):
 
     # Always run merge (even for single worker)
     merge_json_reports(
-        directory=".pytest_worker_jsons" if is_xdist else html_output,
+        directory=worker_dir if is_xdist else html_output,
         output_path=json_path,
     )
 
@@ -482,6 +487,15 @@ def pytest_addoption(parser):
         default="final_report.json",
         help="Name of the JSON report file generated alongside the HTML report",
     )
+    group.addoption(
+        WORKER_JSON_DIR_OPTION,
+        action="store",
+        default=DEFAULT_WORKER_JSON_DIR,
+        help=(
+            "Directory where pytest-xdist workers write their partial JSON "
+            "reports before merging (default: .pytest_worker_jsons)"
+        ),
+    )
 
     # Screenshot options
     group.addoption(
@@ -566,7 +580,9 @@ def pytest_configure(config):
     global _saved_config
     _saved_config = config
 
-    INTERNAL_JSON_DIR = Path(".pytest_worker_jsons")
+    INTERNAL_JSON_DIR = Path(
+        config.getoption(WORKER_JSON_DIR_OPTION) or DEFAULT_WORKER_JSON_DIR
+    )
     report_path = config.getoption("--json-report") or "final_report.json"
     worker_id = os.getenv("PYTEST_XDIST_WORKER")
 
