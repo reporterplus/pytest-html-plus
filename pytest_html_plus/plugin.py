@@ -39,6 +39,7 @@ PROFILE_OPTION_MAP = {
     "json-report": {"flag": "--json-report", "kind": "value"},
     "capture-screenshots": {"flag": "--capture-screenshots", "kind": "value"},
     "html-output": {"flag": "--html-output", "kind": "value"},
+    "plus-no-html": {"flag": "--plus-no-html", "kind": "bool"},
     "screenshots": {"flag": "--screenshots", "kind": "value"},
     "plus-email": {"flag": "--plus-email", "kind": "bool"},
     "should-open-report": {"flag": "--should-open-report", "kind": "value"},
@@ -237,17 +238,17 @@ def pytest_runtest_makereport(item, call):
                 except KeyError:
                     caplog_text = None
 
-        screenshot_path = config.getoption("--screenshots") or "screenshots"
-
         should_capture_screenshot = report.when in ("setup", "call") and (
             capture_option == "all"
             or (capture_option == "failed" and report.outcome == "failed")
         )
 
+        screenshot_path = config.getoption("--screenshots") or "screenshots"
         if should_capture_screenshot:
             driver = resolve_driver(item)
             if driver:
-                screenshot_path = take_screenshot_generic(screenshot_path, item, driver)
+                saved = take_screenshot_generic(screenshot_path, item, driver)
+                screenshot_path = os.path.normpath(os.path.abspath(saved))
 
         worker_id = os.getenv("PYTEST_XDIST_WORKER") or "main"
 
@@ -284,7 +285,7 @@ def pytest_runtest_makereport(item, call):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    reporter = session.config._json_reporter
+    reporter: JSONReporter = session.config._json_reporter
 
     raw_json_report = session.config.getoption("--json-report")
     html_output = session.config.getoption("--html-output") or "report_output"
@@ -343,30 +344,53 @@ def pytest_sessionfinish(session, exitstatus):
         output_path=json_path,
     )
 
-    script_path = os.path.join(os.path.dirname(__file__), "generate_html_report.py")
-    if not os.path.exists(script_path):
-        logger.warning(
-            f"Report generation script not found at {script_path}. "
-            f"Skipping HTML report generation."
-        )
-        return
+    should_generate_html = not session.config.getoption("--plus-no-html")
 
-    try:
-        subprocess.run(
-            [
-                sys.executable,
-                script_path,
-                "--report",
-                json_path,
-                "--screenshots",
-                screenshots_path,
-                "--output",
-                html_output,
-            ],
-            check=True,
+    source_screenshot_dir = Path(screenshots_path).resolve()
+    html_screenshot_dir = (Path(html_output) / "screenshots").resolve()
+
+    if should_generate_html:
+        script_path: str = os.path.join(
+            os.path.dirname(__file__), "generate_html_report.py"
         )
-    except Exception as e:
-        raise RuntimeError(f"Exception during HTML report generation: {e}") from e
+        if not os.path.exists(script_path):
+            logger.warning(
+                f"Report generation script not found at {script_path}. "
+                f"Skipping HTML report generation."
+            )
+            return
+
+        try:
+            subprocess.run(
+                [
+                    sys.executable,
+                    script_path,
+                    "--report",
+                    json_path,
+                    "--screenshots",
+                    source_screenshot_dir,
+                    "--output",
+                    html_output,
+                ],
+                check=True,
+            )
+        except Exception as e:
+            raise RuntimeError(f"Exception during HTML report generation: {e}") from e
+
+    else:
+        # no html backup screenshot
+        if source_screenshot_dir != html_screenshot_dir:
+            # not backup when in same directory
+            html_screenshot_dir.mkdir(parents=True, exist_ok=True)
+
+            for root, _, files in os.walk(source_screenshot_dir):
+                for file in files:
+                    if not file.endswith(".png"):
+                        continue
+
+                    src_path = os.path.join(root, file)
+                    dest_path = os.path.join(html_screenshot_dir, file)
+                    shutil.copy(src_path, dest_path)
 
     # ---- Generate XML ----
     if session.config.getoption("--generate-xml"):
@@ -377,13 +401,16 @@ def pytest_sessionfinish(session, exitstatus):
             raise RuntimeError(f"Failed to generate XML report: {e}") from e
 
     if not os.getenv("PYTEST_XDIST_WORKER"):
-        if os.path.exists(screenshots_path):
+        if (
+            os.path.exists(source_screenshot_dir)
+            and source_screenshot_dir != html_screenshot_dir
+        ):
             try:
-                shutil.rmtree(screenshots_path)
+                shutil.rmtree(source_screenshot_dir)
             except Exception:
                 logger.warning("Could not clean up screenshots directory")
 
-    if session.config.getoption("--plus-email"):
+    if should_generate_html and session.config.getoption("--plus-email"):
         try:
             config = load_email_env()
             config["report_path"] = html_output
@@ -392,12 +419,13 @@ def pytest_sessionfinish(session, exitstatus):
         except Exception as e:
             raise RuntimeError(f"Failed to send email: {e}") from e
 
-    # ---- Open report (controller only) ----
-    open_html_report(
-        report_path=os.path.join(html_output, "report.html"),
-        json_path=json_path,
-        config=session.config,
-    )
+    if should_generate_html:
+        # ---- Open report (controller only) ----
+        open_html_report(
+            report_path=os.path.join(html_output, "report.html"),
+            json_path=json_path,
+            config=session.config,
+        )
 
 
 def pytest_sessionstart(session):
@@ -436,24 +464,12 @@ def pytest_load_initial_conftests(args):
 def pytest_addoption(parser):
     group = parser.getgroup("pytest-html-plus", "pytest-html-plus reporting options")
 
+    # General options
     group.addoption(
         PROFILE_OPTION,
         action="store",
         default=None,
         help="Load pytest-html-plus options from a named profile in pyproject.toml",
-    )
-    group.addoption(
-        "--json-report",
-        action="store",
-        default="final_report.json",
-        help="Name of the JSON report file generated alongside the HTML report",
-    )
-    group.addoption(
-        "--capture-screenshots",
-        action="store",
-        default="failed",
-        choices=["failed", "all", "none"],
-        help="Capture screenshots: failed (default), all, or none",
     )
     group.addoption(
         OUTPUT_OPTION,
@@ -465,8 +481,12 @@ def pytest_addoption(parser):
             "failed-only, or none"
         ),
     )
-    group.addoption("--html-output", default="report_output")
-    group.addoption("--screenshots", default="screenshots")
+    group.addoption(
+        "--json-report",
+        action="store",
+        default="final_report.json",
+        help="Name of the JSON report file generated alongside the HTML report",
+    )
     group.addoption(
         WORKER_JSON_DIR_OPTION,
         action="store",
@@ -476,12 +496,25 @@ def pytest_addoption(parser):
             "reports before merging (default: .pytest_worker_jsons)"
         ),
     )
+
+    # Screenshot options
     group.addoption(
-        "--plus-email",
+        "--capture-screenshots",
+        action="store",
+        default="failed",
+        choices=["failed", "all", "none"],
+        help="Capture screenshots: failed (default), all, or none",
+    )
+    group.addoption("--screenshots", default="screenshots")
+
+    # HTML options
+    group.addoption(
+        "--plus-no-html",
         action="store_true",
         default=False,
-        help="Send HTML test report via email after test run",
+        help="Disable HTML report generation from the final JSON report",
     )
+    group.addoption("--html-output", default="report_output")
     group.addoption(
         "--should-open-report",
         action="store",
@@ -489,6 +522,14 @@ def pytest_addoption(parser):
         choices=["always", "failed", "never"],
         help="When to open the HTML report: always, failed, or never (default: failed)",
     )
+    group.addoption(
+        "--plus-email",
+        action="store_true",
+        default=False,
+        help="Send HTML test report via email after test run",
+    )
+
+    # XML options
     group.addoption(
         "--generate-xml",
         action="store_true",
@@ -501,6 +542,8 @@ def pytest_addoption(parser):
         default=None,
         help="Name of the XML report file generated alongside the HTML report (used with --generate-xml)",  # noqa
     )
+
+    # Other options
     group.addoption(
         "--git-branch",
         action="store",
