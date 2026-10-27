@@ -1,16 +1,15 @@
 Similar errors
 ==============
 
-Use ``pytest --plus-similar-errors=true`` to identify matching final error
-messages. The default is disabled. Explicit ``--plus-similar-errors=false``
-overrides TOML configuration:
+Similar Errors is enabled by default and identifies matching final error
+messages. Disable it with ``pytest --plus-similar-errors=false`` or TOML:
 
 .. code-block:: toml
 
    [tool.pytest-html-plus]
-   similar_errors = true
+   similar_errors = false
 
-Named profiles also accept ``similar_errors = true``. Explicit CLI values take
+Named profiles also accept ``similar_errors = true`` or ``false``. Explicit CLI values take
 precedence over profile values, which take precedence over the top-level setting.
 
 After worker aggregation, failed and error results are grouped by exception type
@@ -24,14 +23,18 @@ Clicking outside, moving focus outside, or navigating also closes it.
 JSON consumers can read ``similar_error_group`` on matched results and
 ``similar_error_groups`` at report level. Each group contains ``message`` and a
 ``nodeids`` list, stored once. IDs are local to the report. Disabled runs add no
-metadata and perform no fingerprinting. The Python merger accepts
+metadata and perform no fingerprinting. Direct Python merger calls remain opt-in: pass
 ``merge_json_reports(..., similar_errors=True)`` for JSON-only generation; this
 checkout does not provide a ``--plus-no-html`` option.
 
 Matching describes similar messages, not shared root causes. It is intentionally
 conservative: exception summaries must contain a useful message; ANSI formatting,
-whitespace, object memory addresses and missing Playwright executable paths are
-normalized. Other paths, numbers and message differences are preserved. Tracebacks
+whitespace and hexadecimal addresses in ``object at 0x...`` representations are
+normalized. Other hexadecimal identifiers, such as transaction IDs, remain distinct. Paths, numbers and
+meaningful message differences are preserved. Identical messages with different
+worker or installation paths remain separate; this intentionally favors missed
+matches over grouping unrelated failures. Bare exception types and context-free
+timeout messages do not form groups. Tracebacks
 and retry history are not used as fallback signals, so some equivalent failures
 will remain unmatched. No external services or new runtime dependencies are used.
 
@@ -47,7 +50,7 @@ inspection, first uncomment the marked block in
    make demo-similar-errors
 
 Open ``report_output_similar_errors/report.html``. Four matching failures display
-**3 similar errors** each; two matching setup errors display **1 similar error**
+**3 similar** each; two matching setup errors display **1 similar**
 each. An unrelated failure and a passing test have no badge. Click a badge to
 navigate to another matching test.
 
@@ -70,8 +73,9 @@ Benchmarks
 
 Measured on 2026-10-27 using macOS ARM64 (Darwin 25.4.0), Python 3.14.4.
 The dataset mixes identical assertions, unrelated errors, object memory-address
-variants, and long Playwright messages with varying executable paths. Three
-matching groups contain 75% of the tests.
+variants, and long Playwright messages with varying executable paths. Two
+matching groups contain 50% of the tests; differing executable paths remain
+separate. Full messages are processed without a Playwright-specific shortcut.
 
 .. list-table:: Additional cost of similarity analysis
    :header-rows: 1
@@ -83,23 +87,23 @@ matching groups contain 75% of the tests.
      - Added HTML (bytes)
      - Peak analysis allocations (bytes)
    * - 100
-     - 0.374
+     - 1.964
      - 0.000083
-     - 6,568
-     - 21,399
-     - 17,267
+     - 4,369
+     - 15,505
+     - 100,325
    * - 1,000
-     - 4.013
-     - 0.000084
-     - 63,268
-     - 186,174
-     - 103,867
+     - 21.517
+     - 0.000167
+     - 42,169
+     - 122,205
+     - 839,048
    * - 10,000
-     - 36.700
-     - 0.000250
-     - 637,018
-     - 1,847,424
-     - 1,071,047
+     - 202.230
+     - 0.000459
+     - 424,669
+     - 1,198,205
+     - 8,422,081
 
 Times are medians of seven runs of the post-processing stage, excluding fixture
 copying, aggregation, serialization, and HTML generation. Disabled timing measures

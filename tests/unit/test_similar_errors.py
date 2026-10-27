@@ -27,11 +27,20 @@ def result(index, **kwargs):
         "AssertionError:",
         "AssertionError: assert False",
         "TimeoutError: 3000",
+        "TimeoutError",
+        "TimeoutError:",
+        "TimeoutError: timed out",
+        "TimeoutError: operation timed out",
+        "TimeoutError: timeout exceeded",
         "Exception: error",
     ],
 )
 def test_uninformative(error):
     assert error_fingerprint(error) is None
+    report = {"results": [result(1, error=error), result(2, error=error)]}
+    annotate_similar_errors(report)
+    assert report["similar_error_groups"] == {}
+    assert all("similar_error_group" not in test for test in report["results"])
 
 
 @pytest.mark.parametrize(
@@ -62,7 +71,7 @@ def test_meaningful_differences(left, right):
         ),
         (
             "playwright._impl._errors.Error:\nBrowserType.launch: Executable doesn't exist at /ms-playwright/a",
-            "playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at C:\\cache\\b",
+            "playwright._impl._errors.Error: BrowserType.launch: Executable doesn't exist at /ms-playwright/a",
         ),
     ],
 )
@@ -123,10 +132,11 @@ def test_aggregation_json_only(tmp_path, workers, enabled, monkeypatch):
 @pytest.mark.parametrize(
     "cli,toml,expected",
     [
-        (None, None, False),
+        (None, None, True),
         ("true", None, True),
         ("false", None, False),
         (None, True, True),
+        (None, False, False),
         ("false", True, False),
         ("true", False, True),
     ],
@@ -170,7 +180,7 @@ def make_report(reporter_factory):
 
 def test_html(reporter_factory):
     content = make_report(reporter_factory).read_text()
-    assert content.count(">2 similar errors</button>") == 3
+    assert content.count(">2 similar</button>") == 3
     assert 'id="similarErrorsOnlyCheckbox"' not in content
     assert content.count('data-group="similar-1"') == 3
     assert "copyTestLink(" in content
@@ -249,7 +259,8 @@ def test_browser_navigation(reporter_factory):
 
 
 @pytest.mark.parametrize("workers", [0, 2])
-def test_real_execution(tmp_path, workers):
+@pytest.mark.parametrize("similar_option", [None, "true", "false"])
+def test_real_execution(tmp_path, workers, similar_option):
     import os
     import subprocess
     import sys
@@ -264,6 +275,16 @@ def test_setup(broken):
     pass
 def test_call():
     raise ValueError('invalid account name')
+@pytest.fixture
+def broken_teardown():
+    yield
+    raise ValueError('invalid account name')
+def test_teardown(broken_teardown):
+    pass
+def test_assertion_login():
+    raise AssertionError('expected login page')
+def test_assertion_checkout():
+    raise AssertionError('expected checkout page')
 def test_pass():
     pass
 """
@@ -291,9 +312,10 @@ def test_pass():
         sys.executable,
         "-m",
         "pytest",
-        "--plus-similar-errors=true",
         "--should-open-report=never",
     ]
+    if similar_option is not None:
+        cmd.append(f"--plus-similar-errors={similar_option}")
     if workers:
         cmd += ["-n", str(workers)]
     run = subprocess.run(
@@ -301,14 +323,39 @@ def test_pass():
     )
     assert run.returncode == 1, run.stdout + run.stderr
     report = json.loads((tmp_path / "report_output/final_report.json").read_text())
+    if similar_option == "false":
+        assert "similar_error_groups" not in report
+        assert all("similar_error_group" not in test for test in report["results"])
+        assert (
+            'class="similar-errors-badge"'
+            not in (tmp_path / "report_output/report.html").read_text()
+        )
+        return
     (group,) = report["similar_error_groups"].values()
     assert set(group["nodeids"]) == {
         "test_example.py::test_setup",
         "test_example.py::test_call",
+        "test_example.py::test_teardown",
     }
+    by_name = {test["test"]: test for test in report["results"]}
+    assert by_name["test_setup"]["status"] == "error"
+    assert by_name["test_teardown"]["status"] == "error"
+    assert by_name["test_call"]["status"] == "failed"
+    for name in ("test_assertion_login", "test_assertion_checkout"):
+        assert "similar_error_group" not in by_name[name]
+    if workers:
+        assert (
+            len(
+                {
+                    by_name[name]["worker"]
+                    for name in ("test_setup", "test_call", "test_teardown")
+                }
+            )
+            == 2
+        )
     assert (tmp_path / "report_output/report.html").read_text().count(
-        ">1 similar error</button>"
-    ) == 2
+        ">2 similar</button>"
+    ) == 3
 
 
 def test_profile_boolean(tmp_path):
@@ -329,3 +376,62 @@ def test_multiline_messages_differ():
     assert error_fingerprint(
         "AssertionError: invalid response\nexpected login"
     ) != error_fingerprint("AssertionError: invalid response\nexpected checkout")
+
+
+@pytest.mark.parametrize("kind", ["playwright._impl._errors.Error", "ValueError"])
+@pytest.mark.parametrize("path", ["/cache/worker2/chrome", "C:/cache/worker2/chrome"])
+def test_preserves_executable_paths(kind, path):
+    first = f"{kind}: Executable doesn't exist at /cache/worker1/chrome"
+    other = f"{kind}: Executable doesn't exist at {path}"
+    report = {
+        "results": [
+            result(1, error=first),
+            result(2, error=first),
+            result(3, error=other),
+        ]
+    }
+    annotate_similar_errors(report)
+    (group,) = report["similar_error_groups"].values()
+    assert group["nodeids"] == ["test_a.py::test_1", "test_a.py::test_2"]
+    assert "similar_error_group" not in report["results"][2]
+    assert "/cache/worker1/chrome" in group["message"]
+
+
+def test_meaningful_timeout_matches():
+    report = {
+        "results": [
+            result(i, error="TimeoutError: waiting for checkout confirmation")
+            for i in (1, 2)
+        ]
+    }
+    annotate_similar_errors(report)
+    assert len(report["similar_error_groups"]) == 1
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "transaction at 0x123abc",
+        "transaction ID 0x123abc",
+        "instruction failed at 0x123abc",
+        "missing /cache/0x123abc/config.json",
+    ],
+)
+def test_preserves_meaningful_hex_identifiers(message):
+    first = "RuntimeError: " + message
+    second = first.replace("123abc", "456def")
+    assert error_fingerprint(first) != error_fingerprint(second)
+
+
+def test_normalizes_python_object_representation():
+    first = "RuntimeError: invalid <client.Session object at 0x123abc>"
+    second = "RuntimeError: invalid <client.Session object at 0x456def>"
+    assert error_fingerprint(first) == error_fingerprint(second)
+
+
+def test_default_enabled_without_pyproject(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        "pytest_html_plus.plugin._find_pyproject_toml", lambda *args: None
+    )
+    config = SimpleNamespace(rootpath=tmp_path, getoption=lambda *args, **kwargs: None)
+    assert resolve_similar_errors(config) is True

@@ -5,8 +5,7 @@ from collections import defaultdict
 
 _ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 _EXCEPTION = re.compile(r"^([\w.]*(?:Error|Exception|Failure)):\s*(.*)$")
-_ADDRESS = re.compile(r"(?<= at )0x[0-9a-fA-F]+\b")
-_EXECUTABLE = re.compile(r"(Executable doesn't exist at )[^\n]+")
+_ADDRESS = re.compile(r"(\bobject at )0x[0-9a-fA-F]+\b")
 
 
 def error_fingerprint(error):
@@ -30,19 +29,17 @@ def error_fingerprint(error):
                 break
             continuation.append(following)
         message = "\n".join([message, *continuation]).strip()
-        if "Executable doesn't exist at " in message:
-            # Playwright appends installation instructions; only the diagnostic
-            # line identifies this specific error.
-            message = next(
-                line
-                for line in message.splitlines()
-                if "Executable doesn't exist at " in line
-            )
-        # Only this well-understood browser-installation diagnostic has path
-        # normalization. Arbitrary paths and numbers can carry useful meaning.
-        message = _EXECUTABLE.sub(r"\1<path>", message)
-        message = " ".join(_ADDRESS.sub("<address>", message).split())
+        # Preserve paths: worker directories and filenames may be meaningful.
+        message = " ".join(_ADDRESS.sub(r"\1<address>", message).split())
         if len(re.findall(r"[A-Za-z]{2,}", message)) < 2:
+            return None
+        if kind.rsplit(".", 1)[-1] == "TimeoutError" and message.casefold().rstrip(
+            "."
+        ) in {
+            "timed out",
+            "operation timed out",
+            "timeout exceeded",
+        }:
             return None
         if message in {"assert False", "assert True", "assert 0", "assert 1"}:
             return None

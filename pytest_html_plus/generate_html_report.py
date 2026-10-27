@@ -977,13 +977,10 @@ class JSONReporter:
             group = self.similar_error_groups.get(group_id)
             if group and len(group["nodeids"]) > 1:
                 similar_count = len(group["nodeids"]) - 1
-                similar_label = (
-                    "similar error" if similar_count == 1 else "similar errors"
-                )
                 similar_badge = (
                     f'<button class="similar-errors-badge" data-group="{escape(group_id, quote=True)}" '
                     f'aria-haspopup="dialog" aria-expanded="false" '
-                    f'aria-controls="similar-errors-popover">{similar_count} {similar_label}</button>'
+                    f'aria-controls="similar-errors-popover">{similar_count} similar</button>'
                 )
             escaped_test_name = escape(test["test"])
             test_anchor = stable_test_anchor(test["nodeid"])

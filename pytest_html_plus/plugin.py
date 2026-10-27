@@ -449,13 +449,13 @@ def resolve_similar_errors(config):
         return explicit == "true"
     path = _find_pyproject_toml(getattr(config, "rootpath", None))
     if path is None:
-        return False
+        return True
     with path.open("rb") as stream:
         value = (
             tomllib.load(stream)
             .get("tool", {})
             .get("pytest-html-plus", {})
-            .get("similar_errors", False)
+            .get("similar_errors", True)
         )
     if not isinstance(value, bool):
         raise pytest.UsageError("similar_errors must be a TOML boolean")
@@ -469,7 +469,7 @@ def pytest_addoption(parser):
         "--plus-similar-errors",
         choices=["true", "false"],
         default=None,
-        help="Find similar final errors (default: false)",
+        help="Find similar final errors (default: true; use false to disable)",
     )
     group.addoption(
         PROFILE_OPTION,

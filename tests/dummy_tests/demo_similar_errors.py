@@ -18,7 +18,7 @@ Automated coverage remains active in tests/unit/test_similar_errors.py.
 #
 # @pytest.mark.parametrize("page", ["login", "checkout", "search", "profile"])
 # def test_matching_account_errors(page):
-#     """Four matching failures should each display '3 similar errors'."""
+#     """Four matching failures should each display '3 similar'."""
 #     raise ValueError("Account service returned an invalid response")
 #
 #
