@@ -36,6 +36,7 @@ OUTPUT_CHOICES = ("all", "failed-only", "none")
 WORKER_JSON_DIR_OPTION = "--worker-json-dir"
 DEFAULT_WORKER_JSON_DIR = ".pytest_worker_jsons"
 PROFILE_OPTION_MAP = {
+    "similar-errors": {"flag": "--plus-similar-errors", "kind": "explicit-bool"},
     "json-report": {"flag": "--json-report", "kind": "value"},
     "capture-screenshots": {"flag": "--capture-screenshots", "kind": "value"},
     "html-output": {"flag": "--html-output", "kind": "value"},
@@ -126,6 +127,14 @@ def _build_profile_args(profile_name, start_path=None):
 
         if option is None:
             invalid_keys.append(raw_key)
+            continue
+
+        if option["kind"] == "explicit-bool":
+            if not isinstance(value, bool):
+                raise pytest.UsageError(
+                    f"Profile '{profile_name}' option '{raw_key}' must be true or false"
+                )
+            profile_args.append(f"{option['flag']}={str(value).lower()}")
             continue
 
         if option["kind"] == "bool":
@@ -341,6 +350,7 @@ def pytest_sessionfinish(session, exitstatus):
     merge_json_reports(
         directory=worker_dir if is_xdist else html_output,
         output_path=json_path,
+        similar_errors=resolve_similar_errors(session.config),
     )
 
     script_path = os.path.join(os.path.dirname(__file__), "generate_html_report.py")
@@ -433,9 +443,34 @@ def pytest_load_initial_conftests(args):
         args.append("--capture=tee-sys")
 
 
+def resolve_similar_errors(config):
+    explicit = config.getoption("--plus-similar-errors", default=None)
+    if explicit is not None:
+        return explicit == "true"
+    path = _find_pyproject_toml(getattr(config, "rootpath", None))
+    if path is None:
+        return False
+    with path.open("rb") as stream:
+        value = (
+            tomllib.load(stream)
+            .get("tool", {})
+            .get("pytest-html-plus", {})
+            .get("similar_errors", False)
+        )
+    if not isinstance(value, bool):
+        raise pytest.UsageError("similar_errors must be a TOML boolean")
+    return value
+
+
 def pytest_addoption(parser):
     group = parser.getgroup("pytest-html-plus", "pytest-html-plus reporting options")
 
+    group.addoption(
+        "--plus-similar-errors",
+        choices=["true", "false"],
+        default=None,
+        help="Find similar final errors (default: false)",
+    )
     group.addoption(
         PROFILE_OPTION,
         action="store",

@@ -49,6 +49,7 @@ class JSONReporter:
         screenshots_dir="screenshots",
         output_dir="report_output",
     ):
+        self.similar_error_groups = {}
         self.filters = None
         self.parsed_data = None
         self.report_path = report_path
@@ -61,6 +62,7 @@ class JSONReporter:
         with open(self.report_path) as f:
             data = json.load(f)
         if isinstance(data, dict) and "results" in data:
+            self.similar_error_groups = data.get("similar_error_groups", {})
             self.results = data["results"]
             self.filters = data.get("filters", {})
         elif isinstance(data, list):
@@ -453,7 +455,7 @@ class JSONReporter:
       function clearFiltersForDeepLink() {{
         const filterIds = [
           'failedOnlyCheckbox', 'errorOnlyCheckbox', 'skippedOnlyCheckbox',
-          'longestOnlyCheckbox', 'untrackedOnlyCheckbox', 'flakyOnlyCheckbox'
+          'untrackedOnlyCheckbox', 'flakyOnlyCheckbox'
         ];
         filterIds.forEach(id => {{
           const checkbox = document.getElementById(id);
@@ -519,50 +521,14 @@ class JSONReporter:
       }}
 
 
-      function toggleFilter(longestCheckbox) {{
-        const failedCheckbox = document.getElementById('failedOnlyCheckbox');
-        const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
-        const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
-        const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
-        const testsContainer = document.getElementById('tests-container');
-        const testElements = Array.from(testsContainer.querySelectorAll('.test'));
-        const errorCheckbox = document.getElementById('errorOnlyCheckbox');
-
-        if (longestCheckbox.checked) {{
-          failedCheckbox.checked = false;
-          skippedCheckbox.checked = false;
-          untrackedCheckbox.checked = false;
-          flakyCheckbox.checked = false;
-          errorCheckbox.checked = false;
-          // Re-enable all tests before sorting
-          testElements.forEach(el => el.style.display = 'block');
-
-          // Sort and reorder
-          testElements.sort((a, b) => {{
-            const aDuration = parseFloat(
-        a.querySelector('.timestamp').textContent.replace(/[^\\d.]/g, '')
-        ) || 0;
-            const bDuration = parseFloat(b.querySelector('.timestamp').textContent.replace(/[^\\d.]/g, '')) || 0;
-            return bDuration - aDuration;
-          }});
-
-          testElements.forEach(el => testsContainer.appendChild(el));
-        }}
-
-        // Reapply marker filter (should now handle failed/skipped too)
-        filterByMarkers();
-      }}
-
       function toggleUntrackedOnly(checkbox) {{
         const testCards = document.querySelectorAll('.test-card');
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
         const errorCheckbox = document.getElementById('errorOnlyCheckbox');
 
         if (checkbox.checked) {{
-          longestCheckbox.checked = false;
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
           errorCheckbox.checked = false;
@@ -584,14 +550,12 @@ class JSONReporter:
       }}
 
       function toggleFlakyOnly(checkbox) {{
-          const longestCheckbox = document.getElementById('longestOnlyCheckbox');
           const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
           const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
           const failedCheckbox = document.getElementById('failedOnlyCheckbox');
           const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
         if (checkbox.checked) {{
-          longestCheckbox.checked = false;
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
           errorCheckbox.checked = false;
@@ -608,14 +572,12 @@ class JSONReporter:
       }}
 
       function toggleFailedOnly(failedCheckbox) {{
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
         const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
         if (failedCheckbox.checked) {{
-          longestCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           skippedCheckbox.checked = false;
           flakyCheckbox.checked = false;
@@ -632,7 +594,6 @@ class JSONReporter:
       }}
 
       function toggleSkippedOnly(skippedCheckbox) {{
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
@@ -640,7 +601,6 @@ class JSONReporter:
         const testElements = document.querySelectorAll('.test');
 
         if (skippedCheckbox.checked) {{
-          longestCheckbox.checked = false;
           failedCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           flakyCheckbox.checked = false;
@@ -658,7 +618,6 @@ class JSONReporter:
       }}
 
       function toggleErrorOnly(errorCheckbox) {{
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
@@ -666,7 +625,6 @@ class JSONReporter:
         const testElements = document.querySelectorAll('.test');
 
         if (errorCheckbox.checked) {{
-          longestCheckbox.checked = false;
           failedCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           flakyCheckbox.checked = false;
@@ -727,7 +685,6 @@ class JSONReporter:
 
       window.onload = function() {{
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
@@ -736,7 +693,6 @@ class JSONReporter:
         toggleFailedOnly(failedCheckbox);
         failedCheckbox.addEventListener('change', () => toggleFailedOnly(failedCheckbox));
         errorCheckbox.addEventListener('change', () => toggleErrorOnly(errorCheckbox));
-        longestCheckbox.addEventListener('change', () => toggleFilter(longestCheckbox));
         skippedCheckbox.addEventListener('change', () => toggleSkippedOnly(skippedCheckbox));
         untrackedCheckbox.addEventListener('change', () => toggleUntrackedOnly(untrackedCheckbox));
         flakyCheckbox.addEventListener('change', () => toggleFlakyOnly(flakyCheckbox));
@@ -766,23 +722,19 @@ class JSONReporter:
     <div class="checkbox-container">
       <label>
         <input type="checkbox" id="failedOnlyCheckbox" />
-        Show only failed tests (<span>{self.filters.get("failed", 0)}</span>)
+        Failed only (<span>{self.filters.get("failed", 0)}</span>)
       </label>
       <label>
         <input type="checkbox" id="errorOnlyCheckbox" />
-        Show only error tests (<span>{self.filters.get("error", 0)}</span>)
+        Errors only (<span>{self.filters.get("error", 0)}</span>)
       </label>
       <label>
         <input type="checkbox" id="skippedOnlyCheckbox" />
-        Show only skipped tests (<span>{self.filters.get("skipped", 0)}</span>)
-      </label>
-      <label style="margin-left: 1rem;">
-        <input type="checkbox" id="longestOnlyCheckbox" />
-        Sort by longest running tests
+        Skipped only (<span>{self.filters.get("skipped", 0)}</span>)
       </label>
       <label style="margin-left: 1rem;">
         <input type="checkbox" id="untrackedOnlyCheckbox" />
-        Show untracked (<span>{self.filters.get("untracked", 0)}</span>)
+        Without links (<span>{self.filters.get("untracked", 0)}</span>)
       </label>
       <span onclick="toggleUntrackedInfo()" style="
   display: inline-flex;
@@ -798,7 +750,7 @@ class JSONReporter:
   font-weight: bold;
   cursor: pointer;
   user-select: none;
-" title="What is untracked?">i</span>
+" title="What does without links mean?">i</span>
 
 <div id="untrackedInfoCard" style="
   display: none;
@@ -812,7 +764,7 @@ class JSONReporter:
   font-size: 0.85em;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 ">
-  <strong>Untracked Tests:</strong><br>
+  <strong>Tests without links:</strong><br>
   These tests do not have any associated tracking markers like:
   <ul style="margin: 6px 0 0 16px; padding: 0;">
     <li><code>pytest.mark.link("https://...")</code></li>
@@ -824,7 +776,7 @@ class JSONReporter:
 </div>
 <label style="margin-left: 1rem;">
   <input type="checkbox" id="flakyOnlyCheckbox">
-  Show flaky tests only (<span>{self.filters.get("flaky", 0)}</span>)
+  Flaky only (<span>{self.filters.get("flaky", 0)}</span>)
 </label>
     </div>
     <div class="search-container">
@@ -1020,6 +972,19 @@ class JSONReporter:
                     '<span style="display:inline-block; min-width:45px;"></span>'
                 )
 
+            similar_badge = ""
+            group_id = test.get("similar_error_group")
+            group = self.similar_error_groups.get(group_id)
+            if group and len(group["nodeids"]) > 1:
+                similar_count = len(group["nodeids"]) - 1
+                similar_label = (
+                    "similar error" if similar_count == 1 else "similar errors"
+                )
+                similar_badge = (
+                    f'<button class="similar-errors-badge" data-group="{escape(group_id, quote=True)}" '
+                    f'aria-haspopup="dialog" aria-expanded="false" '
+                    f'aria-controls="similar-errors-popover">{similar_count} {similar_label}</button>'
+                )
             escaped_test_name = escape(test["test"])
             test_anchor = stable_test_anchor(test["nodeid"])
             html += f"""    
@@ -1041,7 +1006,7 @@ class JSONReporter:
             </svg>
           </button>
       </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">{test["worker"]}</span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">{test["worker"]}</span>{similar_badge}
     </div>
 
     <div class="header-section badges-and-timing">
@@ -1104,6 +1069,12 @@ class JSONReporter:
         html = html.replace(
             '<div id="tests-container">', summary_html + '<div id="tests-container">'
         )
+        if self.similar_error_groups:
+            from pytest_html_plus.similar_errors_ui import render_similar_errors
+
+            html += render_similar_errors(
+                self.similar_error_groups, self.results, stable_test_anchor
+            )
         html += "</div></body></html>"
 
         # Save report

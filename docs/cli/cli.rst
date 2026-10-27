@@ -87,3 +87,10 @@ For detailed information, examples, and best practices for each parameter, see:
    cli/should-open-report
    cli/generate-xml
    cli/xml-report
+
+Similar errors (optional)
+-------------------------
+
+Use ``--plus-similar-errors=true`` to enable matching error badges (default:
+disabled). See :doc:`../Features/similar-errors` for configuration, navigation,
+JSON metadata, and a runnable demo.
