@@ -69,8 +69,11 @@ jobs:
         run: |
           $BRANCH = git rev-parse --abbrev-ref HEAD
           $COMMIT = git rev-parse HEAD
+          # Keep Poetry startup outside the test warning policy.
+          $TEST_PYTHON = (poetry env info --executable).Trim()
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $env:PYTHONWARNINGS = "error"
-          poetry run pytest `
+          & $TEST_PYTHON -m pytest `
             --cov=pytest_html_plus `
             --cov-fail-under=75 `
             --cov-report=term `

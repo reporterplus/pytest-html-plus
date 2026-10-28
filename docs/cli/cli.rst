@@ -25,6 +25,10 @@ Overview
      - Control which captured stdout/stderr streams are included in reports
      - ``all``
      - Reduce report size by omitting output from passing tests or all tests
+   * - ``--plus-similar-errors=true|false``
+     - Identify matching final error messages and add navigation badges; CLI overrides TOML
+     - ``true``
+     - Navigate related failures; disable with ``--plus-similar-errors=false``. See :doc:`../Features/similar-errors`
    * - ``--html-output``
      - Directory for HTML output
      - ``report_output``
