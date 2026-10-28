@@ -440,3 +440,53 @@ def test_default_enabled_without_pyproject(tmp_path, monkeypatch):
     )
     config = SimpleNamespace(rootpath=tmp_path, getoption=lambda *args, **kwargs: None)
     assert resolve_similar_errors(config) is True
+
+
+@pytest.mark.parametrize("toml_value", ['"true"', '"false"', "1", "0", "[]"])
+def test_rejects_non_boolean_toml_setting(tmp_path, toml_value):
+    (tmp_path / "pyproject.toml").write_text(
+        f"[tool.pytest-html-plus]\nsimilar_errors = {toml_value}\n",
+        encoding="utf-8",
+    )
+    config = SimpleNamespace(rootpath=tmp_path, getoption=lambda *args, **kwargs: None)
+
+    with pytest.raises(
+        pytest.UsageError, match="^similar_errors must be a TOML boolean$"
+    ):
+        resolve_similar_errors(config)
+
+
+@pytest.mark.parametrize("toml_value", ['"true"', '"false"', "1", "0", "[]"])
+def test_rejects_non_boolean_profile_setting(tmp_path, toml_value):
+    from pytest_html_plus.plugin import apply_plus_profile_args
+
+    (tmp_path / "pyproject.toml").write_text(
+        f"[tool.pytest-html-plus.profiles.ci]\nsimilar_errors = {toml_value}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(
+        pytest.UsageError,
+        match="^Profile 'ci' option 'similar_errors' must be true or false$",
+    ):
+        apply_plus_profile_args(["--plus-profile=ci"], start_path=tmp_path)
+
+
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        "Call log:",
+        "Traceback (most recent call last):",
+        "During handling of the above exception, another exception occurred:",
+        "The above exception was the direct cause of the following exception:",
+    ],
+)
+def test_fingerprint_stops_at_diagnostic_boundary(boundary):
+    message = "ValueError: invalid account name\nexpected a nonempty value"
+    expected = ("ValueError", "invalid account name expected a nonempty value")
+    assert error_fingerprint(message) == expected
+    assert (
+        error_fingerprint(
+            f"{message}\n{boundary}\ndiagnostic details that must not enter the fingerprint"
+        )
+        == expected
+    )
