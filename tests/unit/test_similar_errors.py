@@ -116,7 +116,9 @@ def test_aggregation_json_only(tmp_path, workers, enabled, monkeypatch):
     source.mkdir()
     tests = [result(1), result(2, status="error")]
     for i in range(workers):
-        (source / f"gw{i}.json").write_text(json.dumps({"results": tests[i::workers]}))
+        (source / f"gw{i}.json").write_text(
+            json.dumps({"results": tests[i::workers]}), encoding="utf-8"
+        )
     if not enabled:
         monkeypatch.setattr(
             "pytest_html_plus.json_merge.annotate_similar_errors",
@@ -124,7 +126,7 @@ def test_aggregation_json_only(tmp_path, workers, enabled, monkeypatch):
         )
     output = tmp_path / "final.json"
     merge_json_reports(source, output, similar_errors=enabled)
-    data = json.loads(output.read_text())
+    data = json.loads(output.read_text(encoding="utf-8"))
     assert ("similar_error_groups" in data) is enabled
     assert all(("similar_error_group" in t) is enabled for t in data["results"])
 
@@ -144,7 +146,8 @@ def test_aggregation_json_only(tmp_path, workers, enabled, monkeypatch):
 def test_configuration(tmp_path, cli, toml, expected):
     (tmp_path / "pyproject.toml").write_text(
         "[tool.pytest-html-plus]\n"
-        + (f"similar_errors = {str(toml).lower()}\n" if toml is not None else "")
+        + (f"similar_errors = {str(toml).lower()}\n" if toml is not None else ""),
+        encoding="utf-8",
     )
     config = SimpleNamespace(rootpath=tmp_path, getoption=lambda *a, **kw: cli)
     assert resolve_similar_errors(config) is expected
@@ -179,7 +182,7 @@ def make_report(reporter_factory):
 
 
 def test_html(reporter_factory):
-    content = make_report(reporter_factory).read_text()
+    content = make_report(reporter_factory).read_text(encoding="utf-8")
     assert content.count(">2 similar</button>") == 3
     assert 'id="similarErrorsOnlyCheckbox"' not in content
     assert content.count('data-group="similar-1"') == 3
@@ -191,7 +194,7 @@ def test_html(reporter_factory):
 def test_disabled_html(reporter_factory):
     reporter = reporter_factory(results=[result(1)])
     reporter.generate_html_report()
-    content = Path(reporter.output_dir, "report.html").read_text()
+    content = Path(reporter.output_dir, "report.html").read_text(encoding="utf-8")
     assert 'class="similar-errors-badge"' not in content
     assert 'id="similar-errors-data"' not in content
     assert 'id="similarErrorsOnlyCheckbox"' not in content
@@ -287,7 +290,8 @@ def test_assertion_checkout():
     raise AssertionError('expected checkout page')
 def test_pass():
     pass
-"""
+""",
+        encoding="utf-8",
     )
     env = os.environ.copy()
     for key in (
@@ -322,14 +326,15 @@ def test_pass():
         cmd, cwd=tmp_path, env=env, capture_output=True, text=True, timeout=90
     )
     assert run.returncode == 1, run.stdout + run.stderr
-    report = json.loads((tmp_path / "report_output/final_report.json").read_text())
+    report = json.loads(
+        (tmp_path / "report_output/final_report.json").read_text(encoding="utf-8")
+    )
     if similar_option == "false":
         assert "similar_error_groups" not in report
         assert all("similar_error_group" not in test for test in report["results"])
-        assert (
-            'class="similar-errors-badge"'
-            not in (tmp_path / "report_output/report.html").read_text()
-        )
+        assert 'class="similar-errors-badge"' not in (
+            tmp_path / "report_output/report.html"
+        ).read_text(encoding="utf-8")
         return
     (group,) = report["similar_error_groups"].values()
     assert set(group["nodeids"]) == {
@@ -353,7 +358,7 @@ def test_pass():
             )
             == 2
         )
-    assert (tmp_path / "report_output/report.html").read_text().count(
+    assert (tmp_path / "report_output/report.html").read_text(encoding="utf-8").count(
         ">2 similar</button>"
     ) == 3
 
@@ -362,7 +367,7 @@ def test_profile_boolean(tmp_path):
     from pytest_html_plus.plugin import apply_plus_profile_args
 
     (tmp_path / "pyproject.toml").write_text(
-        "[tool.pytest-html-plus.profiles.ci]\nsimilar_errors = true\n"
+        "[tool.pytest-html-plus.profiles.ci]\nsimilar_errors = true\n", encoding="utf-8"
     )
     args = apply_plus_profile_args(
         ["--plus-profile=ci", "--plus-similar-errors=false"], start_path=tmp_path
