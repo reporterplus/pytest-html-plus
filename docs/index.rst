@@ -30,6 +30,7 @@ Welcome to pytest-html-plus
 
    Features/direct-test-links
    Features/search
+   Features/similar-errors
 
 .. toctree::
    :maxdepth: 2

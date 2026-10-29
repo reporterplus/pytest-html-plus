@@ -83,7 +83,10 @@ jobs:
         run: |
           export REPORT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           export REPORT_COMMIT="$(git rev-parse HEAD)"
-          PYTHONWARNINGS=error poetry run pytest \
+          # Resolve the environment before enabling strict warnings for tests.
+          # Poetry's own dependencies are outside the test warning policy.
+          TEST_PYTHON="$(poetry env info --executable)"
+          PYTHONWARNINGS=error "$TEST_PYTHON" -m pytest \
             --cov=pytest_html_plus \
             --cov-fail-under=39 \
             --cov-report=term \
