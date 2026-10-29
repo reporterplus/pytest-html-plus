@@ -183,7 +183,7 @@ def make_report(reporter_factory):
 
 def test_html(reporter_factory):
     content = make_report(reporter_factory).read_text(encoding="utf-8")
-    assert content.count(">2 similar</button>") == 3
+    assert content.count("<span>2</span></button>") == 3
     assert 'id="similarErrorsOnlyCheckbox"' not in content
     assert content.count('data-group="similar-1"') == 3
     assert "copyTestLink(" in content
@@ -217,6 +217,15 @@ def test_browser_navigation(reporter_factory):
         page = browser.new_page()
         page.goto(path.as_uri())
         badge = page.locator(".similar-errors-badge").first
+        assert badge.inner_text() == "2"
+        assert badge.get_attribute("title") == "2 tests with similar failure messages"
+        assert (
+            badge.get_attribute("aria-label")
+            == "Show 2 tests with similar failure messages"
+        )
+        assert badge.locator("svg").get_attribute("aria-hidden") == "true"
+        assert badge.locator("svg path").count() == 2
+        assert badge.evaluate("b => getComputedStyle(b).alignItems") == "center"
         badge.focus()
         page.keyboard.press("Enter")
         panel = page.locator("#similar-errors-popover")
@@ -359,7 +368,7 @@ def test_pass():
             == 2
         )
     assert (tmp_path / "report_output/report.html").read_text(encoding="utf-8").count(
-        ">2 similar</button>"
+        "<span>2</span></button>"
     ) == 3
 
 

@@ -25,14 +25,20 @@ def render_similar_errors(groups, results, anchor_for_nodeid):
     )
 
 
-UI = """
+UI = r"""
 <style>
-.similar-errors-badge { background:#eee; color:#444; border:1px solid #bbb;
- border-radius:3px; padding:2px 5px; font-size:.85em; cursor:pointer; }
+.similar-errors-badge { background:transparent; color:#444; border:1px solid #bbb;
+ border-radius:3px; padding:2px 5px; font-size:.85em; cursor:pointer;
+ display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
+.similar-errors-badge svg { flex-shrink:0; }
 #similar-errors-popover { position:fixed; inset:auto; margin:0; z-index:1000;
  box-sizing:border-box; width:min(360px, calc(100vw - 16px)); max-height:50vh;
  overflow:auto; background:white; color:#333; border:1px solid #bbb;
  border-radius:5px; padding:12px; box-shadow:0 3px 12px #0003; }
+#similar-errors-popover .similar-errors-heading { display:flex; align-items:center; gap:8px; }
+#similar-errors-popover .similar-errors-heading strong { flex:1; min-width:0; }
+#similar-errors-popover .copy-all-links { display:inline-flex; align-items:center;
+ gap:4px; margin:0; padding:4px; flex-shrink:0; white-space:nowrap; }
 #similar-errors-popover a { display:block; padding:5px 0; overflow-wrap:anywhere; }
 #similar-errors-popover p { overflow-wrap:anywhere; }
 #similar-errors-popover .similar-errors-note { margin-top:10px; padding-top:8px;
@@ -65,9 +71,34 @@ UI = """
      panel.replaceChildren();
      const title = document.createElement('strong');
      title.textContent = 'Similar errors in this report';
+     const heading = document.createElement('div');
+     heading.className = 'similar-errors-heading';
+     const copyButton = document.createElement('button');
+     copyButton.type = 'button';
+     copyButton.className = 'inline-copy-btn copy-all-links';
+     copyButton.setAttribute('aria-live', 'polite');
+     copyButton.title = 'Copy links to every test in this group, including this test';
+     const icon = button.closest('.test').querySelector('.test-link-btn svg');
+     if (icon) {
+       const copyIcon = icon.cloneNode(true);
+       copyIcon.setAttribute('aria-hidden', 'true');
+       copyButton.append(copyIcon);
+     }
+     copyButton.setAttribute('aria-label', 'Copy all test links');
+     copyButton.addEventListener('click', event => {
+       event.stopPropagation();
+       const seen = new Set();
+       const text = group.tests.filter(test => {
+         if (seen.has(test.anchor)) return false;
+         seen.add(test.anchor);
+         return true;
+       }).map(test => `${test.name.replace(/[\r\n]+/g, ' ')} — ${testLinkUrl(test.anchor)}`).join('\n');
+       copyTextToClipboard(text, copyButton);
+     });
+     heading.append(title, copyButton);
      const message = document.createElement('p');
      message.textContent = group.message;
-     panel.append(title, message);
+     panel.append(heading, message);
      group.tests.forEach(test => {
        if (test.anchor === button.closest('.test').id) return;
        const link = document.createElement('a');
@@ -84,7 +115,7 @@ UI = """
      note.append('Similar messages may have different causes.', document.createElement('br'), 'Disable: ');
      const command = document.createElement('code');
      command.textContent = '--plus-similar-errors=false';
-     note.append(command);
+     note.append(command, document.createElement('br'), "Recipients need access to this report. Local file links aren't shareable.");
      panel.append(note);
      panel.hidden = false;
      const rect = button.getBoundingClientRect();

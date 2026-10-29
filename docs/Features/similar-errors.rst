@@ -14,11 +14,33 @@ precedence over profile values, which take precedence over the top-level setting
 
 After worker aggregation, failed and error results are grouped by exception type
 and normalized message. Passed (including flaky), skipped, xfailed and xpassed
-results are excluded. Retry attempts do not increase counts. A neutral badge after
-the worker shows the number of other matching tests. Click it to open links; links
+results are excluded. Retry attempts do not increase counts. A transparent badge
+after the worker shows a layers icon and the number of other matching tests,
+excluding the current test. For a count of 3, its tooltip is
+``3 tests with similar failure messages`` and its accessible label is
+``Show 3 tests with similar failure messages``. Click it to open links; links
 reuse the report's existing expand, reveal, scroll and highlight behavior, clearing
 active filters/search. Escape closes the popover and returns focus to its badge.
 Clicking outside, moving focus outside, or navigating also closes it.
+
+Sharing links
+-------------
+
+The copy-link icon in the popover header copies every test in the group, including
+the current test, in group order. Each line contains the test name followed by
+its individual deep-link URL. Existing query parameters are preserved and the
+fragment is replaced with the destination test's anchor. Opening a copied link
+uses the existing reveal, expand, scroll, and highlight behavior for one test.
+
+The icon briefly shows a check mark on success or a cross if clipboard
+access is unavailable or denied, matching individual link copying. Its tooltip
+explains that all tests in the group are included. Copying leaves the popover open
+and does not navigate. Recipients need access to the same report;
+local ``file://`` links point to the sender's machine and are not shareable as-is.
+The clipboard text is built only when clicked, without additional group metadata.
+
+JSON metadata and matching
+--------------------------
 
 JSON consumers can read ``similar_error_group`` on matched results and
 ``similar_error_groups`` at report level. Each group contains ``message`` and a
@@ -50,13 +72,14 @@ inspection, first uncomment the marked block in
    make demo-similar-errors
 
 Open ``report_output_similar_errors/report.html``. Four matching failures display
-**3 similar** each; two matching setup errors display **1 similar**
-each. An unrelated failure and a passing test have no badge. Click a badge to
+a layers icon with **3** each; two matching setup errors display a layers icon
+with **1** each. An unrelated failure and a passing test have no badge. Click a badge to
 navigate to another matching test.
 
 The enabled demo exits with a nonzero status by design. Comment the block out
 again after inspection. Automated feature coverage remains active in
-``tests/unit/test_similar_errors.py``.
+``tests/unit/test_similar_errors.py`` and
+``tests/unit/test_similar_errors_copy_links.py``.
 
 For setup, call, and teardown retry scenarios, the separately commented demo in
 ``tests/unit/test_similar_errors_retry_lifecycle.py`` includes its own enable/run
@@ -72,6 +95,8 @@ Benchmarks
 ----------
 
 Measured on 2026-10-27 using macOS ARM64 (Darwin 25.4.0), Python 3.14.4.
+These historical HTML sizes predate the layers icon and group-copy control;
+rerun the benchmark below to measure the current report output.
 The dataset mixes identical assertions, unrelated errors, object memory-address
 variants, and long Playwright messages with varying executable paths. Two
 matching groups contain 50% of the tests; differing executable paths remain

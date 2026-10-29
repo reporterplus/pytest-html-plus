@@ -434,19 +434,35 @@ class JSONReporter:
         }}
       }}
 
+      function testLinkUrl(anchorId) {{
+        const url = new URL(window.location.href);
+        url.hash = anchorId;
+        return url.href;
+      }}
+
+      async function copyTextToClipboard(text, button, successLabel = null, failureLabel = null) {{
+        if (button.dataset.copyPending) return;
+        button.dataset.copyPending = 'true';
+        const originalContent = button.innerHTML;
+        try {{
+          await navigator.clipboard.writeText(text);
+          if (successLabel) button.textContent = successLabel;
+          else button.innerHTML = '<span style="color: #2f7a33;">✓</span>';
+        }} catch (error) {{
+          console.error("Copy failed:", error);
+          if (failureLabel) button.textContent = failureLabel;
+          else button.innerHTML = '<span style="color: #d32f2f;">✗</span>';
+        }} finally {{
+          setTimeout(() => {{
+            button.innerHTML = originalContent;
+            delete button.dataset.copyPending;
+          }}, 1000);
+        }}
+      }}
+
       function copyTestLink(anchorId, button) {{
         try {{
-          const url = new URL(window.location.href);
-          url.hash = anchorId;
-          const originalContent = button.innerHTML;
-          navigator.clipboard.writeText(url.href).then(() => {{
-            button.innerHTML = '<span style="color: #2f7a33;">✓</span>';
-            setTimeout(() => {{ button.innerHTML = originalContent; }}, 1000);
-          }}).catch(err => {{
-            console.error("Copy link failed:", err);
-            button.innerHTML = '<span style="color: #d32f2f;">✗</span>';
-            setTimeout(() => {{ button.innerHTML = originalContent; }}, 1000);
-          }});
+          copyTextToClipboard(testLinkUrl(anchorId), button);
         }} catch (error) {{
           console.error("Copy link error:", error);
         }}
@@ -980,7 +996,15 @@ class JSONReporter:
                 similar_badge = (
                     f'<button class="similar-errors-badge" data-group="{escape(group_id, quote=True)}" '
                     f'aria-haspopup="dialog" aria-expanded="false" '
-                    f'aria-controls="similar-errors-popover">{similar_count} similar</button>'
+                    f'title="{similar_count} tests with similar failure messages" '
+                    f'aria-label="Show {similar_count} tests with similar failure messages" '
+                    f'aria-controls="similar-errors-popover">'
+                    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" '
+                    'stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+                    'stroke-linejoin="round" aria-hidden="true" focusable="false">'
+                    '<path d="m12 3 10 5-10 5L2 8Z"></path>'
+                    '<path d="m2 12 10 5 10-5"></path></svg>'
+                    f"<span>{similar_count}</span></button>"
                 )
             escaped_test_name = escape(test["test"])
             test_anchor = stable_test_anchor(test["nodeid"])
