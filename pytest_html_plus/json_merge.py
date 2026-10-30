@@ -3,10 +3,13 @@ import os
 from collections import defaultdict
 
 from pytest_html_plus.compute_filter_counts import compute_filter_count
+from pytest_html_plus.similar_errors import annotate_similar_errors
 
 
 def merge_json_reports(
-    directory=".pytest_worker_jsons", output_path="final_report.json"
+    directory=".pytest_worker_jsons",
+    output_path="final_report.json",
+    similar_errors=False,
 ):
     all_tests = []
 
@@ -112,6 +115,9 @@ def merge_json_reports(
         "filters": compute_filter_count(merged_results),
         "results": merged_results,
     }
+
+    if similar_errors:
+        annotate_similar_errors(report_data)
 
     # Write output
     try:

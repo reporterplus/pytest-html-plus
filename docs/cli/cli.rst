@@ -25,6 +25,10 @@ Overview
      - Control which captured stdout/stderr streams are included in reports
      - ``all``
      - Reduce report size by omitting output from passing tests or all tests
+   * - ``--plus-similar-errors=true|false``
+     - Identify matching final error messages and add navigation badges; CLI overrides TOML
+     - ``true``
+     - Navigate related failures; disable with ``--plus-similar-errors=false``. See :doc:`../Features/similar-errors`
    * - ``--html-output``
      - Directory for HTML output
      - ``report_output``
@@ -87,3 +91,10 @@ For detailed information, examples, and best practices for each parameter, see:
    cli/should-open-report
    cli/generate-xml
    cli/xml-report
+
+Similar errors (optional)
+-------------------------
+
+Matching error badges are enabled by default. Use
+``--plus-similar-errors=false`` to disable them. See :doc:`../Features/similar-errors` for configuration, navigation,
+JSON metadata, and a runnable demo.
