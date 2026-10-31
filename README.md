@@ -1,8 +1,6 @@
-⚡ **Test your code, not your reporting setup.**
+**Find the failure. Spot the pattern. Debug together.**
 
-> A pytest report built for fast debugging, with parallel execution support, automatic screenshots, and shareable failure context.
-
-`pytest-html-plus` turns pytest results into portable debugging artifacts for CI, collaboration, and integrations, without a reporting platform.
+A self-contained pytest report for faster debugging, with automatic screenshots, similar-error navigation, shareable test links, and parallel execution support
 
 ➡️ [View Demo Report](https://reporterplus.github.io/pytest-html-plus/)
 
@@ -60,6 +58,13 @@ See how a test behaves across retries, from initial failure to recovery. Spot pa
 Copy a direct link to any test result and share it with your team. The report opens at the linked test, reveals it, expands its details, and highlights it, so teammates can jump straight to the relevant context without searching through the report.
 
 <img width="3024" height="1778" alt="ScreenRecording2026-10-03at8 55 26AM-ezgif com-cut" src="https://github.com/user-attachments/assets/0c44a38f-7898-4a4d-8241-4f1d1c57ccfb" />
+
+#### Similar Errors — Spot repeated failure patterns without inspecting every test
+
+The layers badge identifies tests with matching failure messages and lets you navigate between their results. Similar messages may have different causes. Enabled by default; disable with `--plus-similar-errors=false`.
+
+<img width="800" height="381" alt="Screen Recording 2026-10-31 at 10 10 37 PM" src="https://github.com/user-attachments/assets/833b68ce-64de-4675-9421-6fe5e6b78d6e" />
+
 
 #### 🔍 Find the Context You Need
 
