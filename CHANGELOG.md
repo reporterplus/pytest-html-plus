@@ -13,6 +13,25 @@ _Changes merged to `main` but not yet released._
 
 ---
 
+## [1.4.0] — 2026-10-31
+
+### Added
+
+* Added Similar Errors, enabled by default, to identify tests with matching final failure messages after worker aggregation. A layers badge shows the number of other matching tests and opens a popover for navigating between their results. Matching is conservative and does not imply a shared root cause.
+* Added `--plus-similar-errors=true|false`, the TOML setting `similar_errors`, and profile support. Disable the feature with `--plus-similar-errors=false`.
+* Added a copy-link icon in the Similar Errors popover to copy individual links for all tests in the group, including the current test. Clipboard output contains one `test name — URL` entry per line. Recipients need access to the same report.
+* Added `similar_error_group` and `similar_error_groups` JSON metadata when similarity analysis is enabled.
+
+### Changed
+
+* Shortened report filter labels to “Failed only”, “Errors only”, “Skipped only”, and “Flaky only”; renamed “Show untracked” to “Without links”.
+
+### Removed
+
+* Removed the “Sort by longest running tests” control from the HTML report. Users can no longer reorder test cards by duration through this control.
+
+---
+
 ## [1.3.1] — 2026-10-08
 
 ### Fixed
