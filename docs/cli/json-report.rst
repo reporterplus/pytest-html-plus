@@ -17,7 +17,10 @@ Example
 
    pytest --json-report=test_report.json
 
-This will generate a JSON report at the specified location.
+This writes ``test_report.json`` inside the ``--html-output`` directory
+(default: ``report_output``). The option accepts a filename, not a directory path.
+See :ref:`json-report-structure` for the consolidated report fields and example,
+including optional Similar Errors metadata.
 
 Use Cases
 ---------

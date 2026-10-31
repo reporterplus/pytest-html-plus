@@ -113,79 +113,341 @@ Use Cases:
   - Push data into test case management systems (e.g., TestRail, Xray).
   - Trigger Jira ticket creation when critical tests fail.
 
-Structure Preview:
-^^^^^^^^^^^^^^^^^^
-The report has a structure like:
+.. _json-report-structure:
+
+Report structure
+^^^^^^^^^^^^^^^^
+
+The consolidated ``final_report.json`` contains the following fields. This is a
+field reference for the generated report, not a versioned JSON Schema validation
+contract. Consumers should tolerate additional fields and omitted optional fields.
+
+Top-level fields
+~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 20 55
+
+   * - Field
+     - JSON type
+     - Meaning
+   * - ``filters``
+     - object
+     - Summary counts and marker counts for the consolidated results.
+   * - ``results``
+     - array of objects
+     - Test results after worker aggregation, grouped by test identity (``nodeid``).
+   * - ``similar_error_groups``
+     - object (optional)
+     - Map of report-local group IDs to matching-message groups. Present when Similar Errors is enabled, including ``{}`` when no matches exist; absent when disabled.
+
+Filter fields
+~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 20 55
+
+   * - Field
+     - JSON type
+     - Meaning
+   * - ``total``
+     - integer
+     - Number of consolidated test results.
+   * - ``failed``
+     - integer (optional)
+     - Failed results excluding flaky tests.
+   * - ``error``
+     - integer (optional)
+     - Results with error status, including setup/teardown errors.
+   * - ``skipped``
+     - integer (optional)
+     - Results with skipped status.
+   * - ``flaky``
+     - integer (optional)
+     - Results marked flaky.
+   * - ``untracked``
+     - integer (optional)
+     - Results without external links; displayed as “Without links” in the report.
+   * - ``passed``
+     - integer
+     - Computed as total minus failed, skipped, and error counts; not a separate count of only literal ``passed`` statuses.
+   * - ``marker_counts``
+     - object
+     - Map of marker names to integer counts.
+
+Count keys other than ``total`` and ``passed`` may be omitted when zero.
+Treat missing count keys as zero.
+
+Result fields
+~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 20 55
+
+   * - Field
+     - JSON type
+     - Meaning
+   * - ``test / nodeid``
+     - string
+     - Display name / pytest test identity, including parameter IDs where applicable.
+   * - ``status``
+     - string
+     - Recorded result status, such as ``passed``, ``failed``, ``error``, ``skipped``, ``xfailed``, or ``xpassed``.
+   * - ``duration``
+     - number
+     - Recorded duration in seconds.
+   * - ``trace / error``
+     - string or null
+     - Diagnostic trace and error text when available.
+   * - ``markers``
+     - array of strings
+     - Names of pytest markers.
+   * - ``file / line``
+     - string or null / integer or null
+     - Source file and pytest-reported line index (zero-based).
+   * - ``stdout / stderr``
+     - string or null
+     - Captured output; content depends on the output-capture policy.
+   * - ``timestamp``
+     - string
+     - UTC ISO 8601 timestamp, normally ending in ``Z``.
+   * - ``screenshot``
+     - string or null
+     - Screenshot path or configured screenshot directory. A non-null value does not guarantee a captured image; the example contains the directory ``screenshots``.
+   * - ``logs``
+     - string or array
+     - Captured log text when present; normally ``[]`` when no logs are recorded.
+   * - ``worker``
+     - string or null
+     - Worker identifier, for example ``main`` or ``gw0``.
+   * - ``links``
+     - array of strings or null
+     - External links associated with the test.
+   * - ``attempts``
+     - array of objects
+     - Recorded attempts in order; see the attempt fields below.
+   * - ``attempt_count``
+     - integer
+     - Length of ``attempts``.
+   * - ``attempt_statuses``
+     - array of strings
+     - Recorded statuses in attempt order.
+   * - ``flaky``
+     - boolean
+     - True when the final attempt passed after a prior failed or error attempt.
+   * - ``first_failure_index``
+     - integer or null
+     - Zero-based index of the first failed or error attempt; null if none.
+   * - ``first_failure``
+     - object or null
+     - The corresponding attempt object; null if no failed/error attempt exists.
+   * - ``similar_error_group``
+     - string (optional)
+     - Reference to a key in ``similar_error_groups``. Only matched final failed/error results receive this field.
+
+Attempt fields
+~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 20 55
+
+   * - Field
+     - JSON type
+     - Meaning
+   * - ``status``
+     - string
+     - Status recorded for the attempt.
+   * - ``trace / error``
+     - string or null
+     - Attempt-specific diagnostics.
+   * - ``duration``
+     - number
+     - Attempt duration in seconds.
+   * - ``timestamp``
+     - string
+     - UTC ISO 8601 timestamp for the recorded attempt.
+
+Similarity group fields
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 20 55
+
+   * - Field
+     - JSON type
+     - Meaning
+   * - ``message``
+     - string
+     - Normalized diagnostic message used for display; matching also considers exception type.
+   * - ``nodeids``
+     - array of strings
+     - Distinct test identities in this group, including the current test. A group contains at least two tests.
+
+Group IDs such as ``similar-1`` are local to one report and should not be used as
+stable identifiers across runs. A result's badge count is the group's number of
+``nodeids`` minus one. Retries do not increase that count. Passed (including flaky),
+skipped, xfailed, xpassed, and unmatched results have no ``similar_error_group``.
+When disabled, neither report-level nor result-level similarity fields are added.
+See :doc:`Features/similar-errors` for matching rules and configuration.
+
+Example report
+~~~~~~~~~~~~~~
+
+This compact example is derived from a report with matching failures. It retains
+two matching results and one passing result, with recomputed counts and shortened
+traces. The passing result illustrates nullable diagnostics and omitted group
+membership. Reports without matches use an empty ``similar_error_groups`` object
+when the feature is enabled.
 
 .. code-block:: json
 
    {
      "filters": {
-       "skipped": 1,
-       "untracked": 75,
-       "failed": 5,
-       "total": 77,
-       "passed": 71,
+       "failed": 2,
+       "untracked": 3,
+       "total": 3,
+       "passed": 1,
        "marker_counts": {
-         "skip": 1,
-         "parametrize": 5,
-         "jira": 1,
-         "link": 1
+         "parametrize": 2
        }
      },
      "results": [
        {
-         "test": "test_skipped_example",
-         "nodeid": "tests/unit/test_convert_json_to_junit_xml.py::test_skipped_example",
-         "status": "skipped",
-         "duration": 0.0001316650000262598,
-         "trace": null,
-         "error": null,
+         "test": "test_matching_account_errors[login]",
+         "nodeid": "tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[login]",
+         "status": "failed",
+         "duration": 4.9e-05,
+         "trace": "raise ValueError(\"Account service returned an invalid response\")",
+         "error": "E       ValueError: Account service returned an invalid response",
          "markers": [
-           "skip"
+           "parametrize"
          ],
-         "file": "tests/unit/test_convert_json_to_junit_xml.py",
-         "line": 13,
+         "file": "tests/dummy_tests/demo_similar_errors.py",
+         "line": 11,
          "stdout": "",
          "stderr": "",
-         "timestamp": "2026-07-07T06:16:43.404084Z",
+         "timestamp": "2026-10-26T16:51:24.424182Z",
          "screenshot": "screenshots",
          "logs": [],
-         "worker": "gw0",
+         "worker": "main",
          "links": [],
          "attempts": [
            {
-             "status": "skipped",
-             "trace": null,
-             "error": null,
-             "duration": 0.0001316650000262598,
-             "timestamp": "2026-07-07T06:16:43.404107Z"
+             "status": "failed",
+             "trace": "raise ValueError(\"Account service returned an invalid response\")",
+             "error": "E       ValueError: Account service returned an invalid response",
+             "duration": 4.9e-05,
+             "timestamp": "2026-10-26T16:51:24.424192Z"
            }
          ],
          "attempt_count": 1,
          "flaky": false,
          "attempt_statuses": [
-           "skipped"
+           "failed"
+         ],
+         "first_failure_index": 0,
+         "first_failure": {
+           "status": "failed",
+           "trace": "raise ValueError(\"Account service returned an invalid response\")",
+           "error": "E       ValueError: Account service returned an invalid response",
+           "duration": 4.9e-05,
+           "timestamp": "2026-10-26T16:51:24.424192Z"
+         },
+         "similar_error_group": "similar-1"
+       },
+       {
+         "test": "test_matching_account_errors[checkout]",
+         "nodeid": "tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[checkout]",
+         "status": "failed",
+         "duration": 0.001287,
+         "trace": "raise ValueError(\"Account service returned an invalid response\")",
+         "error": "E       ValueError: Account service returned an invalid response",
+         "markers": [
+           "parametrize"
+         ],
+         "file": "tests/dummy_tests/demo_similar_errors.py",
+         "line": 11,
+         "stdout": "",
+         "stderr": "",
+         "timestamp": "2026-10-26T16:51:24.430781Z",
+         "screenshot": "screenshots",
+         "logs": [],
+         "worker": "main",
+         "links": [],
+         "attempts": [
+           {
+             "status": "failed",
+             "trace": "raise ValueError(\"Account service returned an invalid response\")",
+             "error": "E       ValueError: Account service returned an invalid response",
+             "duration": 0.001287,
+             "timestamp": "2026-10-26T16:51:24.430788Z"
+           }
+         ],
+         "attempt_count": 1,
+         "flaky": false,
+         "attempt_statuses": [
+           "failed"
+         ],
+         "first_failure_index": 0,
+         "first_failure": {
+           "status": "failed",
+           "trace": "raise ValueError(\"Account service returned an invalid response\")",
+           "error": "E       ValueError: Account service returned an invalid response",
+           "duration": 0.001287,
+           "timestamp": "2026-10-26T16:51:24.430788Z"
+         },
+         "similar_error_group": "similar-1"
+       },
+       {
+         "test": "test_passing_control",
+         "nodeid": "tests/dummy_tests/demo_similar_errors.py::test_passing_control",
+         "status": "passed",
+         "duration": 0.000255,
+         "trace": null,
+         "error": null,
+         "markers": [],
+         "file": "tests/dummy_tests/demo_similar_errors.py",
+         "line": 35,
+         "stdout": "",
+         "stderr": "",
+         "timestamp": "2026-10-26T16:51:24.447904Z",
+         "screenshot": "screenshots",
+         "logs": [],
+         "worker": "main",
+         "links": [],
+         "attempts": [
+           {
+             "status": "passed",
+             "trace": null,
+             "error": null,
+             "duration": 0.000255,
+             "timestamp": "2026-10-26T16:51:24.447918Z"
+           }
+         ],
+         "attempt_count": 1,
+         "flaky": false,
+         "attempt_statuses": [
+           "passed"
          ],
          "first_failure_index": null,
          "first_failure": null
        }
-     ]
+     ],
+     "similar_error_groups": {
+       "similar-1": {
+         "message": "Account service returned an invalid response",
+         "nodeids": [
+           "tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[login]",
+           "tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[checkout]"
+         ]
+       }
+     }
    }
-
-You can easily parse this using Python, JavaScript, or any JSON-compatible tool.
-
-Retry / flaky metadata
-~~~~~~~~~~~~~~~~~~~~~~
-
-Each test result includes retry-aware metadata:
-
-* ``attempts``: List of recorded attempts for the test.
-* ``attempt_count``: Total number of attempts made for the test.
-* ``attempt_statuses``: Status of each attempt in order.
-* ``flaky``: ``true`` when the test failed in an earlier attempt but eventually passed.
-* ``first_failure_index``: Index of the first failed attempt, or ``null`` if the test never failed.
-* ``first_failure``: Failure details from the first failed attempt, or ``null`` if unavailable.
 
 Metadata Schema
 ^^^^^^^^^^^^^^^
