@@ -63,7 +63,8 @@ Copy a direct link to any test result and share it with your team. The report op
 
 The layers badge identifies tests with matching failure messages and lets you navigate between their results. Similar messages may have different causes. Enabled by default; disable with `--plus-similar-errors=false`.
 
-See the [Similar Errors documentation](docs/Features/similar-errors.rst) for matching rules, configuration, and sharing links.
+<img width="800" height="381" alt="Screen Recording 2026-10-31 at 10 10 37 PM" src="https://github.com/user-attachments/assets/833b68ce-64de-4675-9421-6fe5e6b78d6e" />
+
 
 #### 🔍 Find the Context You Need
 
