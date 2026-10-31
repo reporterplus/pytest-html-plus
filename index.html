@@ -110,6 +110,13 @@
       
       .inline-copy-btn { cursor: pointer; background: none; border: 1px solid #ddd; border-radius: 3px; padding: 2px 4px; font-size: 0.8em; margin-left: 8px; color: #666; transition: all 0.2s ease; line-height: 1; } 
       .inline-copy-btn:hover { border-color: #999; background: #f5f5f5; color: #333; }
+      .test:target, .test.deep-link-target {
+        outline: 2px solid rgba(160, 130, 90, 0.4);
+        outline-offset: 1px;
+        box-shadow: 0 2px 8px rgba(80, 65, 45, 0.1);
+      }
+      .test:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+      .test { scroll-margin-top: 1rem; }
       .error-content pre { background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px; border-radius: 4px; color: #7f1d1d; margin: 8px 0; }
       .trace-content pre { background: #fef7ed; border-left: 4px solid #ea580c; padding: 12px; border-radius: 4px; color: #9a3412; margin: 8px 0; }
       .details-text div pre { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px; margin: 8px 0; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.85em; line-height: 1.4; }
@@ -184,6 +191,84 @@
         }
       }
 
+      function testLinkUrl(anchorId) {
+        const url = new URL(window.location.href);
+        url.hash = anchorId;
+        return url.href;
+      }
+
+      async function copyTextToClipboard(text, button, successLabel = null, failureLabel = null) {
+        if (button.dataset.copyPending) return;
+        button.dataset.copyPending = 'true';
+        const originalContent = button.innerHTML;
+        try {
+          await navigator.clipboard.writeText(text);
+          if (successLabel) button.textContent = successLabel;
+          else button.innerHTML = '<span style="color: #2f7a33;">✓</span>';
+        } catch (error) {
+          console.error("Copy failed:", error);
+          if (failureLabel) button.textContent = failureLabel;
+          else button.innerHTML = '<span style="color: #d32f2f;">✗</span>';
+        } finally {
+          setTimeout(() => {
+            button.innerHTML = originalContent;
+            delete button.dataset.copyPending;
+          }, 1000);
+        }
+      }
+
+      function copyTestLink(anchorId, button) {
+        try {
+          copyTextToClipboard(testLinkUrl(anchorId), button);
+        } catch (error) {
+          console.error("Copy link error:", error);
+        }
+      }
+
+      function clearFiltersForDeepLink() {
+        const filterIds = [
+          'failedOnlyCheckbox', 'errorOnlyCheckbox', 'skippedOnlyCheckbox',
+          'untrackedOnlyCheckbox', 'flakyOnlyCheckbox'
+        ];
+        filterIds.forEach(id => {
+          const checkbox = document.getElementById(id);
+          if (checkbox) checkbox.checked = false;
+        });
+        document.querySelectorAll('.marker-filter input[type="checkbox"]')
+          .forEach(checkbox => checkbox.checked = false);
+        const searchInput = document.getElementById('universal-search');
+        if (searchInput) searchInput.value = '';
+        document.querySelectorAll('.test').forEach(test => test.style.display = 'block');
+      }
+
+      function revealTestFromFragment() {
+        if (!window.location.hash) return;
+        let anchorId;
+        try {
+          anchorId = decodeURIComponent(window.location.hash.slice(1));
+        } catch (error) {
+          return;
+        }
+        if (!anchorId.startsWith('test-')) return;
+        const testCard = document.getElementById(anchorId);
+        if (!testCard || !testCard.classList.contains('test')) return;
+
+        clearFiltersForDeepLink();
+        document.querySelectorAll('.test.deep-link-target')
+          .forEach(test => test.classList.remove('deep-link-target'));
+        testCard.classList.add('deep-link-target');
+
+        const header = testCard.querySelector('.header');
+        const details = testCard.querySelector('.details');
+        if (header && details) {
+          header.classList.add('expanded');
+          details.style.display = 'block';
+        }
+
+        testCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        testCard.focus({ preventScroll: true });
+      }
+
       function toggleFullscreen(img) {
         const overlay = document.getElementById('fullscreen-overlay');
         if (img.classList.contains('fullscreen')) {
@@ -209,50 +294,14 @@
       }
 
 
-      function toggleFilter(longestCheckbox) {
-        const failedCheckbox = document.getElementById('failedOnlyCheckbox');
-        const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
-        const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
-        const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
-        const testsContainer = document.getElementById('tests-container');
-        const testElements = Array.from(testsContainer.querySelectorAll('.test'));
-        const errorCheckbox = document.getElementById('errorOnlyCheckbox');
-
-        if (longestCheckbox.checked) {
-          failedCheckbox.checked = false;
-          skippedCheckbox.checked = false;
-          untrackedCheckbox.checked = false;
-          flakyCheckbox.checked = false;
-          errorCheckbox.checked = false;
-          // Re-enable all tests before sorting
-          testElements.forEach(el => el.style.display = 'block');
-
-          // Sort and reorder
-          testElements.sort((a, b) => {
-            const aDuration = parseFloat(
-        a.querySelector('.timestamp').textContent.replace(/[^\d.]/g, '')
-        ) || 0;
-            const bDuration = parseFloat(b.querySelector('.timestamp').textContent.replace(/[^\d.]/g, '')) || 0;
-            return bDuration - aDuration;
-          });
-
-          testElements.forEach(el => testsContainer.appendChild(el));
-        }
-
-        // Reapply marker filter (should now handle failed/skipped too)
-        filterByMarkers();
-      }
-
       function toggleUntrackedOnly(checkbox) {
         const testCards = document.querySelectorAll('.test-card');
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
         const errorCheckbox = document.getElementById('errorOnlyCheckbox');
 
         if (checkbox.checked) {
-          longestCheckbox.checked = false;
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
           errorCheckbox.checked = false;
@@ -274,14 +323,12 @@
       }
 
       function toggleFlakyOnly(checkbox) {
-          const longestCheckbox = document.getElementById('longestOnlyCheckbox');
           const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
           const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
           const failedCheckbox = document.getElementById('failedOnlyCheckbox');
           const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
         if (checkbox.checked) {
-          longestCheckbox.checked = false;
           skippedCheckbox.checked = false;
           failedCheckbox.checked = false;
           errorCheckbox.checked = false;
@@ -298,14 +345,12 @@
       }
 
       function toggleFailedOnly(failedCheckbox) {
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
         const errorCheckbox = document.getElementById('errorOnlyCheckbox');
         const testElements = document.querySelectorAll('.test');
         if (failedCheckbox.checked) {
-          longestCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           skippedCheckbox.checked = false;
           flakyCheckbox.checked = false;
@@ -322,7 +367,6 @@
       }
 
       function toggleSkippedOnly(skippedCheckbox) {
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
@@ -330,7 +374,6 @@
         const testElements = document.querySelectorAll('.test');
 
         if (skippedCheckbox.checked) {
-          longestCheckbox.checked = false;
           failedCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           flakyCheckbox.checked = false;
@@ -348,7 +391,6 @@
       }
 
       function toggleErrorOnly(errorCheckbox) {
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
@@ -356,7 +398,6 @@
         const testElements = document.querySelectorAll('.test');
 
         if (errorCheckbox.checked) {
-          longestCheckbox.checked = false;
           failedCheckbox.checked = false;
           untrackedCheckbox.checked = false;
           flakyCheckbox.checked = false;
@@ -382,7 +423,8 @@
               document.querySelectorAll('.test-card').forEach(card => {
                   const name = card.getAttribute('data-name') || '';
                   const link = card.getAttribute('data-link') || '';
-                  const isVisible = name.toLowerCase().includes(filter) || link.toLowerCase().includes(filter);
+                  const error = card.getAttribute('data-error') || '';
+                  const isVisible = name.toLowerCase().includes(filter) || link.toLowerCase().includes(filter) || error.toLowerCase().includes(filter);
                   card.style.display = isVisible ? '' : 'none';
               });
           });
@@ -416,7 +458,6 @@
 
       window.onload = function() {
         const failedCheckbox = document.getElementById('failedOnlyCheckbox');
-        const longestCheckbox = document.getElementById('longestOnlyCheckbox');
         const skippedCheckbox = document.getElementById('skippedOnlyCheckbox');
         const untrackedCheckbox = document.getElementById('untrackedOnlyCheckbox');
         const flakyCheckbox = document.getElementById('flakyOnlyCheckbox');
@@ -425,12 +466,13 @@
         toggleFailedOnly(failedCheckbox);
         failedCheckbox.addEventListener('change', () => toggleFailedOnly(failedCheckbox));
         errorCheckbox.addEventListener('change', () => toggleErrorOnly(errorCheckbox));
-        longestCheckbox.addEventListener('change', () => toggleFilter(longestCheckbox));
         skippedCheckbox.addEventListener('change', () => toggleSkippedOnly(skippedCheckbox));
         untrackedCheckbox.addEventListener('change', () => toggleUntrackedOnly(untrackedCheckbox));
         flakyCheckbox.addEventListener('change', () => toggleFlakyOnly(flakyCheckbox));
         const markerCheckboxes = document.querySelectorAll('.marker-filter input[type="checkbox"]');
         markerCheckboxes.forEach(cb => cb.addEventListener('change', filterByMarkers));
+        revealTestFromFragment();
+        window.addEventListener('hashchange', revealTestFromFragment);
       };
     </script>
     </head>
@@ -438,7 +480,7 @@
     <div class="report-metadata" style="background: #f2f4f7;">
     <h2 onclick="this.nextElementSibling.classList.toggle('hidden')" style="cursor: pointer; font-size: 12px; ">
         Execution Metadata (click to toggle)
-         <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('eydyZXBvcnRfdGl0bGUnOiAncmVwb3J0X291dHB1dCcsICdlbnZpcm9ubWVudCc6ICdQYXNzIC0tcnAtZW52IHRvIHBvcHVsYXRlIGVudmlyb25tZW50JywgJ2JyYW5jaCc6ICdQYXNzIC0tZ2l0LWJyYW5jaCB0byBwb3B1bGF0ZSBnaXQgbWV0YWRhdGEnLCAnY29tbWl0JzogJ1Bhc3MgLS1naXQtY29tbWl0IHRvIHBvcHVsYXRlIGdpdCBtZXRhZGF0YScsICdweXRob25fdmVyc2lvbic6ICczLjEwLjEyJywgJ2dlbmVyYXRlZF9hdCc6ICcyMDI2LTA0LTIyVDExOjQyOjUzLjM0NDMyOSd9', this)" title="Copy metadata">
+         <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('eydyZXBvcnRfdGl0bGUnOiAncmVwb3J0X291dHB1dF9zaW1pbGFyX2Vycm9ycycsICdlbnZpcm9ubWVudCc6ICdQYXNzIC0tcnAtZW52IHRvIHBvcHVsYXRlIGVudmlyb25tZW50JywgJ2JyYW5jaCc6ICdQYXNzIC0tZ2l0LWJyYW5jaCB0byBwb3B1bGF0ZSBnaXQgbWV0YWRhdGEnLCAnY29tbWl0JzogJ1Bhc3MgLS1naXQtY29tbWl0IHRvIHBvcHVsYXRlIGdpdCBtZXRhZGF0YScsICdweXRob25fdmVyc2lvbic6ICczLjEwLjEyJywgJ2dlbmVyYXRlZF9hdCc6ICcyMDI2LTEwLTI2VDE2OjUxOjI0LjM5MzQ5OSd9', this)" title="Copy metadata">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -447,11 +489,11 @@
             
     </h2>
     <table class="hidden" style="margin-top:10px;">
-        <tr><th>Title</th><td>report_output</td></tr>
+        <tr><th>Title</th><td>report_output_similar_errors</td></tr>
         <tr><th>Environment</th><td>Pass --rp-env to populate environment</td></tr>
         <tr><th>Branch</th><td>Pass --git-branch to populate git metadata</td></tr>
         <tr><th>Commit</th><td>Pass --git-commit to populate git metadata</td></tr>
-        <tr><th>Generated At</th><td>2026-04-22T11:42:53.344329</td></tr>
+        <tr><th>Generated At</th><td>2026-10-26T16:51:24.393499</td></tr>
         <tr><th>Python version</th><td>3.10.12</td></tr>
     </table>
 </div>
@@ -459,23 +501,19 @@
     <div class="checkbox-container">
       <label>
         <input type="checkbox" id="failedOnlyCheckbox" />
-        Show only failed tests (<span>0</span>)
+        Failed only (<span>5</span>)
       </label>
       <label>
         <input type="checkbox" id="errorOnlyCheckbox" />
-        Show only error tests (<span>0</span>)
+        Errors only (<span>2</span>)
       </label>
       <label>
         <input type="checkbox" id="skippedOnlyCheckbox" />
-        Show only skipped tests (<span>2</span>)
-      </label>
-      <label style="margin-left: 1rem;">
-        <input type="checkbox" id="longestOnlyCheckbox" />
-        Sort by longest running tests
+        Skipped only (<span>0</span>)
       </label>
       <label style="margin-left: 1rem;">
         <input type="checkbox" id="untrackedOnlyCheckbox" />
-        Show untracked (<span>56</span>)
+        Without links (<span>8</span>)
       </label>
       <span onclick="toggleUntrackedInfo()" style="
   display: inline-flex;
@@ -491,7 +529,7 @@
   font-weight: bold;
   cursor: pointer;
   user-select: none;
-" title="What is untracked?">i</span>
+" title="What does without links mean?">i</span>
 
 <div id="untrackedInfoCard" style="
   display: none;
@@ -505,7 +543,7 @@
   font-size: 0.85em;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 ">
-  <strong>Untracked Tests:</strong><br>
+  <strong>Tests without links:</strong><br>
   These tests do not have any associated tracking markers like:
   <ul style="margin: 6px 0 0 16px; padding: 0;">
     <li><code>pytest.mark.link("https://...")</code></li>
@@ -517,14 +555,14 @@
 </div>
 <label style="margin-left: 1rem;">
   <input type="checkbox" id="flakyOnlyCheckbox">
-  Show flaky tests only (<span>1</span>)
+  Flaky only (<span>0</span>)
 </label>
     </div>
     <div class="search-container">
           <input
   type="text"
   id="universal-search"
-  placeholder="🔍 Search by anything, testname? link ids?..."
+  placeholder="🔍 Search by test names, link IDs, or error logs..."
   style="width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;"
 />
     </div>
@@ -532,33 +570,39 @@
 
     <div id="markersFilter" class="marker-filter" style="margin-bottom: 1rem;">
       <strong>Filter by Markers:</strong><br/>
-    <label><input type="checkbox" value="parametrize" /> parametrize (5)</label> <label><input type="checkbox" value="skip" /> skip (2)</label> 
-            <div style="padding: 1rem; background: #e6f4ea; 
-            border: 1px solid #2f7a33; 
+    <label><input type="checkbox" value="parametrize" /> parametrize (4)</label> 
+            <div style="padding: 1rem; background: #fdecea; 
+            border: 1px solid #a83232; 
             border-radius: 5px; margin-bottom: 1rem;">
-              <strong>Bingo!</strong> All your tests passed!
-              The slowest test was <strong>test_profile_requires_pyproject_file</strong> at 0.00s.
+              Total tests: 8, Failures: 5, Errors: 2.
+              The slowest test was <strong>test_matching_account_errors[checkout]</strong> at 0.00s.
             </div>
             <div id="tests-container">    
-<div class="test test-card" data-name="test_skipped_example" data-link="" data-markers="skip">
-  <div class="header skipped" onclick="toggleDetails(this)">
+<div id="test-0e3e5823fcd6ad184f243fd6ea7dcafe" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[login]" tabindex="-1" data-name="test_matching_account_errors[login]" data-link="" data-markers="parametrize" data-error="E       ValueError: Account service returned an invalid response">
+  <div class="header failed" onclick="toggleDetails(this)">
     <div class="header-section test-info">
       <span class="toggle"></span>
-      <strong>test_skipped_example</strong>
-      <span>— SKIPPED</span>
+      <strong>test_matching_account_errors[login]</strong>
+      <span>— FAILED</span>
     </div>
     <div class="header-section meta">
       <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_convert_json_to_junit_xml.py::test_skipped_example</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvbnZlcnRfanNvbl90b19qdW5pdF94bWwucHk6OnRlc3Rfc2tpcHBlZF9leGFtcGxl', this)" title="Copy nodeid">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[login]</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF9tYXRjaGluZ19hY2NvdW50X2Vycm9yc1tsb2dpbl0=', this)" title="Copy nodeid">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
             
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-0e3e5823fcd6ad184f243fd6ea7dcafe', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
       </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span><button class="similar-errors-badge" data-group="similar-1" aria-haspopup="dialog" aria-expanded="false" title="3 tests with similar failure messages" aria-label="Show 3 tests with similar failure messages" aria-controls="similar-errors-popover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 10 5-10 5L2 8Z"></path><path d="m2 12 10 5 10-5"></path></svg><span>3</span></button>
     </div>
 
     <div class="header-section badges-and-timing">
@@ -572,245 +616,107 @@
     <div class="details-content">
       <div class="details-text">
     
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_convert_json_to_xml" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_convert_json_to_xml</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_convert_json_to_junit_xml.py::test_convert_json_to_xml</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvbnZlcnRfanNvbl90b19qdW5pdF94bWwucHk6OnRlc3RfY29udmVydF9qc29uX3RvX3htbA==', this)" title="Copy nodeid">
+                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICBWYWx1ZUVycm9yOiBBY2NvdW50IHNlcnZpY2UgcmV0dXJuZWQgYW4gaW52YWxpZCByZXNwb25zZQ==', this)" title="Copy error">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
             
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_resolve_driver_fallback_on_object_with_screenshot_method" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_resolve_driver_fallback_on_object_with_screenshot_method</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_on_object_with_screenshot_method</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF9yZXNvbHZlX2RyaXZlcl9mYWxsYmFja19vbl9vYmplY3Rfd2l0aF9zY3JlZW5zaG90X21ldGhvZA==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_resolve_driver_fallback_on_object_with_save_screenshot" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_resolve_driver_fallback_on_object_with_save_screenshot</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_on_object_with_save_screenshot</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF9yZXNvbHZlX2RyaXZlcl9mYWxsYmFja19vbl9vYmplY3Rfd2l0aF9zYXZlX3NjcmVlbnNob3Q=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_flaky_network_call" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_flaky_network_call</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_flaky_badge.py::test_flaky_network_call</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2ZsYWt5X2JhZGdlLnB5Ojp0ZXN0X2ZsYWt5X25ldHdvcmtfY2FsbA==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span class="is-flaky" style="background:#f39c12;color:white;padding:2px 6px;border-radius:3px;font-weight:bold;font-size:0.85em;">FLAKY (2 attempts)</span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICAgICAgQXNzZXJ0aW9uRXJyb3I6IFNpbXVsYXRlZCBuZXR3b3JrIGZhaWx1cmUKRSAgICAgICAgICAgYXNzZXJ0IEZhbHNl', this)" title="Copy error">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-                    <pre>E           AssertionError: Simulated network failure
-E           assert False</pre></div>
+                    <pre>E       ValueError: Account service returned an invalid response</pre></div>
                     
     
-                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('ZGVmIHRlc3RfZmxha3lfbmV0d29ya19jYWxsKCk6CiAgICAgICAgYXR0ZW1wdF9jb3VudGVyWyJjb3VudCJdICs9IDEKICAgICAgICBpZiBhdHRlbXB0X2NvdW50ZXJbImNvdW50Il0gPT0gMToKPiAgICAgICAgICAgYXNzZXJ0IEZhbHNlLCAiU2ltdWxhdGVkIG5ldHdvcmsgZmFpbHVyZSI=', this)" title="Copy trace">
+                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('cGFnZSA9ICdsb2dpbicKCiAgICBAcHl0ZXN0Lm1hcmsucGFyYW1ldHJpemUoInBhZ2UiLCBbImxvZ2luIiwgImNoZWNrb3V0IiwgInNlYXJjaCIsICJwcm9maWxlIl0pCiAgICBkZWYgdGVzdF9tYXRjaGluZ19hY2NvdW50X2Vycm9ycyhwYWdlKToKICAgICAgICAiIiJGb3VyIG1hdGNoaW5nIGZhaWx1cmVzIHNob3VsZCBlYWNoIGRpc3BsYXkgJzMgc2ltaWxhcicuIiIiCj4gICAgICAgcmFpc2UgVmFsdWVFcnJvcigiQWNjb3VudCBzZXJ2aWNlIHJldHVybmVkIGFuIGludmFsaWQgcmVzcG9uc2UiKQ==', this)" title="Copy trace">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
             
-                    <pre>def test_flaky_network_call():
-        attempt_counter["count"] += 1
-        if attempt_counter["count"] == 1:
->           assert False, "Simulated network failure"</pre></div>
+                    <pre>page = 'login'
+
+    @pytest.mark.parametrize("page", ["login", "checkout", "search", "profile"])
+    def test_matching_account_errors(page):
+        """Four matching failures should each display '3 similar'."""
+>       raise ValueError("Account service returned an invalid response")</pre></div>
                     
     
     
     
-    <div style="margin-top:10px;"><strong>Attempts:</strong>
-                    <details style="margin-top:8px; border:1px solid #ddd; border-radius:4px; padding:6px;">
-                        <summary style="cursor:pointer;">
-                            <strong>Attempt 1 ❌</strong>
-                        </summary>
-                        <div style="margin-top:8px;">
-                            <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICAgICAgQXNzZXJ0aW9uRXJyb3I6IFNpbXVsYXRlZCBuZXR3b3JrIGZhaWx1cmUKRSAgICAgICAgICAgYXNzZXJ0IEZhbHNl', this)" title="Copy error">
+    
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+        
+<div id="test-1a9df9329740e406c38940f46cb86048" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[checkout]" tabindex="-1" data-name="test_matching_account_errors[checkout]" data-link="" data-markers="parametrize" data-error="E       ValueError: Account service returned an invalid response">
+  <div class="header failed" onclick="toggleDetails(this)">
+    <div class="header-section test-info">
+      <span class="toggle"></span>
+      <strong>test_matching_account_errors[checkout]</strong>
+      <span>— FAILED</span>
+    </div>
+    <div class="header-section meta">
+      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[checkout]</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF9tYXRjaGluZ19hY2NvdW50X2Vycm9yc1tjaGVja291dF0=', this)" title="Copy nodeid">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
-            <pre>E           AssertionError: Simulated network failure
-E           assert False</pre></div>
-                            <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('ZGVmIHRlc3RfZmxha3lfbmV0d29ya19jYWxsKCk6CiAgICAgICAgYXR0ZW1wdF9jb3VudGVyWyJjb3VudCJdICs9IDEKICAgICAgICBpZiBhdHRlbXB0X2NvdW50ZXJbImNvdW50Il0gPT0gMToKPiAgICAgICAgICAgYXNzZXJ0IEZhbHNlLCAiU2ltdWxhdGVkIG5ldHdvcmsgZmFpbHVyZSI=', this)" title="Copy trace">
+            
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-1a9df9329740e406c38940f46cb86048', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
+      </span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span><button class="similar-errors-badge" data-group="similar-1" aria-haspopup="dialog" aria-expanded="false" title="3 tests with similar failure messages" aria-label="Show 3 tests with similar failure messages" aria-controls="similar-errors-popover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 10 5-10 5L2 8Z"></path><path d="m2 12 10 5 10-5"></path></svg><span>3</span></button>
+    </div>
+
+    <div class="header-section badges-and-timing">
+      <span style="display:inline-block; min-width:40px;"></span>
+      <span style="display:inline-block; min-width:45px;"></span>
+      <span class="timestamp">⏱ 0.00s</span>
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="details-content">
+      <div class="details-text">
+    
+                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICBWYWx1ZUVycm9yOiBBY2NvdW50IHNlcnZpY2UgcmV0dXJuZWQgYW4gaW52YWxpZCByZXNwb25zZQ==', this)" title="Copy error">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
-            <pre>def test_flaky_network_call():
-        attempt_counter["count"] += 1
-        if attempt_counter["count"] == 1:
->           assert False, "Simulated network failure"</pre></div>
-                        </div>
-                    </details>
+            
+                    <pre>E       ValueError: Account service returned an invalid response</pre></div>
                     
-                    <details style="margin-top:8px; border:1px solid #ddd; border-radius:4px; padding:6px;">
-                        <summary style="cursor:pointer;">
-                            <strong>Attempt 2 ✅</strong>
-                        </summary>
-                        <div style="margin-top:8px;">
-                            
-                            
-                        </div>
-                    </details>
-                    </div>
+    
+                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('cGFnZSA9ICdjaGVja291dCcKCiAgICBAcHl0ZXN0Lm1hcmsucGFyYW1ldHJpemUoInBhZ2UiLCBbImxvZ2luIiwgImNoZWNrb3V0IiwgInNlYXJjaCIsICJwcm9maWxlIl0pCiAgICBkZWYgdGVzdF9tYXRjaGluZ19hY2NvdW50X2Vycm9ycyhwYWdlKToKICAgICAgICAiIiJGb3VyIG1hdGNoaW5nIGZhaWx1cmVzIHNob3VsZCBlYWNoIGRpc3BsYXkgJzMgc2ltaWxhcicuIiIiCj4gICAgICAgcmFpc2UgVmFsdWVFcnJvcigiQWNjb3VudCBzZXJ2aWNlIHJldHVybmVkIGFuIGludmFsaWQgcmVzcG9uc2UiKQ==', this)" title="Copy trace">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>page = 'checkout'
+
+    @pytest.mark.parametrize("page", ["login", "checkout", "search", "profile"])
+    def test_matching_account_errors(page):
+        """Four matching failures should each display '3 similar'."""
+>       raise ValueError("Account service returned an invalid response")</pre></div>
+                    
+    
+    
+    
+    
       </div>
       
     </div>
@@ -818,25 +724,387 @@ E           assert False</pre></div>
 </div>
 
         
-<div class="test test-card" data-name="test_compute_filter_count_failed_non_flaky" data-link="" data-markers="">
+<div id="test-bb40a75e61e62f34f49744e0ac7a659a" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[search]" tabindex="-1" data-name="test_matching_account_errors[search]" data-link="" data-markers="parametrize" data-error="E       ValueError: Account service returned an invalid response">
+  <div class="header failed" onclick="toggleDetails(this)">
+    <div class="header-section test-info">
+      <span class="toggle"></span>
+      <strong>test_matching_account_errors[search]</strong>
+      <span>— FAILED</span>
+    </div>
+    <div class="header-section meta">
+      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[search]</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF9tYXRjaGluZ19hY2NvdW50X2Vycm9yc1tzZWFyY2hd', this)" title="Copy nodeid">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-bb40a75e61e62f34f49744e0ac7a659a', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
+      </span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span><button class="similar-errors-badge" data-group="similar-1" aria-haspopup="dialog" aria-expanded="false" title="3 tests with similar failure messages" aria-label="Show 3 tests with similar failure messages" aria-controls="similar-errors-popover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 10 5-10 5L2 8Z"></path><path d="m2 12 10 5 10-5"></path></svg><span>3</span></button>
+    </div>
+
+    <div class="header-section badges-and-timing">
+      <span style="display:inline-block; min-width:40px;"></span>
+      <span style="display:inline-block; min-width:45px;"></span>
+      <span class="timestamp">⏱ 0.00s</span>
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="details-content">
+      <div class="details-text">
+    
+                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICBWYWx1ZUVycm9yOiBBY2NvdW50IHNlcnZpY2UgcmV0dXJuZWQgYW4gaW52YWxpZCByZXNwb25zZQ==', this)" title="Copy error">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>E       ValueError: Account service returned an invalid response</pre></div>
+                    
+    
+                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('cGFnZSA9ICdzZWFyY2gnCgogICAgQHB5dGVzdC5tYXJrLnBhcmFtZXRyaXplKCJwYWdlIiwgWyJsb2dpbiIsICJjaGVja291dCIsICJzZWFyY2giLCAicHJvZmlsZSJdKQogICAgZGVmIHRlc3RfbWF0Y2hpbmdfYWNjb3VudF9lcnJvcnMocGFnZSk6CiAgICAgICAgIiIiRm91ciBtYXRjaGluZyBmYWlsdXJlcyBzaG91bGQgZWFjaCBkaXNwbGF5ICczIHNpbWlsYXInLiIiIgo+ICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIkFjY291bnQgc2VydmljZSByZXR1cm5lZCBhbiBpbnZhbGlkIHJlc3BvbnNlIik=', this)" title="Copy trace">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>page = 'search'
+
+    @pytest.mark.parametrize("page", ["login", "checkout", "search", "profile"])
+    def test_matching_account_errors(page):
+        """Four matching failures should each display '3 similar'."""
+>       raise ValueError("Account service returned an invalid response")</pre></div>
+                    
+    
+    
+    
+    
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+        
+<div id="test-2e86015c31be78de7964fe07f9ca139f" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[profile]" tabindex="-1" data-name="test_matching_account_errors[profile]" data-link="" data-markers="parametrize" data-error="E       ValueError: Account service returned an invalid response">
+  <div class="header failed" onclick="toggleDetails(this)">
+    <div class="header-section test-info">
+      <span class="toggle"></span>
+      <strong>test_matching_account_errors[profile]</strong>
+      <span>— FAILED</span>
+    </div>
+    <div class="header-section meta">
+      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_matching_account_errors[profile]</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF9tYXRjaGluZ19hY2NvdW50X2Vycm9yc1twcm9maWxlXQ==', this)" title="Copy nodeid">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-2e86015c31be78de7964fe07f9ca139f', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
+      </span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span><button class="similar-errors-badge" data-group="similar-1" aria-haspopup="dialog" aria-expanded="false" title="3 tests with similar failure messages" aria-label="Show 3 tests with similar failure messages" aria-controls="similar-errors-popover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 10 5-10 5L2 8Z"></path><path d="m2 12 10 5 10-5"></path></svg><span>3</span></button>
+    </div>
+
+    <div class="header-section badges-and-timing">
+      <span style="display:inline-block; min-width:40px;"></span>
+      <span style="display:inline-block; min-width:45px;"></span>
+      <span class="timestamp">⏱ 0.00s</span>
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="details-content">
+      <div class="details-text">
+    
+                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICBWYWx1ZUVycm9yOiBBY2NvdW50IHNlcnZpY2UgcmV0dXJuZWQgYW4gaW52YWxpZCByZXNwb25zZQ==', this)" title="Copy error">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>E       ValueError: Account service returned an invalid response</pre></div>
+                    
+    
+                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('cGFnZSA9ICdwcm9maWxlJwoKICAgIEBweXRlc3QubWFyay5wYXJhbWV0cml6ZSgicGFnZSIsIFsibG9naW4iLCAiY2hlY2tvdXQiLCAic2VhcmNoIiwgInByb2ZpbGUiXSkKICAgIGRlZiB0ZXN0X21hdGNoaW5nX2FjY291bnRfZXJyb3JzKHBhZ2UpOgogICAgICAgICIiIkZvdXIgbWF0Y2hpbmcgZmFpbHVyZXMgc2hvdWxkIGVhY2ggZGlzcGxheSAnMyBzaW1pbGFyJy4iIiIKPiAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJBY2NvdW50IHNlcnZpY2UgcmV0dXJuZWQgYW4gaW52YWxpZCByZXNwb25zZSIp', this)" title="Copy trace">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>page = 'profile'
+
+    @pytest.mark.parametrize("page", ["login", "checkout", "search", "profile"])
+    def test_matching_account_errors(page):
+        """Four matching failures should each display '3 similar'."""
+>       raise ValueError("Account service returned an invalid response")</pre></div>
+                    
+    
+    
+    
+    
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+        
+<div id="test-9ccb5e9c196d120c26965eb2278b42af" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_database_setup_one" tabindex="-1" data-name="test_database_setup_one" data-link="" data-markers="" data-error="E       RuntimeError: Database connection refused for reporting service">
+  <div class="header error" onclick="toggleDetails(this)">
+    <div class="header-section test-info">
+      <span class="toggle"></span>
+      <strong>test_database_setup_one</strong>
+      <span>— ERROR</span>
+    </div>
+    <div class="header-section meta">
+      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_database_setup_one</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF9kYXRhYmFzZV9zZXR1cF9vbmU=', this)" title="Copy nodeid">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-9ccb5e9c196d120c26965eb2278b42af', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
+      </span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span><button class="similar-errors-badge" data-group="similar-2" aria-haspopup="dialog" aria-expanded="false" title="1 tests with similar failure messages" aria-label="Show 1 tests with similar failure messages" aria-controls="similar-errors-popover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 10 5-10 5L2 8Z"></path><path d="m2 12 10 5 10-5"></path></svg><span>1</span></button>
+    </div>
+
+    <div class="header-section badges-and-timing">
+      <span style="display:inline-block; min-width:40px;"></span>
+      <span style="display:inline-block; min-width:45px;"></span>
+      <span class="timestamp">⏱ 0.00s</span>
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="details-content">
+      <div class="details-text">
+    
+                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICBSdW50aW1lRXJyb3I6IERhdGFiYXNlIGNvbm5lY3Rpb24gcmVmdXNlZCBmb3IgcmVwb3J0aW5nIHNlcnZpY2U=', this)" title="Copy error">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>E       RuntimeError: Database connection refused for reporting service</pre></div>
+                    
+    
+                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('QHB5dGVzdC5maXh0dXJlCiAgICBkZWYgdW5hdmFpbGFibGVfZGF0YWJhc2UoKToKPiAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoIkRhdGFiYXNlIGNvbm5lY3Rpb24gcmVmdXNlZCBmb3IgcmVwb3J0aW5nIHNlcnZpY2UiKQ==', this)" title="Copy trace">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>@pytest.fixture
+    def unavailable_database():
+>       raise RuntimeError("Database connection refused for reporting service")</pre></div>
+                    
+    
+    
+    
+    
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+        
+<div id="test-d6db157827f2753a09f739acd4b38d30" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_database_setup_two" tabindex="-1" data-name="test_database_setup_two" data-link="" data-markers="" data-error="E       RuntimeError: Database connection refused for reporting service">
+  <div class="header error" onclick="toggleDetails(this)">
+    <div class="header-section test-info">
+      <span class="toggle"></span>
+      <strong>test_database_setup_two</strong>
+      <span>— ERROR</span>
+    </div>
+    <div class="header-section meta">
+      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_database_setup_two</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF9kYXRhYmFzZV9zZXR1cF90d28=', this)" title="Copy nodeid">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-d6db157827f2753a09f739acd4b38d30', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
+      </span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span><button class="similar-errors-badge" data-group="similar-2" aria-haspopup="dialog" aria-expanded="false" title="1 tests with similar failure messages" aria-label="Show 1 tests with similar failure messages" aria-controls="similar-errors-popover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 10 5-10 5L2 8Z"></path><path d="m2 12 10 5 10-5"></path></svg><span>1</span></button>
+    </div>
+
+    <div class="header-section badges-and-timing">
+      <span style="display:inline-block; min-width:40px;"></span>
+      <span style="display:inline-block; min-width:45px;"></span>
+      <span class="timestamp">⏱ 0.00s</span>
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="details-content">
+      <div class="details-text">
+    
+                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICBSdW50aW1lRXJyb3I6IERhdGFiYXNlIGNvbm5lY3Rpb24gcmVmdXNlZCBmb3IgcmVwb3J0aW5nIHNlcnZpY2U=', this)" title="Copy error">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>E       RuntimeError: Database connection refused for reporting service</pre></div>
+                    
+    
+                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('QHB5dGVzdC5maXh0dXJlCiAgICBkZWYgdW5hdmFpbGFibGVfZGF0YWJhc2UoKToKPiAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoIkRhdGFiYXNlIGNvbm5lY3Rpb24gcmVmdXNlZCBmb3IgcmVwb3J0aW5nIHNlcnZpY2UiKQ==', this)" title="Copy trace">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>@pytest.fixture
+    def unavailable_database():
+>       raise RuntimeError("Database connection refused for reporting service")</pre></div>
+                    
+    
+    
+    
+    
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+        
+<div id="test-b4c6729db672a1f2c6be06ad2b622343" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_unrelated_failure" tabindex="-1" data-name="test_unrelated_failure" data-link="" data-markers="" data-error="E       AssertionError: Expected checkout total to include delivery">
+  <div class="header failed" onclick="toggleDetails(this)">
+    <div class="header-section test-info">
+      <span class="toggle"></span>
+      <strong>test_unrelated_failure</strong>
+      <span>— FAILED</span>
+    </div>
+    <div class="header-section meta">
+      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_unrelated_failure</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF91bnJlbGF0ZWRfZmFpbHVyZQ==', this)" title="Copy nodeid">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-b4c6729db672a1f2c6be06ad2b622343', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
+      </span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span>
+    </div>
+
+    <div class="header-section badges-and-timing">
+      <span style="display:inline-block; min-width:40px;"></span>
+      <span style="display:inline-block; min-width:45px;"></span>
+      <span class="timestamp">⏱ 0.00s</span>
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="details-content">
+      <div class="details-text">
+    
+                    <div class="error-content"><strong>Error:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('RSAgICAgICBBc3NlcnRpb25FcnJvcjogRXhwZWN0ZWQgY2hlY2tvdXQgdG90YWwgdG8gaW5jbHVkZSBkZWxpdmVyeQ==', this)" title="Copy error">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>E       AssertionError: Expected checkout total to include delivery</pre></div>
+                    
+    
+                    <div class="trace-content"><strong>Trace:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('ZGVmIHRlc3RfdW5yZWxhdGVkX2ZhaWx1cmUoKToKICAgICAgICAiIiJUaGlzIGRpc3RpbmN0IGZhaWx1cmUgbXVzdCBub3QgaGF2ZSBhIHNpbWlsYXJpdHkgYmFkZ2UuIiIiCj4gICAgICAgcmFpc2UgQXNzZXJ0aW9uRXJyb3IoIkV4cGVjdGVkIGNoZWNrb3V0IHRvdGFsIHRvIGluY2x1ZGUgZGVsaXZlcnkiKQ==', this)" title="Copy trace">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            
+                    <pre>def test_unrelated_failure():
+        """This distinct failure must not have a similarity badge."""
+>       raise AssertionError("Expected checkout total to include delivery")</pre></div>
+                    
+    
+    
+    
+    
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+        
+<div id="test-ea5161676875cf32024b222099cae2b1" class="test test-card" data-nodeid="tests/dummy_tests/demo_similar_errors.py::test_passing_control" tabindex="-1" data-name="test_passing_control" data-link="" data-markers="" data-error="">
   <div class="header passed" onclick="toggleDetails(this)">
     <div class="header-section test-info">
       <span class="toggle"></span>
-      <strong>test_compute_filter_count_failed_non_flaky</strong>
+      <strong>test_passing_control</strong>
       <span>— PASSED</span>
     </div>
     <div class="header-section meta">
       <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_json_merger.py::test_compute_filter_count_failed_non_flaky</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2pzb25fbWVyZ2VyLnB5Ojp0ZXN0X2NvbXB1dGVfZmlsdGVyX2NvdW50X2ZhaWxlZF9ub25fZmxha3k=', this)" title="Copy nodeid">
+        <code style="font-size: 0.6em; color: #555;">tests/dummy_tests/demo_similar_errors.py::test_passing_control</code>
+          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvZHVtbXlfdGVzdHMvZGVtb19zaW1pbGFyX2Vycm9ycy5weTo6dGVzdF9wYXNzaW5nX2NvbnRyb2w=', this)" title="Copy nodeid">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
             
+          <button class="inline-copy-btn test-link-btn" onclick="event.stopPropagation(); copyTestLink('test-ea5161676875cf32024b222099cae2b1', this)" title="Copy link to test">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
       </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
+      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">main</span>
     </div>
 
     <div class="header-section badges-and-timing">
@@ -861,2224 +1129,116 @@ E           assert False</pre></div>
   </div>
 </div>
 
-        
-<div class="test test-card" data-name="test_passing_test_logged_even_if_screenshot_not_taken" data-link="" data-markers="skip">
-  <div class="header skipped" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_passing_test_logged_even_if_screenshot_not_taken</strong>
-      <span>— SKIPPED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_plugin_logging.py::test_passing_test_logged_even_if_screenshot_not_taken</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3BsdWdpbl9sb2dnaW5nLnB5Ojp0ZXN0X3Bhc3NpbmdfdGVzdF9sb2dnZWRfZXZlbl9pZl9zY3JlZW5zaG90X25vdF90YWtlbg==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_profile_args_are_prepended_so_cli_can_override" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_profile_args_are_prepended_so_cli_can_override</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_profile_loading.py::test_profile_args_are_prepended_so_cli_can_override</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3Byb2ZpbGVfbG9hZGluZy5weTo6dGVzdF9wcm9maWxlX2FyZ3NfYXJlX3ByZXBlbmRlZF9zb19jbGlfY2FuX292ZXJyaWRl', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_trace_block_basic" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_trace_block_basic</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_trace_block.py::test_trace_block_basic</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3RyYWNlX2Jsb2NrLnB5Ojp0ZXN0X3RyYWNlX2Jsb2NrX2Jhc2lj', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw0</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_sanitize_classname_tests_test_login_py_tests_test_login_" data-link="" data-markers="parametrize">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_sanitize_classname_tests_test_login_py_tests_test_login_</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests/test_login.py-tests.test_login]</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvbnZlcnRfanNvbl90b19qdW5pdF94bWwucHk6OnRlc3Rfc2FuaXRpemVfY2xhc3NuYW1lW3Rlc3RzL3Rlc3RfbG9naW4ucHktdGVzdHMudGVzdF9sb2dpbl0=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_sanitize_classname_tests__test_user_py_tests_test_user_" data-link="" data-markers="parametrize">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_sanitize_classname_tests__test_user_py_tests_test_user_</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests\\test_user.py-tests.test_user]</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvbnZlcnRfanNvbl90b19qdW5pdF94bWwucHk6OnRlc3Rfc2FuaXRpemVfY2xhc3NuYW1lW3Rlc3RzXFx0ZXN0X3VzZXIucHktdGVzdHMudGVzdF91c2VyXQ==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_take_screenshot_with_save_screenshot_method" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_take_screenshot_with_save_screenshot_method</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_take_screenshot_with_save_screenshot_method</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF90YWtlX3NjcmVlbnNob3Rfd2l0aF9zYXZlX3NjcmVlbnNob3RfbWV0aG9k', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_take_screenshot_raises_on_invalid_driver" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_take_screenshot_raises_on_invalid_driver</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_take_screenshot_raises_on_invalid_driver</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF90YWtlX3NjcmVlbnNob3RfcmFpc2VzX29uX2ludmFsaWRfZHJpdmVy', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_merge_json_reports_handles_empty_directory" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_merge_json_reports_handles_empty_directory</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_json_merger.py::test_merge_json_reports_handles_empty_directory</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2pzb25fbWVyZ2VyLnB5Ojp0ZXN0X21lcmdlX2pzb25fcmVwb3J0c19oYW5kbGVzX2VtcHR5X2RpcmVjdG9yeQ==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_single_non_flaky_test" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_single_non_flaky_test</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_single_non_flaky_test</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtfZmxha3lfdGVzdHMucHk6OlRlc3RNYXJrRmxha3lUZXN0czo6dGVzdF9zaW5nbGVfbm9uX2ZsYWt5X3Rlc3Q=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_multiple_failures_not_flaky" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_multiple_failures_not_flaky</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_multiple_failures_not_flaky</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtfZmxha3lfdGVzdHMucHk6OlRlc3RNYXJrRmxha3lUZXN0czo6dGVzdF9tdWx0aXBsZV9mYWlsdXJlc19ub3RfZmxha3k=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_invalid_profile_key_raises_usage_error" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_invalid_profile_key_raises_usage_error</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_profile_loading.py::test_invalid_profile_key_raises_usage_error</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3Byb2ZpbGVfbG9hZGluZy5weTo6dGVzdF9pbnZhbGlkX3Byb2ZpbGVfa2V5X3JhaXNlc191c2FnZV9lcnJvcg==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_ui_fixture_failure_captures_screenshot" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_ui_fixture_failure_captures_screenshot</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_setup_failure.py::test_ui_fixture_failure_captures_screenshot</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3NldHVwX2ZhaWx1cmUucHk6OnRlc3RfdWlfZml4dHVyZV9mYWlsdXJlX2NhcHR1cmVzX3NjcmVlbnNob3Q=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw1</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_sanitize_classname_tests_utils_helpers_py_tests_utils_helpers_" data-link="" data-markers="parametrize">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_sanitize_classname_tests_utils_helpers_py_tests_utils_helpers_</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[tests/utils/helpers.py-tests.utils.helpers]</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvbnZlcnRfanNvbl90b19qdW5pdF94bWwucHk6OnRlc3Rfc2FuaXRpemVfY2xhc3NuYW1lW3Rlc3RzL3V0aWxzL2hlbHBlcnMucHktdGVzdHMudXRpbHMuaGVscGVyc10=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_sanitize_classname_None_default_" data-link="" data-markers="parametrize">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_sanitize_classname_None_default_</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[None-default]</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvbnZlcnRfanNvbl90b19qdW5pdF94bWwucHk6OnRlc3Rfc2FuaXRpemVfY2xhc3NuYW1lW05vbmUtZGVmYXVsdF0=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_error_block_spaces_and_blank_lines" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_error_block_spaces_and_blank_lines</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_error_block.py::test_error_block_spaces_and_blank_lines</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2Vycm9yX2Jsb2NrLnB5Ojp0ZXN0X2Vycm9yX2Jsb2NrX3NwYWNlc19hbmRfYmxhbmtfbGluZXM=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_error_block_no_E_lines" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_error_block_no_E_lines</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_error_block.py::test_error_block_no_E_lines</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2Vycm9yX2Jsb2NrLnB5Ojp0ZXN0X2Vycm9yX2Jsb2NrX25vX0VfbGluZXM=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_find_screenshot_and_copy" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_find_screenshot_and_copy</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_find_screenshot_and_copy.py::test_find_screenshot_and_copy</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2ZpbmRfc2NyZWVuc2hvdF9hbmRfY29weS5weTo6dGVzdF9maW5kX3NjcmVlbnNob3RfYW5kX2NvcHk=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_compute_filter_count_error_non_flaky" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_compute_filter_count_error_non_flaky</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_json_merger.py::test_compute_filter_count_error_non_flaky</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2pzb25fbWVyZ2VyLnB5Ojp0ZXN0X2NvbXB1dGVfZmlsdGVyX2NvdW50X2Vycm9yX25vbl9mbGFreQ==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_extract_links_with_non_string_args" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_extract_links_with_non_string_args</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_marker_links.py::test_extract_links_with_non_string_args</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtlcl9saW5rcy5weTo6dGVzdF9leHRyYWN0X2xpbmtzX3dpdGhfbm9uX3N0cmluZ19hcmdz', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_profile_boolean_values_must_be_boolean" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_profile_boolean_values_must_be_boolean</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_profile_loading.py::test_profile_boolean_values_must_be_boolean</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3Byb2ZpbGVfbG9hZGluZy5weTo6dGVzdF9wcm9maWxlX2Jvb2xlYW5fdmFsdWVzX211c3RfYmVfYm9vbGVhbg==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_trace_block_none" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_trace_block_none</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_trace_block.py::test_trace_block_none</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3RyYWNlX2Jsb2NrLnB5Ojp0ZXN0X3RyYWNlX2Jsb2NrX25vbmU=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw2</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_sanitize_classname__default_" data-link="" data-markers="parametrize">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_sanitize_classname__default_</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_convert_json_to_junit_xml.py::test_sanitize_classname[-default]</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvbnZlcnRfanNvbl90b19qdW5pdF94bWwucHk6OnRlc3Rfc2FuaXRpemVfY2xhc3NuYW1lWy1kZWZhdWx0XQ==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_copy_all_screenshots" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_copy_all_screenshots</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_copy_all_screenshots.py::test_copy_all_screenshots</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2NvcHlfYWxsX3NjcmVlbnNob3RzLnB5Ojp0ZXN0X2NvcHlfYWxsX3NjcmVlbnNob3Rz', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_resolve_driver_returns_none_when_no_match" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_resolve_driver_returns_none_when_no_match</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_resolve_driver_returns_none_when_no_match</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF9yZXNvbHZlX2RyaXZlcl9yZXR1cm5zX25vbmVfd2hlbl9ub19tYXRjaA==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-                <div><strong>STDOUT:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('W3Jlc29sdmVfZHJpdmVyXSBVc2luZyBtYW51YWxseSBhdHRhY2hlZCBzY3JlZW5zaG90IG9iamVjdAo=', this)" title="Copy stdout">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-                <pre>[resolve_driver] Using manually attached screenshot object
-</pre></div>
-                
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_take_screenshot_with_screenshot_method" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_take_screenshot_with_screenshot_method</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_take_screenshot_with_screenshot_method</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF90YWtlX3NjcmVlbnNob3Rfd2l0aF9zY3JlZW5zaG90X21ldGhvZA==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_merge_json_reports_handles_bad_json" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_merge_json_reports_handles_bad_json</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_json_merger.py::test_merge_json_reports_handles_bad_json</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2pzb25fbWVyZ2VyLnB5Ojp0ZXN0X21lcmdlX2pzb25fcmVwb3J0c19oYW5kbGVzX2JhZF9qc29u', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_mixed_tests_flaky_and_non_flaky" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_mixed_tests_flaky_and_non_flaky</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_mixed_tests_flaky_and_non_flaky</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtfZmxha3lfdGVzdHMucHk6OlRlc3RNYXJrRmxha3lUZXN0czo6dGVzdF9taXhlZF90ZXN0c19mbGFreV9hbmRfbm9uX2ZsYWt5', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_extract_links_with_no_markers" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_extract_links_with_no_markers</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_marker_links.py::test_extract_links_with_no_markers</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtlcl9saW5rcy5weTo6dGVzdF9leHRyYWN0X2xpbmtzX3dpdGhfbm9fbWFya2Vycw==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_duplicate_profile_keys_surface_toml_error" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_duplicate_profile_keys_surface_toml_error</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_profile_loading.py::test_duplicate_profile_keys_surface_toml_error</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3Byb2ZpbGVfbG9hZGluZy5weTo6dGVzdF9kdXBsaWNhdGVfcHJvZmlsZV9rZXlzX3N1cmZhY2VfdG9tbF9lcnJvcg==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_trace_block_no_error_line" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_trace_block_no_error_line</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_trace_block.py::test_trace_block_no_error_line</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3RyYWNlX2Jsb2NrLnB5Ojp0ZXN0X3RyYWNlX2Jsb2NrX25vX2Vycm9yX2xpbmU=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_trace_block_only_error_line" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_trace_block_only_error_line</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_trace_block.py::test_trace_block_only_error_line</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3RyYWNlX2Jsb2NrLnB5Ojp0ZXN0X3RyYWNlX2Jsb2NrX29ubHlfZXJyb3JfbGluZQ==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw3</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_resolve_driver_prefers_page_over_others" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_resolve_driver_prefers_page_over_others</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_resolve_driver_prefers_page_over_others</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF9yZXNvbHZlX2RyaXZlcl9wcmVmZXJzX3BhZ2Vfb3Zlcl9vdGhlcnM=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_resolve_driver_fallback_to_driver" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_resolve_driver_fallback_to_driver</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_to_driver</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF9yZXNvbHZlX2RyaXZlcl9mYWxsYmFja190b19kcml2ZXI=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_take_screenshot_with_custom_path" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_take_screenshot_with_custom_path</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_take_screenshot_with_custom_path</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF90YWtlX3NjcmVlbnNob3Rfd2l0aF9jdXN0b21fcGF0aA==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_error_block_basic" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_error_block_basic</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_error_block.py::test_error_block_basic</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2Vycm9yX2Jsb2NrLnB5Ojp0ZXN0X2Vycm9yX2Jsb2NrX2Jhc2lj', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_merge_json_reports_creates_merged_file" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_merge_json_reports_creates_merged_file</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_json_merger.py::test_merge_json_reports_creates_merged_file</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2pzb25fbWVyZ2VyLnB5Ojp0ZXN0X21lcmdlX2pzb25fcmVwb3J0c19jcmVhdGVzX21lcmdlZF9maWxl', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_flaky_test_with_multiple_attempts" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_flaky_test_with_multiple_attempts</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_flaky_test_with_multiple_attempts</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtfZmxha3lfdGVzdHMucHk6OlRlc3RNYXJrRmxha3lUZXN0czo6dGVzdF9mbGFreV90ZXN0X3dpdGhfbXVsdGlwbGVfYXR0ZW1wdHM=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_multiple_passes_not_flaky" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_multiple_passes_not_flaky</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_multiple_passes_not_flaky</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtfZmxha3lfdGVzdHMucHk6OlRlc3RNYXJrRmxha3lUZXN0czo6dGVzdF9tdWx0aXBsZV9wYXNzZXNfbm90X2ZsYWt5', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_profile_can_be_passed_as_separate_argument" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_profile_can_be_passed_as_separate_argument</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_profile_loading.py::test_profile_can_be_passed_as_separate_argument</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3Byb2ZpbGVfbG9hZGluZy5weTo6dGVzdF9wcm9maWxlX2Nhbl9iZV9wYXNzZWRfYXNfc2VwYXJhdGVfYXJndW1lbnQ=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_trace_block_with_leading_spaces" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_trace_block_with_leading_spaces</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_trace_block.py::test_trace_block_with_leading_spaces</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3RyYWNlX2Jsb2NrLnB5Ojp0ZXN0X3RyYWNlX2Jsb2NrX3dpdGhfbGVhZGluZ19zcGFjZXM=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_extract_trace_block_with_invalid_input" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_extract_trace_block_with_invalid_input</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_trace_block.py::test_extract_trace_block_with_invalid_input</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3RyYWNlX2Jsb2NrLnB5Ojp0ZXN0X2V4dHJhY3RfdHJhY2VfYmxvY2tfd2l0aF9pbnZhbGlkX2lucHV0', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw4</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_resolve_driver_fallback_to_browser" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_resolve_driver_fallback_to_browser</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_resolve_driver_fallback_to_browser</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF9yZXNvbHZlX2RyaXZlcl9mYWxsYmFja190b19icm93c2Vy', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_resolve_driver_uses_page_for_screenshot_attr" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_resolve_driver_uses_page_for_screenshot_attr</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_driver_screenshots.py::test_resolve_driver_uses_page_for_screenshot_attr</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2RyaXZlcl9zY3JlZW5zaG90cy5weTo6dGVzdF9yZXNvbHZlX2RyaXZlcl91c2VzX3BhZ2VfZm9yX3NjcmVlbnNob3RfYXR0cg==', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-                <div><strong>STDOUT:</strong> <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('W3Jlc29sdmVfZHJpdmVyXSBVc2luZyBtYW51YWxseSBhdHRhY2hlZCBzY3JlZW5zaG90IG9iamVjdAo=', this)" title="Copy stdout">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-                <pre>[resolve_driver] Using manually attached screenshot object
-</pre></div>
-                
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_error_block_empty" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_error_block_empty</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_error_block.py::test_error_block_empty</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2Vycm9yX2Jsb2NrLnB5Ojp0ZXN0X2Vycm9yX2Jsb2NrX2VtcHR5', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_error_block_none" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_error_block_none</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_error_block.py::test_error_block_none</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2Vycm9yX2Jsb2NrLnB5Ojp0ZXN0X2Vycm9yX2Jsb2NrX25vbmU=', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_extract_error_block_with_invalid_input" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_extract_error_block_with_invalid_input</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_error_block.py::test_extract_error_block_with_invalid_input</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X2Vycm9yX2Jsb2NrLnB5Ojp0ZXN0X2V4dHJhY3RfZXJyb3JfYmxvY2tfd2l0aF9pbnZhbGlkX2lucHV0', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_preserves_other_fields" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_preserves_other_fields</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_mark_flaky_tests.py::TestMarkFlakyTests::test_preserves_other_fields</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtfZmxha3lfdGVzdHMucHk6OlRlc3RNYXJrRmxha3lUZXN0czo6dGVzdF9wcmVzZXJ2ZXNfb3RoZXJfZmllbGRz', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_extract_links_with_multiple_marker_names" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_extract_links_with_multiple_marker_names</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_marker_links.py::test_extract_links_with_multiple_marker_names</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X21hcmtlcl9saW5rcy5weTo6dGVzdF9leHRyYWN0X2xpbmtzX3dpdGhfbXVsdGlwbGVfbWFya2VyX25hbWVz', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_profile_requires_pyproject_file" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_profile_requires_pyproject_file</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_profile_loading.py::test_profile_requires_pyproject_file</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3Byb2ZpbGVfbG9hZGluZy5weTo6dGVzdF9wcm9maWxlX3JlcXVpcmVzX3B5cHJvamVjdF9maWxl', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-        
-<div class="test test-card" data-name="test_trace_block_empty" data-link="" data-markers="">
-  <div class="header passed" onclick="toggleDetails(this)">
-    <div class="header-section test-info">
-      <span class="toggle"></span>
-      <strong>test_trace_block_empty</strong>
-      <span>— PASSED</span>
-    </div>
-    <div class="header-section meta">
-      <span class="nodeid-badge" style="display: flex; align-items: center; gap: 6px;">
-        <code style="font-size: 0.6em; color: #555;">tests/unit/test_trace_block.py::test_trace_block_empty</code>
-          <button class="inline-copy-btn" onclick="event.stopPropagation(); copyFromBase64('dGVzdHMvdW5pdC90ZXN0X3RyYWNlX2Jsb2NrLnB5Ojp0ZXN0X3RyYWNlX2Jsb2NrX2VtcHR5', this)" title="Copy nodeid">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
-            
-      </span>
-      <span class="worker-id" style="background: #ddd; border-radius: 3px; padding: 2px 5px; font-size: 0.85em; font-weight: bold;">gw5</span>
-    </div>
-
-    <div class="header-section badges-and-timing">
-      <span style="display:inline-block; min-width:40px;"></span>
-      <span style="display:inline-block; min-width:45px;"></span>
-      <span class="timestamp">⏱ 0.00s</span>
-    </div>
-  </div>
-
-  <div class="details">
-    <div class="details-content">
-      <div class="details-text">
-    
-    
-    
-    
-    
-    
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-    </div></body></html>
+    <script type="application/json" id="similar-errors-data">{"similar-1": {"message": "Account service returned an invalid response", "tests": [{"anchor": "test-0e3e5823fcd6ad184f243fd6ea7dcafe", "name": "test_matching_account_errors[login]"}, {"anchor": "test-1a9df9329740e406c38940f46cb86048", "name": "test_matching_account_errors[checkout]"}, {"anchor": "test-bb40a75e61e62f34f49744e0ac7a659a", "name": "test_matching_account_errors[search]"}, {"anchor": "test-2e86015c31be78de7964fe07f9ca139f", "name": "test_matching_account_errors[profile]"}]}, "similar-2": {"message": "Database connection refused for reporting service", "tests": [{"anchor": "test-9ccb5e9c196d120c26965eb2278b42af", "name": "test_database_setup_one"}, {"anchor": "test-d6db157827f2753a09f739acd4b38d30", "name": "test_database_setup_two"}]}}</script>
+<style>
+.similar-errors-badge { background:transparent; color:#444; border:1px solid #bbb;
+ border-radius:3px; padding:2px 5px; font-size:.85em; cursor:pointer;
+ display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
+.similar-errors-badge svg { flex-shrink:0; }
+#similar-errors-popover { position:fixed; inset:auto; margin:0; z-index:1000;
+ box-sizing:border-box; width:min(360px, calc(100vw - 16px)); max-height:50vh;
+ overflow:auto; background:white; color:#333; border:1px solid #bbb;
+ border-radius:5px; padding:12px; box-shadow:0 3px 12px #0003; }
+#similar-errors-popover .similar-errors-heading { display:flex; align-items:center; gap:8px; }
+#similar-errors-popover .similar-errors-heading strong { flex:1; min-width:0; }
+#similar-errors-popover .copy-all-links { display:inline-flex; align-items:center;
+ gap:4px; margin:0; padding:4px; flex-shrink:0; white-space:nowrap; }
+#similar-errors-popover a { display:block; padding:5px 0; overflow-wrap:anywhere; }
+#similar-errors-popover p { overflow-wrap:anywhere; }
+#similar-errors-popover .similar-errors-note { margin-top:10px; padding-top:8px;
+ border-top:1px solid #e5e7eb; color:#666; font-size:.8rem; line-height:1.5; }
+#similar-errors-popover .similar-errors-note code { overflow-wrap:anywhere; }
+</style>
+<div id="similar-errors-popover" role="dialog" aria-label="Similar errors in this report" hidden></div>
+<script>
+(() => {
+ const groups = JSON.parse(document.getElementById('similar-errors-data').textContent);
+ const panel = document.getElementById('similar-errors-popover');
+ let trigger = null;
+ function close(restoreFocus = false) {
+   panel.hidden = true;
+   if (trigger) {
+     trigger.setAttribute('aria-expanded', 'false');
+     if (restoreFocus) trigger.focus();
+   }
+   trigger = null;
+ }
+ document.querySelectorAll('.similar-errors-badge').forEach(button => {
+   button.addEventListener('click', event => {
+     event.stopPropagation();
+     const same = trigger === button;
+     close();
+     if (same) return;
+     trigger = button;
+     button.setAttribute('aria-expanded', 'true');
+     const group = groups[button.dataset.group];
+     panel.replaceChildren();
+     const title = document.createElement('strong');
+     title.textContent = 'Similar errors in this report';
+     const heading = document.createElement('div');
+     heading.className = 'similar-errors-heading';
+     const copyButton = document.createElement('button');
+     copyButton.type = 'button';
+     copyButton.className = 'inline-copy-btn copy-all-links';
+     copyButton.setAttribute('aria-live', 'polite');
+     copyButton.title = 'Copy links to every test in this group, including this test';
+     const icon = button.closest('.test').querySelector('.test-link-btn svg');
+     if (icon) {
+       const copyIcon = icon.cloneNode(true);
+       copyIcon.setAttribute('aria-hidden', 'true');
+       copyButton.append(copyIcon);
+     }
+     copyButton.setAttribute('aria-label', 'Copy all test links');
+     copyButton.addEventListener('click', event => {
+       event.stopPropagation();
+       const seen = new Set();
+       const text = group.tests.filter(test => {
+         if (seen.has(test.anchor)) return false;
+         seen.add(test.anchor);
+         return true;
+       }).map(test => `${test.name.replace(/[\r\n]+/g, ' ')} — ${testLinkUrl(test.anchor)}`).join('\n');
+       copyTextToClipboard(text, copyButton);
+     });
+     heading.append(title, copyButton);
+     const message = document.createElement('p');
+     message.textContent = group.message;
+     panel.append(heading, message);
+     group.tests.forEach(test => {
+       if (test.anchor === button.closest('.test').id) return;
+       const link = document.createElement('a');
+       link.href = '#' + test.anchor;
+       link.textContent = test.name;
+       link.addEventListener('click', () => {
+         close();
+         if (location.hash === link.hash) revealTestFromFragment();
+       });
+       panel.append(link);
+     });
+     const note = document.createElement('div');
+     note.className = 'similar-errors-note';
+     note.append('Similar messages may have different causes.', document.createElement('br'), 'Disable: ');
+     const command = document.createElement('code');
+     command.textContent = '--plus-similar-errors=false';
+     note.append(command, document.createElement('br'), "Recipients need access to this report. Local file links aren't shareable.");
+     panel.append(note);
+     panel.hidden = false;
+     const rect = button.getBoundingClientRect();
+     panel.style.left = Math.max(8, Math.min(rect.left, innerWidth - panel.offsetWidth - 8)) + 'px';
+     panel.style.top = Math.max(8, Math.min(rect.bottom + 4, innerHeight - panel.offsetHeight - 8)) + 'px';
+     panel.querySelector('a')?.focus();
+   });
+ });
+ document.addEventListener('click', event => {
+   if (!panel.contains(event.target)) close();
+ });
+ document.addEventListener('keydown', event => {
+   if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); close(true); }
+ });
+ document.addEventListener('focusin', event => {
+   if (!panel.hidden && !panel.contains(event.target) && event.target !== trigger) close();
+ });
+ window.addEventListener('hashchange', () => close());
+ window.addEventListener('resize', () => close());
+})();
+</script>
+</div></body></html>
